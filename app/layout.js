@@ -1,4 +1,3 @@
-// Import of styles of mantine packages which are installed
 import "@mantine/core/styles.css";
 import {
   ColorSchemeScript,

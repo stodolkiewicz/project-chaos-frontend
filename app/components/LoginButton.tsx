@@ -5,7 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 
 export default function LoginButton() {
   const handleLogin = () => {
-    console.log("Logowanie przez Google...");
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
   };
 
   return (
