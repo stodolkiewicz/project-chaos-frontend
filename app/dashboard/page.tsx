@@ -1,12 +1,16 @@
-import { Container, Title, Stack } from "@mantine/core";
+import MainAppStructure from "../components/MainAppStructure";
+import Navigation from "../components/MainAppStructure";
+import { Container, Text } from "@mantine/core";
 
 export default function Dashboard() {
   return (
-    <Container size="xl" pt={20}>
-      <Stack>
-        <Title order={1}>Project Chaos</Title>
+    <MainAppStructure>
+      <Container>
+        <Text size="xl" fw={700} mb="md">
+          Wybierz projekt z menu po lewej stronie
+        </Text>
         {/* Tutaj później dodamy tablicę kanban */}
-      </Stack>
-    </Container>
+      </Container>
+    </MainAppStructure>
   );
 }
