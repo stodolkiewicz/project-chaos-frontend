@@ -1,3 +1,10 @@
+import TopMenu from "../components/TopMenu";
+
 export default function Dashboard() {
-  return <div>Dashboard</div>;
+  return (
+    <div className="min-h-screen">
+      <TopMenu />
+      <main className="pt-[48px] px-4">Dashboard content</main>
+    </div>
+  );
 }
