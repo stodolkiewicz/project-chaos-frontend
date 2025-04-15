@@ -1,5 +1,5 @@
 import { extractAccesstokenInfoFromCookie } from "@/lib/tokenHelper";
-import DashboardClientWrapper from "../components/Dashboard/DashboardClientWrapper";
+import DashboardClientWrapper from "./components/DashboardClientWrapper";
 
 export default async function DashboardLayout({ children }) {
   const user = await extractAccesstokenInfoFromCookie();

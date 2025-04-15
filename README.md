@@ -2,6 +2,11 @@
 
 Kanban Board project in Next.js (https://nextjs.org/) and Spring Boot on the backend (https://github.com/stodolkiewicz/project-chaos-backend). Logging in is done via Google oauth2.
 
+## Todo
+
+1. Talk with LLM about folder structure
+2. RTK Query, get some data
+
 ## Commands
 
 ```bash
