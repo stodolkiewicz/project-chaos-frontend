@@ -1,8 +1,8 @@
-import { extractAccesstokenInfoFromCookie } from "@/lib/auth";
 import UserAvatar from "./UserAvatar";
+import { useSelector } from "react-redux";
 
-export default async function TopMenu() {
-  const userData = await extractAccesstokenInfoFromCookie();
+export default function TopMenu() {
+  const userData = useSelector((state) => state.user);
 
   return (
     <div className="fixed top-0 left-0 w-screen h-[48px] flex items-center px-4 border-b-1">

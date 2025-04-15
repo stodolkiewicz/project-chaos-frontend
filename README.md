@@ -28,6 +28,13 @@ not ok -> redirect to /
 3. shadcn/ui  
    https://ui.shadcn.com/
 
+4. React Redux  
+   https://react-redux.js.org/
+
+5. Redux Toolkit - recommended way of writing Redux  
+   https://redux-toolkit.js.org/  
+   Also includes RTK Query for data fetching and caching,
+
 ## Useful Links
 
 1. Convertico  
