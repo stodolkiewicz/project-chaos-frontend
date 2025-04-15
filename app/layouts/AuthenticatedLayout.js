@@ -2,10 +2,11 @@
 
 import { Provider } from "react-redux";
 import { store } from "@/app/store";
-import UserProvider from "../../providers/UserProvider";
-import TopMenu from "../../components/TopMenu/TopMenu";
+import UserProvider from "../providers/UserProvider";
+import TopMenu from "../components/TopMenu/TopMenu";
 
-export default function DashboardClientWrapper({ user, children }) {
+// layout with top menu and content
+export default function AuthenticatedLayout({ user, children }) {
   return (
     <Provider store={store}>
       <UserProvider user={user}>

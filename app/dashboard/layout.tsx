@@ -1,12 +1,10 @@
 import { extractAccesstokenInfoFromCookie } from "@/lib/tokenHelper";
-import DashboardClientWrapper from "./components/DashboardClientWrapper";
+import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 
 export default async function DashboardLayout({ children }) {
+  // await + this function accesses cookies = only in server component
   const user = await extractAccesstokenInfoFromCookie();
 
-  // props only gofrom client component to client component.
-  // That's why this wrapper is needed here
-  return (
-    <DashboardClientWrapper user={user}>{children}</DashboardClientWrapper>
-  );
+  // UserProvider uses a hook -> client component
+  return <AuthenticatedLayout user={user}>{children}</AuthenticatedLayout>;
 }
