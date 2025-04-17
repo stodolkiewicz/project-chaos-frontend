@@ -9,6 +9,7 @@ import TopMenu from "../components/TopMenu/TopMenu";
 export default function AuthenticatedLayout({ user, children }) {
   return (
     <Provider store={store}>
+      {/* individual provider for user state initialisation */}
       <UserProvider user={user}>
         <div className="min-h-screen">
           <TopMenu />
