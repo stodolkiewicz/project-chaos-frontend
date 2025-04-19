@@ -1,5 +1,7 @@
 "use client";
 
+import { clearUser } from "@/app/features/userSlice";
+import { useAppDispatch } from "@/app/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
@@ -12,10 +14,11 @@ interface UserAvatarProps {
 
 export default function UserAvatar({ email, pictureUrl }: UserAvatarProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    // TODO: implement logout
-    console.log("logout");
+    dispatch(clearUser());
+    router.push("/");
   };
 
   return (
