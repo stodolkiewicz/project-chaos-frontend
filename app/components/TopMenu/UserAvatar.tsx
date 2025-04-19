@@ -18,8 +18,6 @@ export default function UserAvatar({ email, pictureUrl }: UserAvatarProps) {
     console.log("logout");
   };
 
-  console.log("UserAvatar props:", { email, pictureUrl });
-
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm">{email}</span>
