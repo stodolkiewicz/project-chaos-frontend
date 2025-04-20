@@ -2,7 +2,7 @@
 
 import { useAppDispatch } from "@/app/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface UserAvatarProps {
