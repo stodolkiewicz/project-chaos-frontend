@@ -16,14 +16,14 @@ export default function UserAvatar({ email, pictureUrl }: UserAvatarProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
-    dispatch(clearUser());
-    router.push("/");
-  };
+  // const handleLogout = () => {
+  //   dispatch(clearUser());
+  //   router.push("/");
+  // };
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm">{email}</span>
+      {/* <span className="text-sm">{email}</span> */}
       <Avatar>
         <AvatarImage src={pictureUrl} alt={email} />
         <AvatarFallback>
@@ -31,9 +31,9 @@ export default function UserAvatar({ email, pictureUrl }: UserAvatarProps) {
         </AvatarFallback>
       </Avatar>
       {/* todo - move it to some menu, which is open on click on Avatar */}
-      <Button variant="ghost" size="icon" onClick={handleLogout}>
+      {/* <Button variant="ghost" size="icon" onClick={handleLogout}>
         <LogOut className="h-4 w-4" />
-      </Button>
+      </Button> */}
     </div>
   );
 }
