@@ -14,7 +14,6 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<UserData>) => {
-      console.log("Reducer setUser otrzymał:", action.payload);
       state.firstName = action.payload.firstName || "";
       state.email = action.payload.email || "";
       state.pictureUrl = action.payload.pictureUrl || "";

@@ -18,7 +18,7 @@ export const projectApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getUserProjects: builder.query<Project[], void>({
+    getUserProjects: builder.query<UserProjectsResponseDTO, void>({
       query: () => ``,
     }),
   }),

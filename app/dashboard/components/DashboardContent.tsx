@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function DashboardContent() {
   // undefined -> we are not passing any parameters (it is a simple get)
   const {
-    data: projects,
+    data: userProjectsResponseDTO,
     isLoading,
     error,
   } = useGetUserProjectsQuery(undefined, {
@@ -16,13 +16,16 @@ export default function DashboardContent() {
   });
 
   if (error) return <div>There was an error while loading the projects</div>;
-  if (isLoading || !projects) return <div>Loading...</div>;
+  if (isLoading || !userProjectsResponseDTO) return <div>Loading...</div>;
 
   return (
     <div>
       <h1>Your projects</h1>
-      {projects.length > 0 ? (
-        <div>{JSON.stringify(projects)}</div>
+      {userProjectsResponseDTO.projects.length > 0 ? (
+        <>
+          <div>{userProjectsResponseDTO.defaultProjectId}</div>
+          <div>{JSON.stringify(userProjectsResponseDTO.projects)}</div>
+        </>
       ) : (
         <Button>Create your first project</Button>
       )}
