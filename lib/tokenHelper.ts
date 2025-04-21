@@ -1,14 +1,6 @@
+import { UserAuthPayload } from "@/app/types/UserData";
 import { jwtDecode } from "jwt-decode";
-import type { JwtPayload } from "jwt-decode";
 import { cookies } from "next/headers";
-
-export interface UserAuthPayload extends JwtPayload {
-  firstName?: string;
-  email?: string;
-  pictureUrl?: string;
-  accessToken?: string;
-  refreshToken?: string;
-}
 
 export async function extractTokenInfoFromCookies(): Promise<UserAuthPayload | null> {
   const cookieStore = await cookies();
@@ -22,7 +14,7 @@ export async function extractTokenInfoFromCookies(): Promise<UserAuthPayload | n
   try {
     const decoded = jwtDecode<UserAuthPayload>(accessToken);
 
-    const decodedPayload = {
+    const decodedPayload: UserAuthPayload = {
       firstName: decoded.firstName,
       email: decoded.sub,
       pictureUrl: decoded.pictureUrl,
