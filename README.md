@@ -73,3 +73,8 @@ OAuth2LoginSuccessHandler will check if user has default_project_id and will red
 
 - /dashboard/onboarding if not
 - /dashboard/project/project_id if yes
+
+### Blogs, tutorials, etc.
+
+1. Redux - Complete Tutorial (with Redux Toolkit)
+   https://www.youtube.com/watch?v=5yEG6GhoJBs

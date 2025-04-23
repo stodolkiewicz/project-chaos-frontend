@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "@/app/store";
 import UserProvider from "../providers/UserProvider";
 import TopMenu from "../components/TopMenu/TopMenu";
-import { UserAuthPayload } from "@/lib/tokenHelper";
+import { UserAuthPayload } from "../types/UserData";
 
 // layout with top menu and content
 export default function AuthenticatedLayout({
