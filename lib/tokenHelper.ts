@@ -18,6 +18,7 @@ export async function extractTokenInfoFromCookies(): Promise<UserAuthPayload | n
       firstName: decoded.firstName,
       email: decoded.sub,
       pictureUrl: decoded.pictureUrl,
+      defaultProjectId: decoded.defaultProjectId,
       accessToken: accessToken,
       refreshToken: refreshToken,
     };

@@ -4,6 +4,7 @@ export interface UserData {
   firstName?: string;
   email: string;
   pictureUrl?: string;
+  defaultProjectId?: string;
   accessToken: string;
   refreshToken?: string;
 }
