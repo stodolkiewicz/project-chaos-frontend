@@ -7,7 +7,7 @@ interface UserProject {
   projectJoinedDate: string;
 }
 
-interface UserProjectsResponseDTO {
+export interface UserProjectsResponseDTO {
   projects: UserProject[];
   defaultProjectId: string;
 }

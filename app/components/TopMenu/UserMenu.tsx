@@ -9,7 +9,7 @@ import {
 } from "@radix-ui/react-popover";
 import UserAvatar from "./UserAvatar";
 import { useAppDispatch } from "@/app/hooks";
-import { clearUser } from "@/app/features/userSlice";
+import { clearUser } from "@/app/state/userSlice";
 import { useRouter } from "next/navigation";
 
 type UserMenuProps = {

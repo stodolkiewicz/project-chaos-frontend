@@ -1,8 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
+import { ColumnDTO } from "../types/ColumnDTO";
 
-export const projectApi = createApi({
-  reducerPath: "ProjectApi",
+export const columnsApi = createApi({
+  reducerPath: "ColumnsApi",
+  tagTypes: ["Columns"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
     credentials: "include",
@@ -17,11 +19,12 @@ export const projectApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getUserProjects: builder.query<UserProjectsResponseDTO, void>({
-      query: () => ``,
+    getColumns: builder.query<ColumnDTO[], string>({
+      query: (projectId) => `/${projectId}/columns`,
+      providesTags: [{ type: "Columns" }],
     }),
   }),
 });
 
-export const { useGetUserProjectsQuery } = projectApi;
-export default projectApi;
+export const { useGetColumnsQuery } = columnsApi;
+export default columnsApi;

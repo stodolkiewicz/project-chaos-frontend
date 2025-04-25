@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useAppDispatch } from "@/app/hooks";
-import { setUser } from "@/app/features/userSlice";
+import { setUser } from "@/app/state/userSlice";
 import { store } from "@/app/store";
 import { UserAuthPayload } from "../types/UserData";
 
