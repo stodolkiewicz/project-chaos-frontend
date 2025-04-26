@@ -35,16 +35,18 @@ export default function DashboardContent() {
 
   return (
     <div>
-      <h1 className="text-center mt-3 mb-3">Your project</h1>
+      <h1 className="text-center mt-4 mb-4">Your project</h1>
       {columns?.length > 0 && (
         <div className="flex justify-center mx-auto">
           {columns.map((column, index) => (
             <div
               key={index}
-              className="box-border border-2 ml-2 mr-2 min-h-[30rem]"
+              className="box-border border-2 rounded-sm ml-2 mr-2 min-h-[30rem]"
               style={{ width: `${columnWidthPercentage}%` }}
             >
-              <h5 className="text-center bg-amber-400">{column.name}</h5>
+              <h5 className="text-center bg-primary hover:bg-indigo-200 transition-all duration-300">
+                {column.name}
+              </h5>
               <p>Position {column.position}</p>
             </div>
           ))}
