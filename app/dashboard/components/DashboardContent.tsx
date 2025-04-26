@@ -18,6 +18,13 @@ export default function DashboardContent() {
     skip: !useAppSelector((state) => state.user.accessToken),
   });
 
+  if (!defaultProjectId || !columns)
+    return (
+      <div className="flex justify-center items-center min-h-screen ">
+        <Button className="-translate-y-15">Create your first project</Button>
+      </div>
+    );
+
   let columnWidthPercentage = 80 / columns?.length;
 
   if (columnsLoading) return <div>Loading...</div>;
@@ -43,9 +50,6 @@ export default function DashboardContent() {
           ))}
         </div>
       )}
-
-      {!columns ||
-        (columns.length === 0 && <Button>Create your first project</Button>)}
     </div>
   );
 }
