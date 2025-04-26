@@ -18,7 +18,7 @@ export default function AuthenticatedLayout({
     <Provider store={store}>
       {/* individual provider for user state initialisation */}
       <UserProvider user={user}>
-        <div className="min-h-screen">
+        <div className="min-h-screen min-w-screen">
           <TopMenu />
           <main className="pt-[48px] px-4">{children}</main>
         </div>

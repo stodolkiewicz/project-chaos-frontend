@@ -18,6 +18,8 @@ export default function DashboardContent() {
     skip: !useAppSelector((state) => state.user.accessToken),
   });
 
+  let columnWidthPercentage = 80 / columns?.length;
+
   if (columnsLoading) return <div>Loading...</div>;
   if (error)
     return (
@@ -26,8 +28,21 @@ export default function DashboardContent() {
 
   return (
     <div>
-      <h1>Your projects</h1>
-      {columns && columns.length > 0 && <div>{JSON.stringify(columns)}</div>}
+      <h1 className="text-center mt-3 mb-3">Your project</h1>
+      {columns?.length > 0 && (
+        <div className="flex justify-center mx-auto">
+          {columns.map((column, index) => (
+            <div
+              key={index}
+              className="box-border border-2 ml-2 mr-2 min-h-[30rem]"
+              style={{ width: `${columnWidthPercentage}%` }}
+            >
+              <h5 className="text-center bg-amber-400">{column.name}</h5>
+              <p>Position {column.position}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {!columns ||
         (columns.length === 0 && <Button>Create your first project</Button>)}
