@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
+import { ProjectDTO } from "../types/ProjectDTO";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
-  tagTypes: ["Projects"],
+  tagTypes: ["Projects", "Project"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
     credentials: "include",
@@ -24,8 +25,12 @@ export const projectsApi = createApi({
       query: () => ``,
       providesTags: [{ type: "Projects" }],
     }),
+    getProject: builder.query<ProjectDTO, string>({
+      query: (projectId) => `${projectId}`,
+      providesTags: (result, error, id) => [{ type: "Project", id }],
+    }),
   }),
 });
 
-export const { useGetUserProjectsQuery } = projectsApi;
+export const { useGetUserProjectsQuery, useGetProjectQuery } = projectsApi;
 export default projectsApi;

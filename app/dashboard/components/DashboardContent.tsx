@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
 import BoardTask from "@/app/components/BoardTask";
+import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -21,14 +22,20 @@ export default function DashboardContent() {
   });
 
   const {
+    data: project,
+    isLoading: projectLoading,
+    error: projectError,
+  } = useGetProjectQuery(defaultProjectId, {
+    skip: !useAppSelector((state) => state.user.accessToken),
+  });
+
+  const {
     data: boardTasks,
     isLoading: boardTasksLoading,
     error: boardTasksError,
   } = useGetBoardTasksQuery(defaultProjectId, {
     skip: !useAppSelector((state) => state.user.accessToken),
   });
-
-  console.log(boardTasks);
 
   if (!defaultProjectId || !columns)
     return (
@@ -39,12 +46,21 @@ export default function DashboardContent() {
 
   let columnWidthPercentage = 80 / columns?.length;
 
-  if (columnsLoading) return <div>Loading...</div>;
+  if (columnsLoading || boardTasksLoading) return <div>Loading...</div>;
   if (columnsError)
     return (
       <div>
         Error:{" "}
         {"message" in columnsError ? columnsError.message : "Unknown error"}
+      </div>
+    );
+  if (boardTasksError)
+    return (
+      <div>
+        Error:{" "}
+        {"message" in boardTasksError
+          ? boardTasksError.message
+          : "Unknown error"}
       </div>
     );
 
@@ -55,7 +71,7 @@ export default function DashboardContent() {
 
   return (
     <div>
-      <h1 className="text-center mt-4 mb-4">Your project</h1>
+      <h2 className="text-center mt-4 mb-4">{project?.name}</h2>
       {columns?.length > 0 && (
         <div className="flex justify-center mx-auto">
           {columns.map((column, index) => {
