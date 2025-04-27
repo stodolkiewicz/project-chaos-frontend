@@ -4,6 +4,8 @@ import { useAppSelector } from "@/app/hooks";
 import { useGetColumnsQuery } from "@/app/state/ColumnsApiSlice";
 import { Button } from "@/components/ui/button";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
+import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
+import BoardTask from "@/app/components/BoardTask";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -13,10 +15,20 @@ export default function DashboardContent() {
   const {
     data: columns,
     isLoading: columnsLoading,
-    error,
+    error: columnsError,
   } = useGetColumnsQuery(defaultProjectId, {
     skip: !useAppSelector((state) => state.user.accessToken),
   });
+
+  const {
+    data: boardTasks,
+    isLoading: boardTasksLoading,
+    error: boardTasksError,
+  } = useGetBoardTasksQuery(defaultProjectId, {
+    skip: !useAppSelector((state) => state.user.accessToken),
+  });
+
+  console.log(boardTasks);
 
   if (!defaultProjectId || !columns)
     return (
@@ -28,28 +40,44 @@ export default function DashboardContent() {
   let columnWidthPercentage = 80 / columns?.length;
 
   if (columnsLoading) return <div>Loading...</div>;
-  if (error)
+  if (columnsError)
     return (
-      <div>Error: {"message" in error ? error.message : "Unknown error"}</div>
+      <div>
+        Error:{" "}
+        {"message" in columnsError ? columnsError.message : "Unknown error"}
+      </div>
     );
+
+  const groupedTasks = columns.reduce((acc, column) => {
+    acc[column.id] = boardTasks.filter((task) => task.column.id === column.id);
+    return acc;
+  }, {});
 
   return (
     <div>
       <h1 className="text-center mt-4 mb-4">Your project</h1>
       {columns?.length > 0 && (
         <div className="flex justify-center mx-auto">
-          {columns.map((column, index) => (
-            <div
-              key={index}
-              className="box-border border-2 rounded-sm ml-2 mr-2 min-h-[30rem]"
-              style={{ width: `${columnWidthPercentage}%` }}
-            >
-              <h5 className="text-center bg-primary hover:bg-indigo-200 transition-all duration-300">
-                {column.name}
-              </h5>
-              <p>Position {column.position}</p>
-            </div>
-          ))}
+          {columns.map((column, index) => {
+            const tasksInColumn = groupedTasks[column.id] || [];
+            return (
+              <div
+                key={column.id}
+                className="box-border border-2 rounded-sm ml-2 mr-2 min-h-[30rem]"
+                style={{ width: `${columnWidthPercentage}%` }}
+              >
+                <h5 className="text-center bg-primary hover:bg-indigo-200 transition-all duration-300">
+                  {column.name}
+                </h5>
+                {tasksInColumn.map((taskInColumn) => (
+                  <BoardTask
+                    key={taskInColumn.taskId}
+                    boardTask={taskInColumn}
+                  />
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

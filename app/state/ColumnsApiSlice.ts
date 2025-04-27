@@ -18,6 +18,7 @@ export const columnsApi = createApi({
       return headers;
     },
   }),
+  refetchOnFocus: true,
   endpoints: (builder) => ({
     getColumns: builder.query<ColumnDTO[], string>({
       query: (projectId) => `/${projectId}/columns`,
