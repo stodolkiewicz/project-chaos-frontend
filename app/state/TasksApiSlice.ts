@@ -22,8 +22,16 @@ export const tasksApi = createApi({
       query: (projectId) => `/${projectId}/tasks`,
       providesTags: [{ type: "Tasks" }],
     }),
+    // todo invalidate 1 task
+    deleteTask: builder.mutation<void, { projectId: string; taskId: string }>({
+      query: ({ projectId, taskId }) => ({
+        url: `/${projectId}/tasks/${taskId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "Tasks" }],
+    }),
   }),
 });
 
-export const { useGetBoardTasksQuery } = tasksApi;
+export const { useGetBoardTasksQuery, useDeleteTaskMutation } = tasksApi;
 export default tasksApi;

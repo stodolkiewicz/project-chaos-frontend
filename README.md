@@ -24,8 +24,9 @@ not ok -> redirect to /
 
 ## Libraries
 
-1. React icons:  
-   https://react-icons.github.io/react-icons/icons/fc/
+1. icons:  
+   https://react-icons.github.io/react-icons/icons/fc/  
+   https://lucide.dev/icons
 
 2. tailwindcss  
    https://tailwindcss.com/
