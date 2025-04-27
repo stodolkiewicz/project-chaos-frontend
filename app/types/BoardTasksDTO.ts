@@ -11,7 +11,6 @@ interface Column {
 }
 
 interface Assignee {
-  id: string;
   email: string;
 }
 
