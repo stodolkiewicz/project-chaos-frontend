@@ -28,7 +28,10 @@ export default function UserMenu({ email, pictureUrl }: UserMenuProps) {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger
+        asChild
+        className="rounded-full shadow-sm hover:shadow-lg transition-shadow duration-300"
+      >
         <button type="button" className="cursor-pointer">
           <UserAvatar
             email={email}
