@@ -48,8 +48,8 @@ export default function DashboardContent() {
       </div>
     );
 
-  const groupedTasks = columns.reduce((acc, column) => {
-    acc[column.id] = boardTasks.filter((task) => task.column.id === column.id);
+  const groupedTasks = columns?.reduce((acc, column) => {
+    acc[column.id] = boardTasks?.filter((task) => task.column.id === column.id);
     return acc;
   }, {});
 
