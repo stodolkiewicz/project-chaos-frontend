@@ -7,6 +7,7 @@ import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
 import BoardTask from "@/app/components/BoardTask";
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
+import Column from "./Column";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -71,27 +72,20 @@ export default function DashboardContent() {
 
   return (
     <div>
+      {/* PROJECT NAME */}
       <h2 className="text-center mt-4 mb-4">{project?.name}</h2>
+      {/* COLUMNS */}
       {columns?.length > 0 && (
         <div className="flex justify-center mx-auto">
           {columns.map((column, index) => {
             const tasksInColumn = groupedTasks[column.id] || [];
             return (
-              <div
+              <Column
                 key={column.id}
-                className="box-border border-2 rounded-sm ml-2 mr-2 min-h-[30rem]"
-                style={{ width: `${columnWidthPercentage}%` }}
-              >
-                <h5 className="text-center bg-primary hover:bg-indigo-200 transition-all duration-300">
-                  {column.name}
-                </h5>
-                {tasksInColumn.map((taskInColumn) => (
-                  <BoardTask
-                    key={taskInColumn.taskId}
-                    boardTask={taskInColumn}
-                  />
-                ))}
-              </div>
+                column={column}
+                tasksInColumn={tasksInColumn}
+                columnWidthPercentage={columnWidthPercentage}
+              />
             );
           })}
         </div>

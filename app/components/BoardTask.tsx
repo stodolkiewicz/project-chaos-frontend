@@ -5,6 +5,17 @@ import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { Trash2 } from "lucide-react";
 import { useDeleteTaskMutation } from "../state/TasksApiSlice";
 import { useAppSelector } from "../hooks";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface BoardTaskProps {
   boardTask: BoardTaskDTO;
@@ -19,10 +30,30 @@ export default function BoardTask({ boardTask }: BoardTaskProps) {
       <div className="flex">
         <h6 className="flex-1">{boardTask.title}</h6>
 
-        <Trash2
-          onClick={() => deleteTask({ projectId, taskId: boardTask.taskId })}
-          className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
-        />
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <Trash2 className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action will permanently delete this task.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() =>
+                  deleteTask({ projectId, taskId: boardTask.taskId })
+                }
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         {/* priority colorful square section */}
         <div className="flex flex-col items-end mr-2">
           <div
