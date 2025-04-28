@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export default function RootLayout({ children }) {
@@ -5,6 +6,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="flex flex-col min-h-screen items-center justify-center ">
         {children}
+        <Toaster />
       </body>
     </html>
   );

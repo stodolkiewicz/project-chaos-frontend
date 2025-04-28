@@ -3,9 +3,7 @@
 import { useAppSelector } from "@/app/hooks";
 import { useGetColumnsQuery } from "@/app/state/ColumnsApiSlice";
 import { Button } from "@/components/ui/button";
-import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
-import BoardTask from "@/app/components/BoardTask";
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import Column from "./Column";
 

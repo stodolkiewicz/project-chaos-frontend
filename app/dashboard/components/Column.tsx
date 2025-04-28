@@ -1,4 +1,4 @@
-import BoardTask from "@/app/components/BoardTask";
+import BoardTask from "@/app/components/BoardTask/BoardTask";
 
 export default function Column({
   column,
