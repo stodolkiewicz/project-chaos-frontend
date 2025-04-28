@@ -45,7 +45,9 @@ export default function DeleteTaskAlertDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action will permanently delete this task.
+            This action will permanently delete the{" "}
+            <span className="font-bold">&ldquo;{boardTask.title}&rdquo; </span>
+            task.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
