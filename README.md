@@ -36,9 +36,6 @@ not ok -> redirect to /
    https://redux-toolkit.js.org/  
    Also includes RTK Query for data fetching and caching,
 
-   Query RTK pessimistic cache updates  
-   https://redux-toolkit.js.org/rtk-query/usage/manual-cache-updates#pessimistic-updates
-
 ## Useful Links
 
 1. Convertico  
@@ -49,3 +46,6 @@ not ok -> redirect to /
 
 1. Redux - Complete Tutorial (with Redux Toolkit)
    https://www.youtube.com/watch?v=5yEG6GhoJBs
+
+2. Query RTK pessimistic cache updates  
+   https://redux-toolkit.js.org/rtk-query/usage/manual-cache-updates#pessimistic-updates

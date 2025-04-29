@@ -14,6 +14,12 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,9 +44,19 @@ export default function DeleteTaskAlertDialog({
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
-        <Trash2 className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </AlertDialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <AlertDialogTrigger>
+              <Trash2 className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </AlertDialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent align="center" className="-translate-x-[3px]">
+            <p>Delete this task</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
