@@ -36,6 +36,9 @@ not ok -> redirect to /
    https://redux-toolkit.js.org/  
    Also includes RTK Query for data fetching and caching,
 
+6. React Hook Form  
+   https://react-hook-form.com/get-started
+
 ## Useful Links
 
 1. Convertico  

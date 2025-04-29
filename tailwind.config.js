@@ -7,14 +7,10 @@ module.exports = {
   darkMode: "class",
   theme: {
     extend: {
-      colors: {
-        "primary-headers": "var(--primary-headers)",
-        "primary-headers-darker": "var(--primary-headers-darker)",
-        "accept-color": "var(--accept-color)",
-        "accept-color-darker": "var(--accept-color-darker)",
-      },
+      colors: {},
     },
   },
+
   variants: {
     extend: {},
   },

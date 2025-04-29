@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
+import CreateTaskForm from "./CreateTaskForm";
 
 export default function CreateTaskDialog() {
   return (
@@ -33,8 +34,9 @@ export default function CreateTaskDialog() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Header</DialogTitle>
-          <DialogDescription>Formularz tutaj. todo.</DialogDescription>
+          <DialogTitle>Add a new task</DialogTitle>
+
+          <CreateTaskForm />
         </DialogHeader>
       </DialogContent>
     </Dialog>

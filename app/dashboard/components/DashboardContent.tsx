@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import Column from "./Column";
+import CreateTaskForm from "./CreateTask/CreateTaskForm";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -71,7 +72,9 @@ export default function DashboardContent() {
   return (
     <div>
       {/* PROJECT NAME */}
-      <h2 className="text-center mt-4 mb-4">{project?.name}</h2>
+      <h2 className="text-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
+        {project?.name}
+      </h2>
       {/* COLUMNS */}
       {columns?.length > 0 && (
         <div className="flex justify-center mx-auto">

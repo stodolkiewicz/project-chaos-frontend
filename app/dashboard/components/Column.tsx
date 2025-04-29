@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
-import CreateTaskDialog from "./CreateTaskDialog";
+import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
 
 export default function Column({
   column,
@@ -17,10 +17,10 @@ export default function Column({
   return (
     <div
       key={column.id}
-      className="flex flex-col box-border border-2 rounded-sm ml-2 mr-2 mb-20 min-h-[30rem]"
+      className="flex flex-col box-border border-2 rounded-sm ml-2 mr-2 mb-20 min-h-[30rem] shadow-sm"
       style={{ width: `${columnWidthPercentage}%` }}
     >
-      <h5 className="flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300">
+      <h5 className="flex items-center px-4 py-2 bg-primary h-8 text-primary-foreground hover:bg-primary-darker-1 bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300">
         <span className="flex flex-1 justify-center">{column.name}</span>
       </h5>
 
