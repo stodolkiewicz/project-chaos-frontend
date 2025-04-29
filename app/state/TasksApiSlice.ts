@@ -22,13 +22,32 @@ export const tasksApi = createApi({
       query: (projectId) => `/${projectId}/tasks`,
       providesTags: [{ type: "Tasks" }],
     }),
-    // todo invalidate 1 task
     deleteTask: builder.mutation<void, { projectId: string; taskId: string }>({
       query: ({ projectId, taskId }) => ({
         url: `/${projectId}/tasks/${taskId}`,
         method: "DELETE",
       }),
-      invalidatesTags: [{ type: "Tasks" }],
+      // pessimistic Query RTK cache update.
+      // Wait for queryFulfilled, no error? -> delete boardTask from cache of getBoardTasks endpoint
+      async onQueryStarted(
+        { projectId, taskId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            tasksApi.util.updateQueryData(
+              "getBoardTasks",
+              projectId,
+              (draft) => {
+                return draft.filter((boardTask) => boardTask.taskId !== taskId);
+              }
+            )
+          );
+        } catch (error) {
+          console.error("Failed to delete task:", error);
+        }
+      },
     }),
   }),
 });
