@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
+import CreateTaskDialog from "./CreateTaskDialog";
 
 export default function Column({
   column,
@@ -28,16 +29,7 @@ export default function Column({
       ))}
 
       <div className="w-full flex flex-1 justify-end items-end px-2 py-3">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Plus className="w-7 h-7 p-1 text-primary hover:scale-110 hover:text-green-600 hover:border-green-200 hover:border rounded-full transition-all duration-600 cursor-pointer" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add a new task</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <CreateTaskDialog />
       </div>
     </div>
   );
