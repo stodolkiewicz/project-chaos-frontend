@@ -29,7 +29,11 @@ interface DeleteTaskAlertDialogProps {
 
 export default function DeleteTaskAlertDialog({
   boardTask,
-}: DeleteTaskAlertDialogProps) {
+  children,
+}: {
+  boardTask: BoardTaskDTO;
+  children: React.ReactNode;
+}) {
   const [deleteTask] = useDeleteTaskMutation();
   const projectId = useAppSelector((state) => state.user.defaultProjectId);
 
@@ -47,9 +51,7 @@ export default function DeleteTaskAlertDialog({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <AlertDialogTrigger>
-              <Trash2 className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </AlertDialogTrigger>
+            <AlertDialogTrigger>{children}</AlertDialogTrigger>
           </TooltipTrigger>
           <TooltipContent align="center" className="-translate-x-[3px]">
             <p>Delete this task</p>

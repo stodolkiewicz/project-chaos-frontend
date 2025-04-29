@@ -72,9 +72,9 @@ export default function DashboardContent() {
   return (
     <div>
       {/* PROJECT NAME */}
-      <h2 className="text-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
+      <h3 className="text-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
         {project?.name}
-      </h2>
+      </h3>
       {/* COLUMNS */}
       {columns?.length > 0 && (
         <div className="flex justify-center mx-auto">

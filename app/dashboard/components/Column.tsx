@@ -17,12 +17,12 @@ export default function Column({
   return (
     <div
       key={column.id}
-      className="flex flex-col box-border border-2 rounded-sm ml-2 mr-2 mb-20 min-h-[30rem] shadow-sm"
+      className="flex flex-col box-border border-2 rounded-md ml-2 mr-2 mb-20 min-h-[30rem] shadow-sm"
       style={{ width: `${columnWidthPercentage}%` }}
     >
-      <h5 className="flex items-center px-4 py-2 bg-primary h-8 text-primary-foreground hover:bg-primary-darker-1 bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300">
+      <h6 className="flex items-center px-1 py-1 bg-primary text-primary-foreground hover:bg-primary-darker-1 rounded-t-sm bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300 break-all">
         <span className="flex flex-1 justify-center">{column.name}</span>
-      </h5>
+      </h6>
 
       {tasksInColumn.map((taskInColumn) => (
         <BoardTask key={taskInColumn.taskId} boardTask={taskInColumn} />
