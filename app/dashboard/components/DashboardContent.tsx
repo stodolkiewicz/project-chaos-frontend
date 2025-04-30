@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import Column from "./Column";
-import CreateTaskForm from "./CreateTask/CreateTaskForm";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(

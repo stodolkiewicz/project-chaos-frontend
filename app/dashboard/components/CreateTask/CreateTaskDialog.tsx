@@ -15,7 +15,11 @@ import {
 import { Plus } from "lucide-react";
 import CreateTaskForm from "./CreateTaskForm";
 
-export default function CreateTaskDialog() {
+export default function CreateTaskDialog({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <Dialog>
       <DialogTrigger>
@@ -32,11 +36,11 @@ export default function CreateTaskDialog() {
           </TooltipProvider>
         </div>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="lg:min-w-2xl">
         <DialogHeader>
           <DialogTitle>Add a new task</DialogTitle>
 
-          <CreateTaskForm />
+          {children}
         </DialogHeader>
       </DialogContent>
     </Dialog>

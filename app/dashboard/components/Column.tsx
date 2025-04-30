@@ -1,19 +1,23 @@
 import BoardTask from "@/app/dashboard/components/BoardTask/BoardTask";
-import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Plus } from "lucide-react";
 import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
+import CreateTaskForm from "./CreateTask/CreateTaskForm";
+import { ColumnDTO } from "@/app/types/ColumnDTO";
+import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 
 export default function Column({
   column,
   tasksInColumn,
   columnWidthPercentage,
+}: {
+  column: ColumnDTO;
+  tasksInColumn: BoardTaskDTO[];
+  columnWidthPercentage: number;
 }) {
+  const maxPositionInColumn =
+    tasksInColumn.length > 0
+      ? Math.max(...tasksInColumn.map((task) => task.positionInColumn))
+      : 0;
+
   return (
     <div
       key={column.id}
@@ -29,7 +33,12 @@ export default function Column({
       ))}
 
       <div className="w-full flex flex-1 justify-end items-end px-2 py-3">
-        <CreateTaskDialog />
+        <CreateTaskDialog>
+          <CreateTaskForm
+            positionInColumn={maxPositionInColumn + 1}
+            columnId={column.id}
+          />
+        </CreateTaskDialog>
       </div>
     </div>
   );
