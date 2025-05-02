@@ -8,7 +8,6 @@ export const projectsApi = createApi({
   tagTypes: ["Projects", "Project"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
-    credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
 
@@ -20,6 +19,7 @@ export const projectsApi = createApi({
     },
   }),
   refetchOnFocus: true,
+  // todo TAGS!
   endpoints: (builder) => ({
     getUserProjects: builder.query<UserProjectsResponseDTO, void>({
       query: () => ``,

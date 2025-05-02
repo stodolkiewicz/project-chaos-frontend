@@ -5,6 +5,7 @@ import { useGetProjectUsersQuery } from "@/app/state/UsersApiSlice";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useGetTaskPrioritiesQuery } from "@/app/state/TaskPrioritiesApiSlice";
 
 type FormData = {
   title: string;
@@ -12,6 +13,7 @@ type FormData = {
   positionInColumn: number;
   columnId: string;
   assigneeEmail: string;
+  taskPriority: string;
 };
 
 type CreateTaskFormProps = {
@@ -43,6 +45,14 @@ export default function CreateTaskForm({
     skip: !useAppSelector((state) => state.user.accessToken),
   });
 
+  const {
+    data: taskPriorities,
+    isLoading: taskPrioritiesLoading,
+    error: taskPrioritiesError,
+  } = useGetTaskPrioritiesQuery(defaultProjectId, {
+    skip: !useAppSelector((state) => state.user.accessToken),
+  });
+
   useEffect(() => {
     setValue("positionInColumn", positionInColumn);
   }, [positionInColumn, setValue]);
@@ -60,7 +70,7 @@ export default function CreateTaskForm({
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-4">
       {/* TITLE */}
       <div>
-        <label className="block text-sm font-medium">Task title</label>
+        <label className="block text-sm font-medium">Title:</label>
         <input
           type="text"
           placeholder="Task title"
@@ -77,9 +87,7 @@ export default function CreateTaskForm({
 
       {/* DESCRIPTION */}
       <div>
-        <label className="block text-sm font-medium mt-3">
-          Task description
-        </label>
+        <label className="block text-sm font-medium mt-3">Description:</label>
         <Textarea
           className="wrap-anywhere"
           placeholder="Describe the task."
@@ -103,7 +111,7 @@ export default function CreateTaskForm({
       <input type="hidden" {...register("columnId")} />
 
       {/* Assign to */}
-      <label className="block text-sm font-medium mt-3">Assign to</label>
+      <label className="text-sm font-medium mt-3">Assign to:</label>
       <select
         {...register("assigneeEmail")}
         className="border border-primary p-2 rounded w-full mt-2"
@@ -115,11 +123,20 @@ export default function CreateTaskForm({
           </option>
         ))}
       </select>
-      {errors.assigneeEmail && (
-        <p className="text-red-500 text-sm mt-1 mb-2">
-          {errors.assigneeEmail.message}
-        </p>
-      )}
+
+      {/* Task priority */}
+      <label className="text-sm font-medium mt-3">Priority:</label>
+      <select
+        {...register("taskPriority")}
+        className="border border-primary p-2 rounded w-full mt-2"
+      >
+        <option value="">-- Select task priority --</option>
+        {taskPriorities?.map((taskPriority) => (
+          <option key={taskPriority.id} value={taskPriority.name}>
+            {taskPriority.name} ({taskPriority.priorityValue})
+          </option>
+        ))}
+      </select>
 
       {/* SUBMIT BUTTON */}
       <button

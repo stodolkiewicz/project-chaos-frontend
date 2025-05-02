@@ -3,6 +3,7 @@ import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
 import CreateTaskForm from "./CreateTask/CreateTaskForm";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 export default function Column({
   column,
@@ -34,10 +35,13 @@ export default function Column({
 
       <div className="w-full flex flex-1 justify-end items-end px-2 py-3">
         <CreateTaskDialog>
-          <CreateTaskForm
-            positionInColumn={maxPositionInColumn + 1}
-            columnId={column.id}
-          />
+          <>
+            <DialogTitle>Add a new task</DialogTitle>
+            <CreateTaskForm
+              positionInColumn={maxPositionInColumn + 1}
+              columnId={column.id}
+            />
+          </>
         </CreateTaskDialog>
       </div>
     </div>

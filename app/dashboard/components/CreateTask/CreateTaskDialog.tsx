@@ -1,7 +1,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,7 +12,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
-import CreateTaskForm from "./CreateTaskForm";
 
 export default function CreateTaskDialog({
   children,
@@ -37,11 +35,7 @@ export default function CreateTaskDialog({
         </div>
       </DialogTrigger>
       <DialogContent className="lg:min-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Add a new task</DialogTitle>
-
-          {children}
-        </DialogHeader>
+        <DialogHeader>{children}</DialogHeader>
       </DialogContent>
     </Dialog>
   );

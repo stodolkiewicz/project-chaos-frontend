@@ -7,7 +7,6 @@ export const columnsApi = createApi({
   tagTypes: ["Columns"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
-    credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
 
@@ -22,7 +21,9 @@ export const columnsApi = createApi({
   endpoints: (builder) => ({
     getColumns: builder.query<ColumnDTO[], string>({
       query: (projectId) => `/${projectId}/columns`,
-      providesTags: [{ type: "Columns" }],
+      providesTags: (result, error, projectId) => [
+        { type: "Columns", id: projectId },
+      ],
     }),
   }),
 });

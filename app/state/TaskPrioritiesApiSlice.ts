@@ -1,31 +1,32 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
-import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
+import { TaskPriorityDTO } from "../types/TaskPriorityDTO";
 
-export const usersApi = createApi({
-  reducerPath: "UsersApi",
-  tagTypes: ["Users"],
+export const taskPrioritiesApi = createApi({
+  reducerPath: "TaskPrioritiesApi",
+  tagTypes: ["TaskPriorities"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
-    credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
+
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
+
       return headers;
     },
   }),
   refetchOnFocus: true,
   endpoints: (builder) => ({
-    getProjectUsers: builder.query<ProjectUsersDTO, string>({
-      query: (projectId) => `/${projectId}/users`,
+    getTaskPriorities: builder.query<TaskPriorityDTO[], string>({
+      query: (projectId) => `/${projectId}/task-priorities`,
       providesTags: (result, error, projectId) => [
-        { type: "Users", id: projectId },
+        { type: "TaskPriorities", id: projectId },
       ],
     }),
   }),
 });
 
-export const { useGetProjectUsersQuery } = usersApi;
-export default usersApi;
+export const { useGetTaskPrioritiesQuery } = taskPrioritiesApi;
+export default taskPrioritiesApi;

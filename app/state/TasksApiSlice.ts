@@ -7,7 +7,6 @@ export const tasksApi = createApi({
   tagTypes: ["Tasks"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
-    credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
       if (token) {
@@ -20,7 +19,9 @@ export const tasksApi = createApi({
   endpoints: (builder) => ({
     getBoardTasks: builder.query<BoardTaskDTO[], string>({
       query: (projectId) => `/${projectId}/tasks`,
-      providesTags: [{ type: "Tasks" }],
+      providesTags: (result, error, projectId) => [
+        { type: "Tasks", id: projectId },
+      ],
     }),
     deleteTask: builder.mutation<void, { projectId: string; taskId: string }>({
       query: ({ projectId, taskId }) => ({
