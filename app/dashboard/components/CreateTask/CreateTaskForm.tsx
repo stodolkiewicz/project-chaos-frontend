@@ -6,14 +6,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetTaskPrioritiesQuery } from "@/app/state/TaskPrioritiesApiSlice";
+import { useCreateTaskMutation } from "@/app/state/TasksApiSlice";
 
-type FormData = {
+export type CreateTaskFormData = {
   title: string;
   description: string;
   positionInColumn: number;
   columnId: string;
   assigneeEmail: string;
-  taskPriority: string;
+  priorityId: string;
 };
 
 type CreateTaskFormProps = {
@@ -31,7 +32,7 @@ export default function CreateTaskForm({
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<CreateTaskFormData>();
 
   const defaultProjectId = useAppSelector(
     (state) => state.user.defaultProjectId
@@ -54,15 +55,31 @@ export default function CreateTaskForm({
   });
 
   useEffect(() => {
+    register("positionInColumn", { valueAsNumber: true });
     setValue("positionInColumn", positionInColumn);
-  }, [positionInColumn, setValue]);
+  }, []);
 
   useEffect(() => {
+    register("columnId");
     setValue("columnId", columnId);
-  }, [columnId, setValue]);
+  }, []);
 
-  const onSubmit = (data: FormData) => {
-    console.log("FormData: " + JSON.stringify(data));
+  const [createTask, { isLoading, isSuccess, isError }] =
+    useCreateTaskMutation();
+
+  const onSubmit = async (createTaskFormData: CreateTaskFormData) => {
+    console.log("FormData: " + JSON.stringify(createTaskFormData));
+    console.log("FormData obiekt:", createTaskFormData);
+
+    try {
+      await createTask({
+        projectId: defaultProjectId,
+        createTaskFormData,
+      }).unwrap();
+      alert("Task created. hura!");
+    } catch (err) {
+      console.error("Błąd przy tworzeniu zadania:", err);
+    }
     reset();
   };
 
@@ -106,9 +123,8 @@ export default function CreateTaskForm({
         )}
       </div>
       {/* POSITION IN COLUMN - HIDDEN */}
-      <input type="hidden" {...register("positionInColumn")} />
+
       {/* COLUMN ID - HIDDEN */}
-      <input type="hidden" {...register("columnId")} />
 
       {/* Assign to */}
       <label className="text-sm font-medium mt-3">Assign to:</label>
@@ -127,16 +143,18 @@ export default function CreateTaskForm({
       {/* Task priority */}
       <label className="text-sm font-medium mt-3">Priority:</label>
       <select
-        {...register("taskPriority")}
+        {...register("priorityId")}
         className="border border-primary p-2 rounded w-full mt-2"
       >
         <option value="">-- Select task priority --</option>
         {taskPriorities?.map((taskPriority) => (
-          <option key={taskPriority.id} value={taskPriority.name}>
+          <option key={taskPriority.id} value={taskPriority.id}>
             {taskPriority.name} ({taskPriority.priorityValue})
           </option>
         ))}
       </select>
+
+      {/* Todo: task labels */}
 
       {/* SUBMIT BUTTON */}
       <button

@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { BoardTaskDTO } from "../types/BoardTasksDTO";
+import { CreateTaskFormData } from "../dashboard/components/CreateTask/CreateTaskForm";
 
 export const tasksApi = createApi({
   reducerPath: "TasksApi",
@@ -50,8 +51,37 @@ export const tasksApi = createApi({
         }
       },
     }),
+    createTask: builder.mutation<
+      void, // what backend returns, void = we don't care
+      { projectId: string; createTaskFormData: CreateTaskFormData }
+    >({
+      query: ({ projectId, createTaskFormData }) => ({
+        url: `/${projectId}/tasks`,
+        method: "POST",
+        body: createTaskFormData,
+      }),
+      // optimistic update
+      async onQueryStarted(
+        { projectId, createTaskFormData },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          // After successful creation, invalidate the tasks list to refetch
+          dispatch(
+            tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+          );
+        } catch (error) {
+          console.error("Failed to create task:", error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetBoardTasksQuery, useDeleteTaskMutation } = tasksApi;
+export const {
+  useGetBoardTasksQuery,
+  useDeleteTaskMutation,
+  useCreateTaskMutation,
+} = tasksApi;
 export default tasksApi;

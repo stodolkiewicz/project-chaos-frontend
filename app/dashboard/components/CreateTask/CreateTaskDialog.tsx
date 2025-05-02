@@ -35,7 +35,11 @@ export default function CreateTaskDialog({
         </div>
       </DialogTrigger>
       <DialogContent className="lg:min-w-2xl">
-        <DialogHeader>{children}</DialogHeader>
+        <DialogHeader>
+          <DialogTitle>Add a new task</DialogTitle>
+
+          {children}
+        </DialogHeader>
       </DialogContent>
     </Dialog>
   );
