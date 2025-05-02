@@ -5,7 +5,7 @@ import { ProjectDTO } from "../types/ProjectDTO";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
-  tagTypes: ["Projects", "Project"],
+  tagTypes: ["Projects"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
     prepareHeaders: (headers, { getState }) => {
@@ -19,15 +19,16 @@ export const projectsApi = createApi({
     },
   }),
   refetchOnFocus: true,
-  // todo TAGS!
+
   endpoints: (builder) => ({
-    getUserProjects: builder.query<UserProjectsResponseDTO, void>({
-      query: () => ``,
-      providesTags: [{ type: "Projects" }],
+    // not used anywhere yet. path does not have email, but email is used for RTK tags
+    getUserProjects: builder.query<UserProjectsResponseDTO, string>({
+      query: (email) => ``,
+      providesTags: (result, error, email) => [{ type: "Projects", id: email }],
     }),
     getProject: builder.query<ProjectDTO, string>({
       query: (projectId) => `${projectId}`,
-      providesTags: (result, error, id) => [{ type: "Project", id }],
+      providesTags: (result, error, id) => [{ type: "Projects", id }],
     }),
   }),
 });
