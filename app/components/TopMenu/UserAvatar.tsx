@@ -11,9 +11,6 @@ interface UserAvatarProps {
 }
 
 export default function UserAvatar({ email, pictureUrl }: UserAvatarProps) {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-
   return (
     <div className="flex items-center gap-2">
       <Avatar>

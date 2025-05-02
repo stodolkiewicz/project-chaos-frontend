@@ -11,6 +11,7 @@ import UserAvatar from "./UserAvatar";
 import { useAppDispatch } from "@/app/hooks";
 import { clearUser } from "@/app/state/userSlice";
 import { useRouter } from "next/navigation";
+import { deleteCookie } from "@/app/server-actions/deleteCookie";
 
 type UserMenuProps = {
   email: string;
@@ -21,8 +22,10 @@ export default function UserMenu({ email, pictureUrl }: UserMenuProps) {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     dispatch(clearUser());
+    deleteCookie("refresh_token");
+    deleteCookie("access_token");
     router.push("/");
   };
 
