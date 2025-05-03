@@ -12,14 +12,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 
 export default function CreateTaskDialog({
   children,
 }: {
-  children: React.ReactNode;
+  // as children we have children function
+  // children function gets 1 argument - onClose function
+  // onClose function is used to open/close dialog
+  // children function returns React.ReactNode
+  children: (onClose: () => void) => React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
         <div>
           <TooltipProvider>
@@ -37,9 +43,9 @@ export default function CreateTaskDialog({
       <DialogContent className="lg:min-w-2xl">
         <DialogHeader>
           <DialogTitle>Add a new task</DialogTitle>
-
-          {children}
         </DialogHeader>
+        {/* children get onClose function */}
+        {children(() => setIsOpen(false))}
       </DialogContent>
     </Dialog>
   );

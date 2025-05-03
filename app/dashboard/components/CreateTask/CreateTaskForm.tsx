@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useGetTaskPrioritiesQuery } from "@/app/state/TaskPrioritiesApiSlice";
 import { useCreateTaskMutation } from "@/app/state/TasksApiSlice";
+import { toast } from "sonner";
 
 export type CreateTaskFormData = {
   title: string;
@@ -20,11 +21,13 @@ export type CreateTaskFormData = {
 type CreateTaskFormProps = {
   positionInColumn: number;
   columnId: string;
+  onClose: () => void;
 };
 
 export default function CreateTaskForm({
   positionInColumn,
   columnId,
+  onClose,
 }: CreateTaskFormProps) {
   const {
     register,
@@ -57,28 +60,32 @@ export default function CreateTaskForm({
   useEffect(() => {
     register("positionInColumn", { valueAsNumber: true });
     setValue("positionInColumn", positionInColumn);
-  }, []);
+  });
 
   useEffect(() => {
     register("columnId");
     setValue("columnId", columnId);
-  }, []);
+  });
 
   const [createTask, { isLoading, isSuccess, isError }] =
     useCreateTaskMutation();
 
   const onSubmit = async (createTaskFormData: CreateTaskFormData) => {
-    console.log("FormData: " + JSON.stringify(createTaskFormData));
-    console.log("FormData obiekt:", createTaskFormData);
+    // console.log("FormData: " + JSON.stringify(createTaskFormData));
+    // console.log("FormData obiekt:", createTaskFormData);
 
     try {
       await createTask({
         projectId: defaultProjectId,
         createTaskFormData,
       }).unwrap();
-      alert("Task created. hura!");
+
+      toast.success(`Task "${createTaskFormData.title}" was created.`);
+      onClose();
     } catch (err) {
-      console.error("Błąd przy tworzeniu zadania:", err);
+      toast.error(
+        `There was an error while creating "${createTaskFormData.title}" task.`
+      );
     }
     reset();
   };

@@ -35,13 +35,17 @@ export default function Column({
 
       <div className="w-full flex flex-1 justify-end items-end px-2 py-3">
         <CreateTaskDialog>
-          <>
-            <DialogTitle>Add a new task</DialogTitle>
-            <CreateTaskForm
-              positionInColumn={maxPositionInColumn + 1}
-              columnId={column.id}
-            />
-          </>
+          {/* children function returns React.ReactNode */}
+          {(onClose) => (
+            <>
+              <DialogTitle>Add a new task</DialogTitle>
+              <CreateTaskForm
+                positionInColumn={maxPositionInColumn + 1}
+                columnId={column.id}
+                onClose={onClose}
+              />
+            </>
+          )}
         </CreateTaskDialog>
       </div>
     </div>
