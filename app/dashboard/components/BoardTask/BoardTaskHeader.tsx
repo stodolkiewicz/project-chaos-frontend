@@ -1,6 +1,15 @@
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import DeleteTaskAlertDialog from "./DeleteTaskAlertDialog";
 import { Trash2 } from "lucide-react";
+import { MdDragIndicator } from "react-icons/md";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDndContext } from "@dnd-kit/core";
+import { useState } from "react";
 
 interface BoardTaskHeaderProps {
   boardTask: BoardTaskDTO;
@@ -16,14 +25,51 @@ function isColorDark(hexColor: string): boolean {
   return luminance < 128;
 }
 
-export default function BoardTaskHeader({ boardTask }: BoardTaskHeaderProps) {
+interface BoardTaskHeaderProps {
+  boardTask: BoardTaskDTO;
+  listeners?: React.HTMLAttributes<HTMLDivElement>;
+  attributes?: React.HTMLAttributes<HTMLDivElement>;
+}
+
+export default function BoardTaskHeader({
+  boardTask,
+  listeners,
+  attributes,
+}: BoardTaskHeaderProps) {
+  const { active } = useDndContext();
+  const isDragging = active?.id === boardTask.taskId;
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   return (
     <>
       <div className="flex">
+        <Tooltip
+          open={isDragging ? false : tooltipOpen}
+          onOpenChange={setTooltipOpen}
+        >
+          <TooltipTrigger asChild>
+            <div
+              className={`flex items-center mr-1  ${
+                isDragging ? "cursor-grabbing" : "cursor-grab"
+              }`}
+              {...listeners}
+              {...attributes}
+            >
+              <MdDragIndicator />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent align="center" className="translate-x-[1px] border-1">
+            <p>Drag to another column</p>
+          </TooltipContent>
+        </Tooltip>
+
         <h6 className="flex-1 ">{boardTask.title}</h6>
 
         <DeleteTaskAlertDialog boardTask={boardTask}>
-          <Trash2 className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Trash2
+            className="h-4 w-4 text-muted-foreground mr-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            onPointerDown={(e) => e.stopPropagation()}
+          />
         </DeleteTaskAlertDialog>
 
         <div className="flex flex-col items-end mr-2">

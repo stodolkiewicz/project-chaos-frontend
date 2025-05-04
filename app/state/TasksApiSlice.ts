@@ -93,7 +93,7 @@ export const tasksApi = createApi({
       async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          // Po udanym przeniesieniu taska, odśwież listę tasków
+
           dispatch(
             tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
           );

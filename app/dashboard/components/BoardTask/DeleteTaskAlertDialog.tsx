@@ -48,16 +48,16 @@ export default function DeleteTaskAlertDialog({
 
   return (
     <AlertDialog>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <AlertDialogTrigger>{children}</AlertDialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent align="center" className="-translate-x-[3px]">
-            <p>Delete this task</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <AlertDialogTrigger className="cursor-pointer">
+            {children}
+          </AlertDialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent align="center" className="-translate-x-[4px] border-1">
+          <p>Delete this task</p>
+        </TooltipContent>
+      </Tooltip>
 
       <AlertDialogContent>
         <AlertDialogHeader>

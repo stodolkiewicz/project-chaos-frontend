@@ -28,16 +28,14 @@ export default function CreateTaskDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
         <div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Plus className="w-7 h-7 p-1 text-primary hover:scale-110 hover:text-green-600 hover:border-green-200 hover:border rounded-full transition-all duration-600 cursor-pointer" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Add a new task</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Plus className="w-7 h-7 p-1 text-primary hover:scale-110 hover:text-green-600 hover:border-green-200 hover:border rounded-full transition-all duration-600 cursor-pointer" />
+            </TooltipTrigger>
+            <TooltipContent className="-translate-x-[1px] border-1">
+              <p>Add a new task</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </DialogTrigger>
       <DialogContent className="lg:min-w-2xl">

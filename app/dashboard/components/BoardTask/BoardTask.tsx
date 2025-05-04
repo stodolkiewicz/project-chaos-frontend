@@ -21,13 +21,15 @@ export default function BoardTask({ boardTask }: BoardTaskProps) {
 
   return (
     <div
-      className="group rounded-md p-2 m-2 flex flex-col border-1 shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+      className="group rounded-md p-2 m-2 flex flex-col border-1 shadow-sm hover:shadow-md transition-shadow duration-300 bg-amber-100"
       ref={setNodeRef}
       style={style}
-      {...listeners}
-      {...attributes}
     >
-      <BoardTaskHeader boardTask={boardTask} />
+      <BoardTaskHeader
+        boardTask={boardTask}
+        listeners={listeners}
+        attributes={attributes}
+      />
       <Separator className="bg-border h-[1.5px]" />
       <div className="mt-1 break-all">{boardTask.description}</div>
       <BoardTaskFooter assigneeEmail={boardTask.assignee.email} />
