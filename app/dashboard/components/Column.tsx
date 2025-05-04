@@ -4,26 +4,43 @@ import CreateTaskForm from "./CreateTask/CreateTaskForm";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { useDroppable } from "@dnd-kit/core";
+import { useEffect } from "react";
 
 export default function Column({
   column,
   tasksInColumn,
   columnWidthPercentage,
+  onMaxPositionInColumn,
 }: {
   column: ColumnDTO;
   tasksInColumn: BoardTaskDTO[];
   columnWidthPercentage: number;
+  onMaxPositionInColumn: (columnId: string, maxPosition: number) => void;
 }) {
   const maxPositionInColumn =
     tasksInColumn.length > 0
       ? Math.max(...tasksInColumn.map((task) => task.positionInColumn))
       : 0;
 
+  useEffect(() => {
+    onMaxPositionInColumn(column.id, maxPositionInColumn);
+  }, [maxPositionInColumn, column.id, onMaxPositionInColumn]);
+
+  const { isOver, setNodeRef } = useDroppable({
+    id: column.id,
+  });
+  const style = {
+    color: isOver ? "green" : undefined,
+  };
+
   return (
     <div
       key={column.id}
+      id={column.id}
       className="flex flex-col box-border border-2 rounded-md ml-2 mr-2 mb-20 min-h-[30rem] shadow-sm"
       style={{ width: `${columnWidthPercentage}%` }}
+      ref={setNodeRef}
     >
       <h6 className="flex items-center px-1 py-1 bg-primary text-primary-foreground hover:bg-primary-darker-1 rounded-t-sm bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300 break-all">
         <span className="flex flex-1 justify-center">{column.name}</span>

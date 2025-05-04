@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { CreateTaskFormData } from "../dashboard/components/CreateTask/CreateTaskForm";
+import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
 
 export const tasksApi = createApi({
   reducerPath: "TasksApi",
@@ -76,6 +77,31 @@ export const tasksApi = createApi({
         }
       },
     }),
+    moveTask: builder.mutation<
+      void,
+      {
+        projectId: string;
+        taskId: string;
+        updateTaskColumnDTO: UpdateTaskColumnDTO;
+      }
+    >({
+      query: ({ projectId, taskId, updateTaskColumnDTO }) => ({
+        url: `/${projectId}/tasks/${taskId}`,
+        method: "PATCH",
+        body: updateTaskColumnDTO,
+      }),
+      async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          // Po udanym przeniesieniu taska, odśwież listę tasków
+          dispatch(
+            tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+          );
+        } catch (error) {
+          console.error("Failed to move task:", error);
+        }
+      },
+    }),
   }),
 });
 
@@ -83,5 +109,6 @@ export const {
   useGetBoardTasksQuery,
   useDeleteTaskMutation,
   useCreateTaskMutation,
+  useMoveTaskMutation,
 } = tasksApi;
 export default tasksApi;
