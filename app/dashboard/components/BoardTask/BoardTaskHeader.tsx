@@ -38,15 +38,15 @@ export default function BoardTaskHeader({ boardTask }: BoardTaskHeaderProps) {
       </div>
       <div>
         {boardTask.labels.map((label, id) => (
-          <span
+          <div
             key={id}
-            className={`overflow-hidden text-ellipsis font-medium text-xs bg-primary-lighter-2 rounded-full pr-1.5 pl-1.5 ${
+            className={`shadow-2xl inline-block hover:opacity-78 duration-300 overflow-hidden text-ellipsis font-medium text-xs  bg-amber-300 rounded-full pr-1.5 pl-1.5 ${
               isColorDark(label.color) ? "text-white" : ""
             }`}
             style={{ backgroundColor: label.color }}
           >
             {"#" + label.name + " "}
-          </span>
+          </div>
         ))}
       </div>
     </>

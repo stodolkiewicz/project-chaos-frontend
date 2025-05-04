@@ -10,6 +10,12 @@ import { useCreateTaskMutation } from "@/app/state/TasksApiSlice";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { HexColorPicker } from "react-colorful";
 
 type Label = {
   name: string;
@@ -194,6 +200,29 @@ export default function CreateTaskForm({
               <Input {...field} placeholder="Label name" />
             )}
           />
+          {/* Kolor */}
+          <Controller
+            control={control}
+            name={`labels.${index}.color`}
+            render={({ field }) => (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    className="w-8 h-8 rounded-full border"
+                    style={{ backgroundColor: field.value }}
+                  />
+                </PopoverTrigger>
+                <PopoverContent className="w-fit p-2">
+                  <HexColorPicker
+                    color={field.value}
+                    onChange={field.onChange}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+
           <Button
             type="button"
             variant="destructive"
