@@ -38,7 +38,6 @@ export default function Column({
           {/* children function returns React.ReactNode */}
           {(onClose) => (
             <>
-              <DialogTitle>Add a new task</DialogTitle>
               <CreateTaskForm
                 positionInColumn={maxPositionInColumn + 1}
                 columnId={column.id}

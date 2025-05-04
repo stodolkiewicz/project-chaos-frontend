@@ -4,10 +4,17 @@ import { useAppSelector } from "@/app/hooks";
 import { useGetProjectUsersQuery } from "@/app/state/UsersApiSlice";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useGetTaskPrioritiesQuery } from "@/app/state/TaskPrioritiesApiSlice";
 import { useCreateTaskMutation } from "@/app/state/TasksApiSlice";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+type Label = {
+  name: string;
+  color: string;
+};
 
 export type CreateTaskFormData = {
   title: string;
@@ -16,6 +23,7 @@ export type CreateTaskFormData = {
   columnId: string;
   assigneeEmail: string;
   priorityId: string;
+  labels: Label[];
 };
 
 type CreateTaskFormProps = {
@@ -31,6 +39,7 @@ export default function CreateTaskForm({
 }: CreateTaskFormProps) {
   const {
     register,
+    control, // for dynamic fields
     handleSubmit,
     reset,
     setValue,
@@ -74,10 +83,17 @@ export default function CreateTaskForm({
     // console.log("FormData: " + JSON.stringify(createTaskFormData));
     // console.log("FormData obiekt:", createTaskFormData);
 
+    const createTaskFormDataNoEmptyLabels: CreateTaskFormData = {
+      ...createTaskFormData,
+      labels: createTaskFormData.labels.filter(
+        (label) => label.name.trim() != ""
+      ),
+    };
+
     try {
       await createTask({
         projectId: defaultProjectId,
-        createTaskFormData,
+        createTaskFormData: createTaskFormDataNoEmptyLabels,
       }).unwrap();
 
       toast.success(`Task "${createTaskFormData.title}" was created.`);
@@ -89,6 +105,11 @@ export default function CreateTaskForm({
     }
     reset();
   };
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "labels",
+  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-4">
@@ -162,6 +183,35 @@ export default function CreateTaskForm({
       </select>
 
       {/* Todo: task labels */}
+      <label className="text-sm font-medium mt-3">Labels:</label>
+
+      {fields.map((field, index) => (
+        <div key={field.id} className="mt-2 flex gap-2">
+          <Controller
+            control={control}
+            name={`labels.${index}.name`}
+            render={({ field }) => (
+              <Input {...field} placeholder="Label name" />
+            )}
+          />
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => remove(index)}
+          >
+            Delete
+          </Button>
+        </div>
+      ))}
+
+      <Button
+        type="button"
+        variant="secondary"
+        onClick={() => append({ name: "", color: "" })}
+        className="mt-3"
+      >
+        Click to add a new label
+      </Button>
 
       {/* SUBMIT BUTTON */}
       <button
