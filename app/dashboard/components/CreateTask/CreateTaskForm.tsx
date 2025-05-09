@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import { HexColorPicker } from "react-colorful";
+import { useGetLabelsQuery } from "@/app/state/LabelsApiSlice";
 
 type Label = {
   name: string;
@@ -36,6 +37,15 @@ type CreateTaskFormProps = {
   positionInColumn: number;
   columnId: string;
   onClose: () => void;
+};
+
+const generateRandomColor = () => {
+  return (
+    "#" +
+    Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, "0")
+  );
 };
 
 export default function CreateTaskForm({
@@ -69,6 +79,14 @@ export default function CreateTaskForm({
     isLoading: taskPrioritiesLoading,
     error: taskPrioritiesError,
   } = useGetTaskPrioritiesQuery(defaultProjectId, {
+    skip: !useAppSelector((state) => state.user.accessToken),
+  });
+
+  const {
+    data: labelResponseDTO,
+    isLoading: labelsLoading,
+    error: labelsError,
+  } = useGetLabelsQuery(defaultProjectId, {
     skip: !useAppSelector((state) => state.user.accessToken),
   });
 
@@ -236,11 +254,33 @@ export default function CreateTaskForm({
       <Button
         type="button"
         variant="secondary"
-        onClick={() => append({ name: "", color: "" })}
+        onClick={() => append({ name: "", color: generateRandomColor() })}
         className="mt-3"
       >
         Click to add a new label
       </Button>
+
+      <div className="text-sm font-medium mt-3 flex gap-2">
+        Existing labels:
+      </div>
+
+      <div className="flex gap-12 mt-2">
+        {labelResponseDTO &&
+          labelResponseDTO?.labels?.map((label) => (
+            <div
+              key={label.id}
+              onClick={() => append({ name: label.name, color: label.color })}
+              className="flex border-1 border-primary-lighter-1 p-2 rounded-2xl hover:scale-104 duration-300 cursor-pointer hover:shadow-md"
+            >
+              <Button
+                type="button"
+                className="w-8 h-8 rounded-full border mr-2"
+                style={{ backgroundColor: label.color }}
+              />
+              <div className="text-sm font-medium mt-1">{label.name}</div>
+            </div>
+          ))}
+      </div>
 
       {/* SUBMIT BUTTON */}
       <button

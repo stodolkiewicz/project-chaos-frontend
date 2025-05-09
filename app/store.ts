@@ -6,12 +6,14 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import tasksApi from "./state/TasksApiSlice";
 import usersApi from "./state/UsersApiSlice";
 import { taskPrioritiesApi } from "./state/TaskPrioritiesApiSlice";
+import labelsApi from "./state/LabelsApiSlice";
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     [projectsApi.reducerPath]: projectsApi.reducer,
     [columnsApi.reducerPath]: columnsApi.reducer,
+    [labelsApi.reducerPath]: labelsApi.reducer,
     [tasksApi.reducerPath]: tasksApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
     [taskPrioritiesApi.reducerPath]: taskPrioritiesApi.reducer,
@@ -22,7 +24,8 @@ export const store = configureStore({
       columnsApi.middleware,
       tasksApi.middleware,
       usersApi.middleware,
-      taskPrioritiesApi.middleware
+      taskPrioritiesApi.middleware,
+      labelsApi.middleware
     ),
 });
 
