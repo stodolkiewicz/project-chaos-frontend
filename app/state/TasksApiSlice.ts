@@ -3,10 +3,11 @@ import { RootState } from "@/app/store";
 import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { CreateTaskFormData } from "../dashboard/components/CreateTask/CreateTaskForm";
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
+import labelsApi from "./LabelsApiSlice";
 
 export const tasksApi = createApi({
   reducerPath: "TasksApi",
-  tagTypes: ["Tasks"],
+  tagTypes: ["Tasks", "Labels"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
     prepareHeaders: (headers, { getState }) => {
@@ -47,6 +48,9 @@ export const tasksApi = createApi({
               }
             )
           );
+          dispatch(
+            labelsApi.util.invalidateTags([{ type: "Labels", id: projectId }])
+          );
         } catch (error) {
           console.error("Failed to delete task:", error);
         }
@@ -68,9 +72,11 @@ export const tasksApi = createApi({
       ) {
         try {
           await queryFulfilled;
-          // After successful creation, invalidate the tasks list to refetch
           dispatch(
             tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+          );
+          dispatch(
+            labelsApi.util.invalidateTags([{ type: "Labels", id: projectId }])
           );
         } catch (error) {
           console.error("Failed to create task:", error);

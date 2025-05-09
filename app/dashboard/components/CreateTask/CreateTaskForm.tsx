@@ -104,15 +104,18 @@ export default function CreateTaskForm({
     useCreateTaskMutation();
 
   const onSubmit = async (createTaskFormData: CreateTaskFormData) => {
-    // console.log("FormData: " + JSON.stringify(createTaskFormData));
-    // console.log("FormData obiekt:", createTaskFormData);
-
     const createTaskFormDataNoEmptyLabels: CreateTaskFormData = {
       ...createTaskFormData,
-      labels: createTaskFormData.labels.filter(
-        (label) => label.name.trim() != ""
-      ),
+      labels: createTaskFormData.labels.filter((label, index, array) => {
+        const firstOccurrenceIndex = array.findIndex(
+          (l) => l.name.trim() === label.name.trim()
+        );
+        // leave only if it is first occurence
+        return index === firstOccurrenceIndex && label.name !== "";
+      }),
     };
+
+    console.log(JSON.stringify(createTaskFormDataNoEmptyLabels));
 
     try {
       await createTask({
