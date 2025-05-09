@@ -264,7 +264,7 @@ export default function CreateTaskForm({
         Existing labels:
       </div>
 
-      <div className="flex gap-12 mt-2">
+      <div className="flex flex-wrap gap-2 mt-2">
         {labelResponseDTO &&
           labelResponseDTO?.labels?.map((label) => (
             <div
