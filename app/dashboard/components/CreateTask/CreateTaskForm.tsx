@@ -115,8 +115,6 @@ export default function CreateTaskForm({
       }),
     };
 
-    console.log(JSON.stringify(createTaskFormDataNoEmptyLabels));
-
     try {
       await createTask({
         projectId: defaultProjectId,

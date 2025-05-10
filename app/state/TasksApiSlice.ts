@@ -96,14 +96,35 @@ export const tasksApi = createApi({
         method: "PATCH",
         body: updateTaskColumnDTO,
       }),
-      async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+      async onQueryStarted(
+        { projectId, taskId, updateTaskColumnDTO },
+        { dispatch, queryFulfilled }
+      ) {
+        // Optimistic update
+        dispatch(
+          tasksApi.util.updateQueryData("getBoardTasks", projectId, (draft) => {
+            const taskIndex = draft.findIndex((task) => task.taskId === taskId);
+            if (taskIndex !== -1) {
+              draft[taskIndex] = {
+                ...draft[taskIndex],
+                column: {
+                  id: updateTaskColumnDTO.targetColumnId,
+                  name: draft[taskIndex].column.name,
+                },
+                positionInColumn: updateTaskColumnDTO.positionInColumn,
+              };
+            }
+            return draft;
+          })
+        );
+
         try {
           await queryFulfilled;
-
+        } catch (error) {
+          // W przypadku błędu, przywracamy poprzedni stan
           dispatch(
             tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
           );
-        } catch (error) {
           console.error("Failed to move task:", error);
         }
       },
