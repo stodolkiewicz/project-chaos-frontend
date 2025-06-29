@@ -11,6 +11,8 @@ import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import Column from "./Column";
 import { DndContext } from "@dnd-kit/core";
 import { useState } from "react";
+import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
+import CreateProjectForm from "./CreateProject/CreateProjectForm";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -68,19 +70,21 @@ export default function DashboardContent() {
   }
 
   const {
-    data: columns,
-    isLoading: columnsLoading,
-    error: columnsError,
-  } = useGetColumnsQuery(defaultProjectId, {
-    skip: !useAppSelector((state) => state.user.accessToken),
-  });
-
-  const {
     data: project,
     isLoading: projectLoading,
     error: projectError,
   } = useGetProjectQuery(defaultProjectId, {
-    skip: !useAppSelector((state) => state.user.accessToken),
+    skip:
+      !useAppSelector((state) => state.user.accessToken) || !defaultProjectId,
+  });
+
+  const {
+    data: columns,
+    isLoading: columnsLoading,
+    error: columnsError,
+  } = useGetColumnsQuery(defaultProjectId, {
+    skip:
+      !useAppSelector((state) => state.user.accessToken) || !defaultProjectId,
   });
 
   const {
@@ -88,15 +92,18 @@ export default function DashboardContent() {
     isLoading: boardTasksLoading,
     error: boardTasksError,
   } = useGetBoardTasksQuery(defaultProjectId, {
-    skip: !useAppSelector((state) => state.user.accessToken),
+    skip:
+      !useAppSelector((state) => state.user.accessToken) || !defaultProjectId,
   });
 
-  if (!defaultProjectId || !columns)
+  if (!defaultProjectId || !columns) {
+    // console.log("columns - not there!");
     return (
-      <div className="flex justify-center items-center min-h-screen ">
-        <Button className="-translate-y-15">Create your first project</Button>
-      </div>
+      <CreateProjectDialog>
+        {(onClose) => <CreateProjectForm onClose={onClose}></CreateProjectForm>}
+      </CreateProjectDialog>
     );
+  }
 
   let columnWidthPercentage = 80 / columns?.length;
 

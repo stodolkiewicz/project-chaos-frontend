@@ -207,7 +207,7 @@ export default function CreateTaskForm({
         ))}
       </select>
 
-      {/* Todo: task labels */}
+      {/* Task labels */}
       <label className="text-sm font-medium mt-3">Labels:</label>
 
       {fields.map((field, index) => (

@@ -65,7 +65,7 @@ export const tasksApi = createApi({
         method: "POST",
         body: createTaskFormData,
       }),
-      // optimistic update
+      // pessimistic update
       async onQueryStarted(
         { projectId, createTaskFormData },
         { dispatch, queryFulfilled }
@@ -121,7 +121,7 @@ export const tasksApi = createApi({
         try {
           await queryFulfilled;
         } catch (error) {
-          // W przypadku błędu, przywracamy poprzedni stan
+          //
           dispatch(
             tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
           );

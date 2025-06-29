@@ -30,8 +30,11 @@ export const userSlice = createSlice({
       state.refreshToken = "";
       state.accessToken = "";
     },
+    setDefaultProjectId: (state, action: PayloadAction<string>) => {
+      state.defaultProjectId = action.payload;
+    },
   },
 });
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, clearUser, setDefaultProjectId } = userSlice.actions;
 export default userSlice.reducer;

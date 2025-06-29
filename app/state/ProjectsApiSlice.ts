@@ -2,6 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
+import { CreateProjectFormData } from "../dashboard/components/CreateProject/CreateProjectForm";
+import { setDefaultProjectId } from "./userSlice";
+import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
+import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
@@ -30,8 +34,34 @@ export const projectsApi = createApi({
       query: (projectId) => `${projectId}`,
       providesTags: (result, error, id) => [{ type: "Projects", id }],
     }),
+
+    createProject: builder.mutation<
+      { CreateProjectResponseDTO }, // what backend returns
+      CreateProjectRequestDTO
+    >({
+      query: (createProjectRequestDTO) => ({
+        url: ``,
+        method: "POST",
+        body: createProjectRequestDTO,
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          // dispatch(projectsApi.util.invalidateTags([{ type: "Projects" }]));
+          console.log("co tam przyszło");
+          console.log(data);
+          dispatch(setDefaultProjectId(data.projectId));
+        } catch (error) {
+          console.error("Failed to create project:", error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetUserProjectsQuery, useGetProjectQuery } = projectsApi;
+export const {
+  useGetUserProjectsQuery,
+  useGetProjectQuery,
+  useCreateProjectMutation,
+} = projectsApi;
 export default projectsApi;
