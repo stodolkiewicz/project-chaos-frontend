@@ -1,12 +1,15 @@
 import type { JwtPayload } from "jwt-decode";
 
-export interface UserData {
+export interface UserCookieData {
   firstName?: string;
   email: string;
   pictureUrl?: string;
-  defaultProjectId?: string;
   accessToken: string;
   refreshToken?: string;
 }
 
-export interface UserAuthPayload extends JwtPayload, UserData {}
+export interface UserData extends UserCookieData {
+  defaultProjectId?: string;
+}
+
+export interface UserAuthPayload extends JwtPayload, UserCookieData {}

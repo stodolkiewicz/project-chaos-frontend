@@ -13,6 +13,7 @@ import { DndContext } from "@dnd-kit/core";
 import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
+import { ChevronDown, Folder } from "lucide-react";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -135,7 +136,12 @@ export default function DashboardContent() {
       <div>
         {/* PROJECT NAME */}
         <h3 className="text-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
-          {project?.name}
+          {project?.name}{" "}
+          <Button variant="ghost">
+            <Folder className="h-4 w-4 mr-1" />
+            <span>Projekt X</span>
+            <ChevronDown className="h-4 w-4 ml-1" />
+          </Button>
         </h3>
         {/* COLUMNS */}
         {columns?.length > 0 && (

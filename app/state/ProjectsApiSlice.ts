@@ -2,9 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
-import { CreateProjectFormData } from "../dashboard/components/CreateProject/CreateProjectForm";
 import { setDefaultProjectId } from "./userSlice";
-import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 
 export const projectsApi = createApi({
@@ -14,7 +12,8 @@ export const projectsApi = createApi({
     baseUrl: "http://localhost:8080/api/v1/projects",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
-
+      console.log("token");
+      console.log(token);
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
@@ -35,6 +34,11 @@ export const projectsApi = createApi({
       providesTags: (result, error, id) => [{ type: "Projects", id }],
     }),
 
+    getDefaultProjectId: builder.query<{ projectId: string }, void>({
+      query: () => `/default`,
+      providesTags: (result) => [{ type: "Projects", id: result?.projectId }],
+    }),
+
     createProject: builder.mutation<
       { CreateProjectResponseDTO }, // what backend returns
       CreateProjectRequestDTO
@@ -47,9 +51,6 @@ export const projectsApi = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // dispatch(projectsApi.util.invalidateTags([{ type: "Projects" }]));
-          console.log("co tam przyszło");
-          console.log(data);
           dispatch(setDefaultProjectId(data.projectId));
         } catch (error) {
           console.error("Failed to create project:", error);
@@ -62,6 +63,7 @@ export const projectsApi = createApi({
 export const {
   useGetUserProjectsQuery,
   useGetProjectQuery,
+  useLazyGetDefaultProjectIdQuery,
   useCreateProjectMutation,
 } = projectsApi;
 export default projectsApi;
