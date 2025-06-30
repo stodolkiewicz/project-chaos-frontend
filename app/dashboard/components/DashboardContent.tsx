@@ -14,6 +14,7 @@ import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import { ChevronDown, Folder } from "lucide-react";
+import ProjectMenu from "./ProjectMenu";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -45,22 +46,22 @@ export default function DashboardContent() {
     const taskBeingDraggedId = event.active.id;
     const columnBeingDroppedIntoId = event.over.id;
 
-    console.log("upuszczon");
-    console.log("task being dragged:" + event.active.id);
-    console.log("columnId being dropped into:" + event.over.id);
-    console.log("event summary:", {
-      active: event.active,
-      over: event.over,
-      delta: event.delta,
-    });
+    // console.log("upuszczon");
+    // console.log("task being dragged:" + event.active.id);
+    // console.log("columnId being dropped into:" + event.over.id);
+    // console.log("event summary:", {
+    //   active: event.active,
+    //   over: event.over,
+    //   delta: event.delta,
+    // });
 
     moveTask({
       projectId: defaultProjectId,
       taskId: taskBeingDraggedId,
       updateTaskColumnDTO: {
         targetColumnId: columnBeingDroppedIntoId,
-        positionInColumn: maxPositions[columnBeingDroppedIntoId],
-        // to do: fix it
+        positionInColumn: maxPositions[columnBeingDroppedIntoId] + 1,
+        // to do: fix it. Not used on the backend at all.
         nearestNeighboursPositionInColumn: [1, 3],
       },
     });
@@ -135,14 +136,7 @@ export default function DashboardContent() {
     <DndContext onDragEnd={handleDragEnd}>
       <div>
         {/* PROJECT NAME */}
-        <h3 className="text-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
-          {project?.name}{" "}
-          <Button variant="ghost">
-            <Folder className="h-4 w-4 mr-1" />
-            <span>Projekt X</span>
-            <ChevronDown className="h-4 w-4 ml-1" />
-          </Button>
-        </h3>
+        <ProjectMenu projectName={project.name} />
         {/* COLUMNS */}
         {columns?.length > 0 && (
           <div className="flex justify-center mx-auto">

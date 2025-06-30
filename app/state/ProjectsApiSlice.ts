@@ -12,8 +12,6 @@ export const projectsApi = createApi({
     baseUrl: "http://localhost:8080/api/v1/projects",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
-      console.log("token");
-      console.log(token);
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
