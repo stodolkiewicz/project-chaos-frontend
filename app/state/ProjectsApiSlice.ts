@@ -9,7 +9,7 @@ import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
-  tagTypes: ["Projects", "DefaultProject"],
+  tagTypes: ["Projects", "DefaultProject", "SimpleProjects"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
     prepareHeaders: (headers, { getState }) => {
@@ -32,7 +32,7 @@ export const projectsApi = createApi({
     getSimpleUserProjects: builder.query<SimpleUserProjectsResponseDTO, string>(
       {
         query: (email) => `/simple`,
-        providesTags: (result, error, email) => [{ type: "Projects" }],
+        providesTags: (result, error, email) => [{ type: "SimpleProjects" }],
       }
     ),
     getProject: builder.query<ProjectDTO, string>({
@@ -64,6 +64,7 @@ export const projectsApi = createApi({
             projectsApi.util.invalidateTags([
               { type: "Projects", id: data.projectId },
               { type: "DefaultProject", id: data.projectId },
+              { type: "SimpleProjects" },
             ])
           );
         } catch (error) {

@@ -58,6 +58,9 @@ export const usersApi = createApi({
               type: "DefaultProject",
               id: changeDefaultProjectRequestDTO.newDefaultProjectId,
             },
+            {
+              type: "SimpleProjects",
+            },
           ]);
         } catch (error) {
           // Rollback przy błędzie
@@ -68,6 +71,9 @@ export const usersApi = createApi({
             {
               type: "DefaultProject",
               id: previousProjectId,
+            },
+            {
+              type: "SimpleProjects",
             },
           ]);
 
