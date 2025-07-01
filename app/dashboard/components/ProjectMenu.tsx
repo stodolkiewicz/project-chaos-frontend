@@ -14,19 +14,39 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Folder, FolderPlus, Plus } from "lucide-react";
+import { ChevronDown, FolderPlus } from "lucide-react";
 import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
+import { useGetSimpleUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
+import { useAppSelector } from "@/app/hooks";
 
 type ProjectMenuProps = {
   projectName: string;
+  currentProjectId: string;
 };
 
-export default function ProjectMenu({ projectName }: ProjectMenuProps) {
+export default function ProjectMenu({
+  projectName,
+  currentProjectId,
+}: ProjectMenuProps) {
   const [menuOpened, setMenuOpened] = useState(false);
   const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] =
     useState(false);
+
+  const userEmail = useAppSelector((state) => state.user.email);
+  const {
+    data: simpleUserProjects,
+    isLoading,
+    error,
+  } = useGetSimpleUserProjectsQuery(userEmail);
+
+  const otherProjects = simpleUserProjects?.projects.filter(
+    (project) => project.projectId != currentProjectId
+  );
+
+  console.log(currentProjectId);
+  console.log(JSON.stringify(otherProjects));
 
   function handleOpenCloseMenu() {
     setMenuOpened(() => !menuOpened);
@@ -58,9 +78,12 @@ export default function ProjectMenu({ projectName }: ProjectMenuProps) {
           <DropdownMenuContent>
             <DropdownMenuLabel>{projectName}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Team</DropdownMenuItem>
+            {otherProjects?.map((proj) => (
+              <DropdownMenuItem key={proj.projectId}>
+                {proj.projectName}
+              </DropdownMenuItem>
+            ))}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={(e) => {

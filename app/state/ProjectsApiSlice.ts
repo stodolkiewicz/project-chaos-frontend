@@ -4,10 +4,12 @@ import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
 import { setDefaultProjectId } from "./userSlice";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
+import { SimpleUserProjectsResponseDTO } from "../types/SimpleUserProjectsResponseDTO";
+import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
-  tagTypes: ["Projects"],
+  tagTypes: ["Projects", "DefaultProject"],
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8080/api/v1/projects",
     prepareHeaders: (headers, { getState }) => {
@@ -25,8 +27,14 @@ export const projectsApi = createApi({
     // not used anywhere yet. path does not have email, but email is used for RTK tags
     getUserProjects: builder.query<UserProjectsResponseDTO, string>({
       query: (email) => ``,
-      providesTags: (result, error, email) => [{ type: "Projects", id: email }],
+      providesTags: (result, error, email) => [{ type: "Projects" }],
     }),
+    getSimpleUserProjects: builder.query<SimpleUserProjectsResponseDTO, string>(
+      {
+        query: (email) => `/simple`,
+        providesTags: (result, error, email) => [{ type: "Projects" }],
+      }
+    ),
     getProject: builder.query<ProjectDTO, string>({
       query: (projectId) => `${projectId}`,
       providesTags: (result, error, id) => [{ type: "Projects", id }],
@@ -34,11 +42,13 @@ export const projectsApi = createApi({
 
     getDefaultProjectId: builder.query<{ projectId: string }, void>({
       query: () => `/default`,
-      providesTags: (result) => [{ type: "Projects", id: result?.projectId }],
+      providesTags: (result) => [
+        { type: "DefaultProject", id: result?.projectId },
+      ],
     }),
 
     createProject: builder.mutation<
-      { CreateProjectResponseDTO }, // what backend returns
+      CreateProjectResponseDTO,
       CreateProjectRequestDTO
     >({
       query: (createProjectRequestDTO) => ({
@@ -50,6 +60,12 @@ export const projectsApi = createApi({
         try {
           const { data } = await queryFulfilled;
           dispatch(setDefaultProjectId(data.projectId));
+          dispatch(
+            projectsApi.util.invalidateTags([
+              { type: "Projects", id: data.projectId },
+              { type: "DefaultProject", id: data.projectId },
+            ])
+          );
         } catch (error) {
           console.error("Failed to create project:", error);
         }
@@ -60,6 +76,7 @@ export const projectsApi = createApi({
 
 export const {
   useGetUserProjectsQuery,
+  useGetSimpleUserProjectsQuery,
   useGetProjectQuery,
   useLazyGetDefaultProjectIdQuery,
   useCreateProjectMutation,

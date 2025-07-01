@@ -122,7 +122,7 @@ export default function DashboardContent() {
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div>
-        <ProjectMenu projectName={project.name} />
+        <ProjectMenu projectName={project.name} currentProjectId={project.id} />
         {/* COLUMNS */}
         {columns?.length > 0 && (
           <div className="flex justify-center mx-auto">
