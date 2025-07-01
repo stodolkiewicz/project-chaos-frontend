@@ -2,7 +2,6 @@
 
 import { useAppSelector } from "@/app/hooks";
 import { useGetColumnsQuery } from "@/app/state/ColumnsApiSlice";
-import { Button } from "@/components/ui/button";
 import {
   useGetBoardTasksQuery,
   useMoveTaskMutation,
@@ -13,30 +12,12 @@ import { DndContext } from "@dnd-kit/core";
 import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
-import { ChevronDown, Folder } from "lucide-react";
 import ProjectMenu from "./ProjectMenu";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
     (state) => state.user.defaultProjectId
   );
-
-  // for storing maxPositionInColumn from all columns
-  const [maxPositions, setMaxPositions] = useState({});
-
-  function handleMaxPositionInColumn(columnId, maxPosition) {
-    setMaxPositions((prev) => {
-      // to avoid infinite rendering loop return prev state if no changes
-      if (prev[columnId] === maxPosition) return prev;
-      return {
-        ...prev,
-        [columnId]: maxPosition,
-      };
-    });
-  }
-
-  // for dragging
-  const [parent, setParent] = useState(null);
 
   const [moveTask, { isLoading, isSuccess, isError, error }] =
     useMoveTaskMutation();
@@ -46,29 +27,26 @@ export default function DashboardContent() {
     const taskBeingDraggedId = event.active.id;
     const columnBeingDroppedIntoId = event.over.id;
 
-    // console.log("upuszczon");
-    // console.log("task being dragged:" + event.active.id);
-    // console.log("columnId being dropped into:" + event.over.id);
-    // console.log("event summary:", {
-    //   active: event.active,
-    //   over: event.over,
-    //   delta: event.delta,
-    // });
+    // Oblicz maxPosition bezpośrednio z aktualnych danych
+    const tasksInTargetColumn = groupedTasks[columnBeingDroppedIntoId] || [];
+    const maxPositionInTargetColumn =
+      tasksInTargetColumn.length > 0
+        ? Math.max(...tasksInTargetColumn.map((task) => task.positionInColumn))
+        : 0;
+
+    console.log("maxPositionInTargetColumn");
+    console.log(maxPositionInTargetColumn);
+    console.log(event.active.data);
 
     moveTask({
       projectId: defaultProjectId,
       taskId: taskBeingDraggedId,
       updateTaskColumnDTO: {
         targetColumnId: columnBeingDroppedIntoId,
-        positionInColumn: maxPositions[columnBeingDroppedIntoId] + 1,
-        // to do: fix it. Not used on the backend at all.
+        positionInColumn: maxPositionInTargetColumn + 1,
         nearestNeighboursPositionInColumn: [1, 3],
       },
     });
-
-    // If the item is dropped over a container, set it as the parent
-    // otherwise reset the parent to `null`
-    setParent(over ? over.id : null);
   }
 
   const {
@@ -127,15 +105,23 @@ export default function DashboardContent() {
       </div>
     );
 
-  const groupedTasks = columns?.reduce((acc, column) => {
-    acc[column.id] = boardTasks?.filter((task) => task.column.id === column.id);
-    return acc;
-  }, {});
+  const groupedTasks: Record<string, BoardTaskDTO[]> = columns?.reduce(
+    (acc, column) => {
+      // get all boardTasks which belong to a given column
+      const tasksInColumn =
+        boardTasks?.filter((task) => task.column.id === column.id) || [];
+      // sort all boardTasks based on positionInColumn, then add them to the map. key = column.id, value - BoardTaskDTO[]
+      acc[column.id] = tasksInColumn.sort(
+        (a, b) => a.positionInColumn - b.positionInColumn
+      );
+      return acc;
+    },
+    {} as Record<string, BoardTaskDTO[]>
+  );
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div>
-        {/* PROJECT NAME */}
         <ProjectMenu projectName={project.name} />
         {/* COLUMNS */}
         {columns?.length > 0 && (
@@ -148,7 +134,6 @@ export default function DashboardContent() {
                   column={column}
                   tasksInColumn={tasksInColumn}
                   columnWidthPercentage={columnWidthPercentage}
-                  onMaxPositionInColumn={handleMaxPositionInColumn}
                 />
               );
             })}

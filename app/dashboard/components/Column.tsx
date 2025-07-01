@@ -3,7 +3,6 @@ import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
 import CreateTaskForm from "./CreateTask/CreateTaskForm";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { useDroppable } from "@dnd-kit/core";
 import { useEffect } from "react";
 
@@ -11,28 +10,19 @@ export default function Column({
   column,
   tasksInColumn,
   columnWidthPercentage,
-  onMaxPositionInColumn,
 }: {
   column: ColumnDTO;
   tasksInColumn: BoardTaskDTO[];
   columnWidthPercentage: number;
-  onMaxPositionInColumn: (columnId: string, maxPosition: number) => void;
 }) {
   const maxPositionInColumn =
     tasksInColumn.length > 0
       ? Math.max(...tasksInColumn.map((task) => task.positionInColumn))
       : 0;
 
-  useEffect(() => {
-    onMaxPositionInColumn(column.id, maxPositionInColumn);
-  }, [maxPositionInColumn, column.id, onMaxPositionInColumn]);
-
   const { isOver, setNodeRef } = useDroppable({
     id: column.id,
   });
-  const style = {
-    color: isOver ? "green" : undefined,
-  };
 
   return (
     <div

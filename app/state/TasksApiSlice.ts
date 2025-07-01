@@ -105,11 +105,16 @@ export const tasksApi = createApi({
           tasksApi.util.updateQueryData("getBoardTasks", projectId, (draft) => {
             const taskIndex = draft.findIndex((task) => task.taskId === taskId);
             if (taskIndex !== -1) {
+              // Znajdź nazwę kolumny docelowej
+              const targetColumn = draft.find(
+                (task) => task.column.id === updateTaskColumnDTO.targetColumnId
+              );
+
               draft[taskIndex] = {
                 ...draft[taskIndex],
                 column: {
                   id: updateTaskColumnDTO.targetColumnId,
-                  name: draft[taskIndex].column.name,
+                  name: targetColumn?.column.name || "Unknown Column",
                 },
                 positionInColumn: updateTaskColumnDTO.positionInColumn,
               };
