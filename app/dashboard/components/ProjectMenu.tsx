@@ -20,6 +20,7 @@ import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import { useGetSimpleUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
 import { useAppSelector } from "@/app/hooks";
+import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 
 type ProjectMenuProps = {
   projectName: string;
@@ -45,8 +46,7 @@ export default function ProjectMenu({
     (project) => project.projectId != currentProjectId
   );
 
-  console.log(currentProjectId);
-  console.log(JSON.stringify(otherProjects));
+  const [changeProjectForUser] = useChangeProjectForUserMutation();
 
   function handleOpenCloseMenu() {
     setMenuOpened(() => !menuOpened);
@@ -79,7 +79,12 @@ export default function ProjectMenu({
             <DropdownMenuLabel>{projectName}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {otherProjects?.map((proj) => (
-              <DropdownMenuItem key={proj.projectId}>
+              <DropdownMenuItem
+                key={proj.projectId}
+                onClick={() =>
+                  changeProjectForUser({ newDefaultProjectId: proj.projectId })
+                }
+              >
                 {proj.projectName}
               </DropdownMenuItem>
             ))}

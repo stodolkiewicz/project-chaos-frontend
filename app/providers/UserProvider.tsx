@@ -17,7 +17,7 @@ export default function UserProvider({
   const [triggerGetDefaultProject] = useLazyGetDefaultProjectIdQuery();
 
   useEffect(() => {
-    // dlaczego? bo nie można bezpośrednio użyć await w useEffect.
+    // why? because you can not use await directly in useEffect
     const fetchAndSetUser = async () => {
       // set user data from access token (no defaultProjectId)
       dispatch(setUser(user));

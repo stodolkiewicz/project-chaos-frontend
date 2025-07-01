@@ -2,7 +2,6 @@ import { extractTokenInfoFromCookies } from "@/lib/tokenHelper";
 import AuthenticatedLayout from "../layouts/AuthenticatedLayout";
 import DashboardContent from "./components/DashboardContent";
 import { UserData } from "../types/UserData";
-import { useAppDispatch } from "../hooks";
 
 export default async function Dashboard() {
   // await + this function accesses cookies = only in server component

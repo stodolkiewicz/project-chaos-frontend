@@ -1,9 +1,7 @@
 "use client";
 
-import { useAppDispatch } from "@/app/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 interface UserAvatarProps {
   email?: string;

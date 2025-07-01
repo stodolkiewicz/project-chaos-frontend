@@ -1,12 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
+import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectRequestDTO";
+import { setDefaultProjectId } from "./userSlice";
+import projectsApi from "./ProjectsApiSlice";
 
 export const usersApi = createApi({
   reducerPath: "UsersApi",
   tagTypes: ["Users"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080/api/v1/projects",
+    baseUrl: "http://localhost:8080/api/v1/users",
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
@@ -24,8 +27,57 @@ export const usersApi = createApi({
         { type: "Users", id: projectId },
       ],
     }),
+    changeProjectForUser: builder.mutation<
+      void,
+      ChangeDefaultProjectRequestDTO
+    >({
+      query: (changeDefaultProjectRequestDTO) => ({
+        url: `default-project`,
+        method: "PATCH",
+        body: changeDefaultProjectRequestDTO,
+      }),
+      async onQueryStarted(
+        changeDefaultProjectRequestDTO,
+        { dispatch, queryFulfilled, getState }
+      ) {
+        // Save previous state for rollback
+        const previousProjectId = (getState() as RootState).user
+          .defaultProjectId;
+        try {
+          // optimistic update
+          dispatch(
+            setDefaultProjectId(
+              changeDefaultProjectRequestDTO.newDefaultProjectId
+            )
+          );
+
+          await queryFulfilled;
+
+          projectsApi.util.invalidateTags([
+            {
+              type: "DefaultProject",
+              id: changeDefaultProjectRequestDTO.newDefaultProjectId,
+            },
+          ]);
+        } catch (error) {
+          // Rollback przy błędzie
+          dispatch(setDefaultProjectId(previousProjectId));
+
+          // Invalidate cache dla poprzedniego projektu (rollback)
+          projectsApi.util.invalidateTags([
+            {
+              type: "DefaultProject",
+              id: previousProjectId,
+            },
+          ]);
+
+          console.error("Failed to change project:", error);
+        }
+      },
+    }),
   }),
 });
 
-export const { useGetProjectUsersQuery } = usersApi;
+export const { useGetProjectUsersQuery, useChangeProjectForUserMutation } =
+  usersApi;
 export default usersApi;
