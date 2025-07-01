@@ -9,10 +9,10 @@ import {
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import Column from "./Column";
 import { DndContext } from "@dnd-kit/core";
-import { useState } from "react";
-import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
+import CreateFirstProjectDialog from "./CreateProject/CreateFirstProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
+import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 
 export default function DashboardContent() {
   const defaultProjectId = useAppSelector(
@@ -79,9 +79,9 @@ export default function DashboardContent() {
   if (!defaultProjectId || !columns) {
     // console.log("columns - not there!");
     return (
-      <CreateProjectDialog>
+      <CreateFirstProjectDialog>
         {(onClose) => <CreateProjectForm onClose={onClose}></CreateProjectForm>}
-      </CreateProjectDialog>
+      </CreateFirstProjectDialog>
     );
   }
 

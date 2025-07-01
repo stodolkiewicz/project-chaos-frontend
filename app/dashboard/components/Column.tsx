@@ -4,7 +4,6 @@ import CreateTaskForm from "./CreateTask/CreateTaskForm";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useDroppable } from "@dnd-kit/core";
-import { useEffect } from "react";
 
 export default function Column({
   column,

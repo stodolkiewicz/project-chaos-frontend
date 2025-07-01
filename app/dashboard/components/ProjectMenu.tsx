@@ -14,8 +14,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Folder, FolderPlus, Plus } from "lucide-react";
 import { useState } from "react";
+import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
+import CreateProjectForm from "./CreateProject/CreateProjectForm";
 
 type ProjectMenuProps = {
   projectName: string;
@@ -23,6 +25,8 @@ type ProjectMenuProps = {
 
 export default function ProjectMenu({ projectName }: ProjectMenuProps) {
   const [menuOpened, setMenuOpened] = useState(false);
+  const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] =
+    useState(false);
 
   function handleOpenCloseMenu() {
     setMenuOpened(() => !menuOpened);
@@ -52,14 +56,32 @@ export default function ProjectMenu({ projectName }: ProjectMenuProps) {
             </TooltipProvider>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{projectName}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Billing</DropdownMenuItem>
             <DropdownMenuItem>Team</DropdownMenuItem>
-            <DropdownMenuItem>Subscription</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsCreateProjectDialogOpen(true);
+                setMenuOpened(false);
+              }}
+            >
+              <span className="font-bold">Create project </span>
+              <FolderPlus className="w-8 h-8 p-0 text-green-600 hover:border rounded-full duration-300 scale-110" />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        {/* DropdownMenu messes display of this dialog. That's why it has to be outside of it. */}
+        <CreateProjectDialog
+          isCreateProjectDialogOpen={isCreateProjectDialogOpen}
+          setIsCreateProjectDialogOpen={setIsCreateProjectDialogOpen}
+        >
+          {(onClose) => <CreateProjectForm onClose={onClose} />}
+        </CreateProjectDialog>
       </div>
     </div>
   );
