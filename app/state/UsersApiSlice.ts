@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
 import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectRequestDTO";
-import { setDefaultProjectId } from "./userSlice";
 import projectsApi from "./ProjectsApiSlice";
 
 export const usersApi = createApi({
@@ -40,43 +39,24 @@ export const usersApi = createApi({
         changeDefaultProjectRequestDTO,
         { dispatch, queryFulfilled, getState }
       ) {
-        // Save previous state for rollback
-        const previousProjectId = (getState() as RootState).user
-          .defaultProjectId;
+        console.log("aa");
+        // Optimistic update - immediately update cache
+        const patchResult = dispatch(
+          projectsApi.util.updateQueryData(
+            "getDefaultProjectId",
+            undefined,
+            (draft) => {
+              // update cache data
+              draft.projectId =
+                changeDefaultProjectRequestDTO.newDefaultProjectId;
+            }
+          )
+        );
+
         try {
-          // optimistic update
-          dispatch(
-            setDefaultProjectId(
-              changeDefaultProjectRequestDTO.newDefaultProjectId
-            )
-          );
-
           await queryFulfilled;
-
-          projectsApi.util.invalidateTags([
-            {
-              type: "DefaultProject",
-              id: changeDefaultProjectRequestDTO.newDefaultProjectId,
-            },
-            {
-              type: "SimpleProjects",
-            },
-          ]);
         } catch (error) {
-          // Rollback przy błędzie
-          dispatch(setDefaultProjectId(previousProjectId));
-
-          // Invalidate cache dla poprzedniego projektu (rollback)
-          projectsApi.util.invalidateTags([
-            {
-              type: "DefaultProject",
-              id: previousProjectId,
-            },
-            {
-              type: "SimpleProjects",
-            },
-          ]);
-
+          patchResult.undo();
           console.error("Failed to change project:", error);
         }
       },

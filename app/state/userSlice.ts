@@ -5,7 +5,6 @@ const initialState: UserData = {
   firstName: "",
   email: "",
   pictureUrl: "",
-  defaultProjectId: "",
   refreshToken: "",
   accessToken: "",
 };
@@ -18,7 +17,6 @@ export const userSlice = createSlice({
       state.firstName = action.payload.firstName || "";
       state.email = action.payload.email || "";
       state.pictureUrl = action.payload.pictureUrl || "";
-      state.defaultProjectId = action.payload.defaultProjectId || "";
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken || "";
     },
@@ -26,15 +24,11 @@ export const userSlice = createSlice({
       state.firstName = "";
       state.email = "";
       state.pictureUrl = "";
-      state.defaultProjectId = "";
       state.refreshToken = "";
       state.accessToken = "";
-    },
-    setDefaultProjectId: (state, action: PayloadAction<string>) => {
-      state.defaultProjectId = action.payload;
     },
   },
 });
 
-export const { setUser, clearUser, setDefaultProjectId } = userSlice.actions;
+export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

@@ -17,6 +17,7 @@ import {
 } from "@radix-ui/react-popover";
 import { HexColorPicker } from "react-colorful";
 import { useGetLabelsQuery } from "@/app/state/LabelsApiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/ProjectsApiSlice";
 
 type Label = {
   name: string;
@@ -62,9 +63,8 @@ export default function CreateTaskForm({
     formState: { errors },
   } = useForm<CreateTaskFormData>();
 
-  const defaultProjectId = useAppSelector(
-    (state) => state.user.defaultProjectId
-  );
+  const { data } = useGetDefaultProjectIdQuery();
+  const defaultProjectId = data?.projectId;
 
   const {
     data: projectUsers,

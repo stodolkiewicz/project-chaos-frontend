@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
-import { setDefaultProjectId } from "./userSlice";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 import { SimpleUserProjectsResponseDTO } from "../types/SimpleUserProjectsResponseDTO";
 import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
@@ -59,11 +58,11 @@ export const projectsApi = createApi({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setDefaultProjectId(data.projectId));
+
           dispatch(
             projectsApi.util.invalidateTags([
               { type: "Projects", id: data.projectId },
-              { type: "DefaultProject", id: data.projectId },
+              { type: "DefaultProject" },
               { type: "SimpleProjects" },
             ])
           );
@@ -79,7 +78,7 @@ export const {
   useGetUserProjectsQuery,
   useGetSimpleUserProjectsQuery,
   useGetProjectQuery,
-  useLazyGetDefaultProjectIdQuery,
+  useGetDefaultProjectIdQuery,
   useCreateProjectMutation,
 } = projectsApi;
 export default projectsApi;

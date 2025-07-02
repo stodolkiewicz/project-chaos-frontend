@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppSelector } from "@/app/hooks";
+import { useGetDefaultProjectIdQuery } from "@/app/state/ProjectsApiSlice";
 import { useDeleteTaskMutation } from "@/app/state/TasksApiSlice";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import {
@@ -17,15 +17,9 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-
-interface DeleteTaskAlertDialogProps {
-  boardTask: BoardTaskDTO;
-}
 
 export default function DeleteTaskAlertDialog({
   boardTask,
@@ -35,7 +29,9 @@ export default function DeleteTaskAlertDialog({
   children: React.ReactNode;
 }) {
   const [deleteTask] = useDeleteTaskMutation();
-  const projectId = useAppSelector((state) => state.user.defaultProjectId);
+
+  const { data } = useGetDefaultProjectIdQuery();
+  const projectId = data?.projectId;
 
   async function handleOnDeleteTask() {
     try {

@@ -6,7 +6,10 @@ import {
   useGetBoardTasksQuery,
   useMoveTaskMutation,
 } from "@/app/state/TasksApiSlice";
-import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
+import {
+  useGetDefaultProjectIdQuery,
+  useGetProjectQuery,
+} from "@/app/state/ProjectsApiSlice";
 import Column from "./Column";
 import { DndContext } from "@dnd-kit/core";
 import CreateFirstProjectDialog from "./CreateProject/CreateFirstProjectDialog";
@@ -15,9 +18,8 @@ import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 
 export default function DashboardContent() {
-  const defaultProjectId = useAppSelector(
-    (state) => state.user.defaultProjectId
-  );
+  const { data } = useGetDefaultProjectIdQuery();
+  const defaultProjectId = data?.projectId;
 
   const [moveTask, { isLoading, isSuccess, isError, error }] =
     useMoveTaskMutation();

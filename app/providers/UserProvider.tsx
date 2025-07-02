@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/app/hooks";
 import { setUser } from "@/app/state/userSlice";
 import { UserData } from "../types/UserData";
-import { useLazyGetDefaultProjectIdQuery } from "../state/ProjectsApiSlice";
+import { useGetDefaultProjectIdQuery } from "../state/ProjectsApiSlice";
 
 export default function UserProvider({
   user,
@@ -13,35 +13,22 @@ export default function UserProvider({
   user: UserData;
   children: React.ReactNode;
 }) {
+  const [userSet, setUserSet] = useState(false);
+  const { data, isLoading, error } = useGetDefaultProjectIdQuery(undefined, {
+    // don't start query until user is set (access token needs to be set to execute query)
+    skip: !userSet,
+  });
   const dispatch = useAppDispatch();
-  const [triggerGetDefaultProject] = useLazyGetDefaultProjectIdQuery();
 
   useEffect(() => {
-    // why? because you can not use await directly in useEffect
-    const fetchAndSetUser = async () => {
-      // set user data from access token (no defaultProjectId)
-      dispatch(setUser(user));
+    dispatch(setUser(user));
+    setUserSet(true);
+  }, [user, dispatch]);
 
-      // no defaultProjectId? try to get it from backend
-      if (!user.defaultProjectId) {
-        try {
-          const result = await triggerGetDefaultProject().unwrap();
-
-          if (result?.projectId) {
-            const updatedUser = {
-              ...user,
-              defaultProjectId: result.projectId,
-            };
-            dispatch(setUser(updatedUser));
-          }
-        } catch (err) {
-          console.error("Failed to fetch default projectId:", err);
-        }
-      }
-    };
-
-    fetchAndSetUser();
-  }, [user, dispatch, triggerGetDefaultProject]);
+  // Nie renderuj children dopóki nie mamy defaultProjectId
+  if (!data) {
+    return <div>Loading...aa</div>; // lub jakiś loading spinner
+  }
 
   return children;
 }
