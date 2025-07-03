@@ -89,7 +89,7 @@ export default function ProjectMenu({
               </DropdownMenuItem>
             ))}
 
-            <DropdownMenuSeparator />
+            {otherProjects?.length > 0 && <DropdownMenuSeparator />}
             <DropdownMenuItem
               onClick={(e) => {
                 e.preventDefault();
