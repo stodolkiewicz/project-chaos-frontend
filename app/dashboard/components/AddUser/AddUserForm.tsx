@@ -3,6 +3,7 @@ import { useAddUserToProjectMutation } from "@/app/state/UsersApiSlice";
 import { AddUserResponseDTO } from "@/app/types/AddUserResponseDTO";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { isApiError } from "@/app/types/ApiError";
 
 export type AddUserFormData = {
   invitedEmail: string;
@@ -42,7 +43,20 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
       );
       onClose();
     } catch (err) {
-      toast.error(`There was an error while adding the user to the project.`);
+      if (isApiError(err.data)) {
+        if (err.data.title == "Entity not found") {
+          toast.error(
+            "User with email " +
+              data.invitedEmail +
+              " does not exist in the application."
+          );
+        } else {
+          toast.error(err.data.detail);
+        }
+      } else {
+        console.log(err);
+        toast.error(`There was an error while adding the user to the project.`);
+      }
     }
     reset();
   };

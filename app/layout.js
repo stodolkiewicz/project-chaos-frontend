@@ -6,7 +6,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="flex flex-col min-h-screen items-center justify-center ">
         {children}
-        <Toaster />
+        <Toaster duration={7500} />
       </body>
     </html>
   );

@@ -34,7 +34,7 @@ export const usersApi = createApi({
     >({
       query: ({ projectId, userData }) => ({
         url: `/projects/${projectId}`,
-        method: "POST",
+        method: "PATCH",
         body: userData,
       }),
       async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
