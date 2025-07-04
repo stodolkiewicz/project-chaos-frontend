@@ -14,13 +14,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, FolderPlus } from "lucide-react";
+import { ChevronDown, FolderPlus, SmilePlus } from "lucide-react";
 import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import { useGetSimpleUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
 import { useAppSelector } from "@/app/hooks";
 import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
+import AddUserDialog from "./AddUser/AddUserDialog";
+import AddUserForm from "./AddUser/AddUserForm";
 
 type ProjectMenuProps = {
   projectName: string;
@@ -33,6 +35,8 @@ export default function ProjectMenu({
 }: ProjectMenuProps) {
   const [menuOpened, setMenuOpened] = useState(false);
   const [isCreateProjectDialogOpen, setIsCreateProjectDialogOpen] =
+    useState(false);
+  const [isAddUserToProjectDialogOpen, setIsAddUserToProjectDialogOpen] =
     useState(false);
 
   const userEmail = useAppSelector((state) => state.user.email);
@@ -97,9 +101,22 @@ export default function ProjectMenu({
                 setIsCreateProjectDialogOpen(true);
                 setMenuOpened(false);
               }}
+              className="flex justify-between"
             >
-              <span className="font-bold">Create project </span>
+              <span className="font-bold">Create new project </span>
               <FolderPlus className="w-8 h-8 p-0 text-green-600 hover:border rounded-full duration-300 scale-110" />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsAddUserToProjectDialogOpen(true);
+                setMenuOpened(false);
+              }}
+              className="flex justify-between"
+            >
+              <span className="font-bold">Add member</span>
+              <SmilePlus className="w-8 h-8 p-0 text-green-600 hover:border rounded-full duration-300 scale-110" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -110,6 +127,12 @@ export default function ProjectMenu({
         >
           {(onClose) => <CreateProjectForm onClose={onClose} />}
         </CreateProjectDialog>
+        <AddUserDialog
+          isAddUserToProjectDialogOpen={isAddUserToProjectDialogOpen}
+          setIsAddUserToProjectDialogOpen={setIsAddUserToProjectDialogOpen}
+        >
+          {(onClose) => <AddUserForm onClose={onClose}></AddUserForm>}
+        </AddUserDialog>
       </div>
     </div>
   );

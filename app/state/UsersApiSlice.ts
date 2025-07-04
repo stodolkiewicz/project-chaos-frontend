@@ -3,6 +3,8 @@ import { RootState } from "@/app/store";
 import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
 import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectRequestDTO";
 import projectsApi from "./ProjectsApiSlice";
+import { AddUserRequestDTO } from "../types/AddUserRequestDTO";
+import { AddUserResponseDTO } from "../types/AddUserResponseDTO";
 
 export const usersApi = createApi({
   reducerPath: "UsersApi",
@@ -26,6 +28,28 @@ export const usersApi = createApi({
         { type: "Users", id: projectId },
       ],
     }),
+    addUserToProject: builder.mutation<
+      AddUserResponseDTO,
+      { projectId: string; userData: AddUserRequestDTO }
+    >({
+      query: ({ projectId, userData }) => ({
+        url: `/projects/${projectId}`,
+        method: "POST",
+        body: userData,
+      }),
+      async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          // Invalidate tags after successful mutation
+          dispatch(
+            usersApi.util.invalidateTags([{ type: "Users", id: projectId }])
+          );
+        } catch (error) {
+          console.error("Failed to add user to project:", error);
+        }
+      },
+    }),
+
     changeProjectForUser: builder.mutation<
       void,
       ChangeDefaultProjectRequestDTO
@@ -39,7 +63,6 @@ export const usersApi = createApi({
         changeDefaultProjectRequestDTO,
         { dispatch, queryFulfilled, getState }
       ) {
-        console.log("aa");
         // Optimistic update - immediately update cache
         const patchResult = dispatch(
           projectsApi.util.updateQueryData(
@@ -64,6 +87,9 @@ export const usersApi = createApi({
   }),
 });
 
-export const { useGetProjectUsersQuery, useChangeProjectForUserMutation } =
-  usersApi;
+export const {
+  useGetProjectUsersQuery,
+  useChangeProjectForUserMutation,
+  useAddUserToProjectMutation,
+} = usersApi;
 export default usersApi;

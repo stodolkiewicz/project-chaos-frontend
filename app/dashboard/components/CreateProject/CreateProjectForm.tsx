@@ -44,7 +44,6 @@ export default function CreateProjectForm({
       setColumnError("Create at least 2 columns");
       return;
     }
-    console.log(data);
 
     try {
       const createProjectRequestDTO = {

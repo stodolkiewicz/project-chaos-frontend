@@ -39,6 +39,7 @@ export const projectsApi = createApi({
       providesTags: (result, error, id) => [{ type: "Projects", id }],
     }),
 
+    // more suitable for User api slice
     getDefaultProjectId: builder.query<{ projectId: string }, void>({
       query: () => `/default`,
       providesTags: (result) => [
