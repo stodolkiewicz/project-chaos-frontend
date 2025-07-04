@@ -101,10 +101,9 @@ export default function ProjectMenu({
                 setIsCreateProjectDialogOpen(true);
                 setMenuOpened(false);
               }}
-              className="flex justify-between"
             >
-              <span className="font-bold">Create new project </span>
-              <FolderPlus className="w-8 h-8 p-0 text-green-600 hover:border rounded-full duration-300 scale-110" />
+              <FolderPlus className="w-8 h-8 p-0 text-primary-darker-1  hover:border rounded-full duration-300 scale-100" />
+              <span className="font-medium">Create new project </span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {
@@ -113,10 +112,9 @@ export default function ProjectMenu({
                 setIsAddUserToProjectDialogOpen(true);
                 setMenuOpened(false);
               }}
-              className="flex justify-between"
             >
-              <span className="font-bold">Add member</span>
-              <SmilePlus className="w-8 h-8 p-0 text-green-600 hover:border rounded-full duration-300 scale-110" />
+              <SmilePlus className="w-8 h-8 p-0 text-primary-darker-1 hover:border rounded-full duration-300 scale-100" />
+              <span className="font-medium">Add member</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
