@@ -18,6 +18,7 @@ import {
 import { HexColorPicker } from "react-colorful";
 import { useGetLabelsQuery } from "@/app/state/LabelsApiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/ProjectsApiSlice";
+import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 
 type Label = {
   name: string;
@@ -103,6 +104,8 @@ export default function CreateTaskForm({
   const [createTask, { isLoading, isSuccess, isError }] =
     useCreateTaskMutation();
 
+  const { handleApiError } = useErrorHandler();
+
   const onSubmit = async (createTaskFormData: CreateTaskFormData) => {
     const createTaskFormDataNoEmptyLabels: CreateTaskFormData = {
       ...createTaskFormData,
@@ -124,7 +127,8 @@ export default function CreateTaskForm({
       toast.success(`Task "${createTaskFormData.title}" was created.`);
       onClose();
     } catch (err) {
-      toast.error(
+      handleApiError(
+        err,
         `There was an error while creating "${createTaskFormData.title}" task.`
       );
     }

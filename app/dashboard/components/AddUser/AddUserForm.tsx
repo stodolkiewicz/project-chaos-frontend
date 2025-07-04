@@ -4,6 +4,7 @@ import { AddUserResponseDTO } from "@/app/types/AddUserResponseDTO";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { isApiError } from "@/app/types/ApiError";
+import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 
 export type AddUserFormData = {
   invitedEmail: string;
@@ -54,7 +55,6 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
           toast.error(err.data.detail);
         }
       } else {
-        console.log(err);
         toast.error(`There was an error while adding the user to the project.`);
       }
     }

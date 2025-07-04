@@ -1,5 +1,6 @@
 "use client";
 
+import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 import { useGetDefaultProjectIdQuery } from "@/app/state/ProjectsApiSlice";
 import { useDeleteTaskMutation } from "@/app/state/TasksApiSlice";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
@@ -33,12 +34,14 @@ export default function DeleteTaskAlertDialog({
   const { data } = useGetDefaultProjectIdQuery();
   const projectId = data?.projectId;
 
+  const { handleApiError } = useErrorHandler();
+
   async function handleOnDeleteTask() {
     try {
       await deleteTask({ projectId, taskId: boardTask.taskId }).unwrap();
       toast.success(`Task "${boardTask.title}" has been deleted.`);
-    } catch {
-      toast.error(`Failed to delete task "${boardTask.title}".`);
+    } catch (error) {
+      handleApiError(error, `Failed to delete task "${boardTask.title}".`);
     }
   }
 

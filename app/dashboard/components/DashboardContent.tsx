@@ -16,15 +16,17 @@ import CreateFirstProjectDialog from "./CreateProject/CreateFirstProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 
 export default function DashboardContent() {
   const { data } = useGetDefaultProjectIdQuery();
   const defaultProjectId = data?.projectId;
 
-  const [moveTask, { isLoading, isSuccess, isError, error }] =
-    useMoveTaskMutation();
+  const [moveTask] = useMoveTaskMutation();
 
-  function handleDragEnd(event) {
+  const { handleApiError } = useErrorHandler();
+
+  async function handleDragEnd(event) {
     const { over } = event;
     const taskBeingDraggedId = event.active.id;
     const columnBeingDroppedIntoId = event.over.id;
@@ -36,19 +38,23 @@ export default function DashboardContent() {
         ? Math.max(...tasksInTargetColumn.map((task) => task.positionInColumn))
         : 0;
 
-    console.log("maxPositionInTargetColumn");
-    console.log(maxPositionInTargetColumn);
-    console.log(event.active.data);
+    // console.log("maxPositionInTargetColumn");
+    // console.log(maxPositionInTargetColumn);
+    // console.log(event.active.data);
 
-    moveTask({
-      projectId: defaultProjectId,
-      taskId: taskBeingDraggedId,
-      updateTaskColumnDTO: {
-        targetColumnId: columnBeingDroppedIntoId,
-        positionInColumn: maxPositionInTargetColumn + 1,
-        nearestNeighboursPositionInColumn: [1, 3],
-      },
-    });
+    try {
+      await moveTask({
+        projectId: defaultProjectId,
+        taskId: taskBeingDraggedId,
+        updateTaskColumnDTO: {
+          targetColumnId: columnBeingDroppedIntoId,
+          positionInColumn: maxPositionInTargetColumn + 1,
+          nearestNeighboursPositionInColumn: [1, 3],
+        },
+      }).unwrap();
+    } catch (err) {
+      handleApiError(err);
+    }
   }
 
   const {
