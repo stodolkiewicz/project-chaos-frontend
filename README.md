@@ -55,3 +55,6 @@ not ok -> redirect to /
 
 3. Query RTK caching / tags / refetching  
    https://redux-toolkit.js.org/rtk-query/usage/automated-refetching
+
+4. Next.js caching  
+   https://www.youtube.com/watch?v=LVTEKjKHJ5w
