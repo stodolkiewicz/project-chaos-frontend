@@ -1,0 +1,28 @@
+# Container image configuration
+image:
+  repository: europe-central2-docker.pkg.dev/project-chaos-459521/project-chaos-docker-registry/project-chaos-frontend
+  pullPolicy: Always
+  tag: "latest"
+
+# Override chart name
+nameOverride: ""
+fullnameOverride: ""
+
+# Pod configuration
+podAnnotations: {}
+podLabels: {}
+
+# Security context
+podSecurityContext: {}
+securityContext: {}
+
+# Resources limits
+resources: {}
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+# Health checks
