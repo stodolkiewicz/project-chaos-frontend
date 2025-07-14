@@ -5,12 +5,13 @@ import { ProjectDTO } from "../types/ProjectDTO";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 import { SimpleUserProjectsResponseDTO } from "../types/SimpleUserProjectsResponseDTO";
 import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
+import { API_CONFIG } from "@/lib/apiConfig";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
   tagTypes: ["Projects", "DefaultProject", "SimpleProjects"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080/api/v1/projects",
+    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
       if (token) {

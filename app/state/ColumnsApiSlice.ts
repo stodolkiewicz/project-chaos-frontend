@@ -1,12 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { ColumnDTO } from "../types/ColumnDTO";
+import { API_CONFIG } from "@/lib/apiConfig";
 
 export const columnsApi = createApi({
   reducerPath: "ColumnsApi",
   tagTypes: ["Columns"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080/api/v1/projects",
+    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
 

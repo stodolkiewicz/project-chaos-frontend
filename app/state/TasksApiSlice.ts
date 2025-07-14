@@ -4,12 +4,13 @@ import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { CreateTaskFormData } from "../dashboard/components/CreateTask/CreateTaskForm";
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
 import labelsApi from "./LabelsApiSlice";
+import { API_CONFIG } from "@/lib/apiConfig";
 
 export const tasksApi = createApi({
   reducerPath: "TasksApi",
   tagTypes: ["Tasks", "Labels"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080/api/v1/projects",
+    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;
       if (token) {

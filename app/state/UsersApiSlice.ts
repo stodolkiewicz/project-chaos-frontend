@@ -5,12 +5,13 @@ import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectReq
 import projectsApi from "./ProjectsApiSlice";
 import { AddUserRequestDTO } from "../types/AddUserRequestDTO";
 import { AddUserResponseDTO } from "../types/AddUserResponseDTO";
+import { API_CONFIG } from "@/lib/apiConfig";
 
 export const usersApi = createApi({
   reducerPath: "UsersApi",
   tagTypes: ["Users"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:8080/api/v1/users",
+    baseUrl: `${API_CONFIG.baseUrl}/api/v1/users`,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).user.accessToken;

@@ -2,10 +2,11 @@
 
 import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/button";
+import { API_CONFIG } from "@/lib/apiConfig";
 
 export default function LoginButton() {
   const handleLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    window.location.href = API_CONFIG.oauthRedirectUrl;
   };
 
   return (
