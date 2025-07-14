@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "start": "node server.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
