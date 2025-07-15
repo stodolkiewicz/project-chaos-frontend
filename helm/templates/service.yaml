@@ -4,7 +4,7 @@ metadata:
   name: project-chaos-load-balancer-svc
   labels: {{- include "helm.labels" . | nindent 4 }}
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - port: 80
       targetPort: http
