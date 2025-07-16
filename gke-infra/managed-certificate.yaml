@@ -2,6 +2,8 @@ apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
   name: my-manged-ssl-certificate
+  annotations:
+    helm.sh/resource-policy: keep
 spec:
   domains:
     - theprojectchaos.com

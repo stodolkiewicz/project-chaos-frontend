@@ -8,12 +8,20 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: "oauth-app-ip"
     networking.gke.io/managed-certificates: "my-manged-ssl-certificate"
     kubernetes.io/ingress.allow-http: "false"
+    helm.sh/resource-policy: keep
 spec:
   rules:
   - host: theprojectchaos.com 
     http:
       paths:
       - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: project-chaos-backend-clusterip-svc
+            port:
+              number: 80
+      - path: /oauth2
         pathType: Prefix
         backend:
           service:
