@@ -24,6 +24,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: frontend-service
+            name: project-chaos-frontend-nodePort
             port:
               number: 80

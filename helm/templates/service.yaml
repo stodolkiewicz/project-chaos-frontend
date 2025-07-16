@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: project-chaos-load-balancer-svc
+  name: project-chaos-frontend-nodePort
   labels: {{- include "helm.labels" . | nindent 4 }}
 spec:
   type: NodePort
