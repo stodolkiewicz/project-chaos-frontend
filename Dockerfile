@@ -17,11 +17,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build arguments for environment variables
-ARG NEXT_PUBLIC_API_BASE_URL
 ARG NEXT_PUBLIC_OAUTH_REDIRECT_URL
 
 # Set environment variables for build
-ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_OAUTH_REDIRECT_URL=$NEXT_PUBLIC_OAUTH_REDIRECT_URL
 
 # Rebuild native dependencies for the target platform

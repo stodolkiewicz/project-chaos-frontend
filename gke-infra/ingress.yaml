@@ -28,6 +28,13 @@ spec:
             name: project-chaos-backend-clusterip-svc
             port:
               number: 80
+      - path: /login
+        pathType: Prefix
+        backend:
+          service:
+            name: project-chaos-backend-clusterip-svc
+            port:
+              number: 80
       - path: /
         pathType: Prefix
         backend:
