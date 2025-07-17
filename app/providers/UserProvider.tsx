@@ -5,6 +5,7 @@ import { useAppDispatch } from "@/app/hooks";
 import { setUser } from "@/app/state/userSlice";
 import { UserData } from "../types/UserData";
 import { useGetDefaultProjectIdQuery } from "../state/ProjectsApiSlice";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function UserProvider({
   user,
@@ -25,9 +26,9 @@ export default function UserProvider({
     setUserSet(true);
   }, [user, dispatch]);
 
-  // Nie renderuj children dopóki nie mamy defaultProjectId
+  // Do not render children, before defaultProjectId is there
   if (!data) {
-    return <div>Loading...aa</div>; // lub jakiś loading spinner
+    return <Spinner size="large" />;
   }
 
   return children;
