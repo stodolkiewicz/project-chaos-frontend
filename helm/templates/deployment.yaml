@@ -35,6 +35,5 @@ spec:
               containerPort: 3000
               protocol: TCP
           {{- with .Values.livenessProbe }}
-          resources:
-            {{- toYaml . | nindent 12 }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
