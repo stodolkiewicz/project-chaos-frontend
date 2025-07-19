@@ -35,6 +35,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            NEXT_PUBLIC_OAUTH_REDIRECT_URL=${{ vars.NEXT_PUBLIC_OAUTH_REDIRECT_URL }}
           tags: |
             ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-frontend:${{ github.ref_name }}
             ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-frontend:latest
@@ -72,7 +74,6 @@ jobs:
             --service-account=$SERVICE_ACCOUNT \
             --image=$ARTIFACT_REGISTRY_REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/project-chaos-frontend:$IMAGE_TAG \
             --region=$CLOUD_RUN_REGION \
-            --set-env-vars="NEXT_PUBLIC_OAUTH_REDIRECT_URL=/oauth2/authorization/google" \
             --platform="managed" \
             --allow-unauthenticated
 
