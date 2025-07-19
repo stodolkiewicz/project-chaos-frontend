@@ -75,3 +75,4 @@ jobs:
             --set-env-vars="NEXT_PUBLIC_OAUTH_REDIRECT_URL=/oauth2/authorization/google" \
             --platform="managed" \
             --allow-unauthenticated
+
