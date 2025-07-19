@@ -27,7 +27,7 @@ jobs:
 
       - name: Configure Docker to use gcloud
         run: |
-          gcloud auth configure-docker ${{ vars.REGION }}-docker.pkg.dev --quiet
+          gcloud auth configure-docker ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev --quiet
 
       - name: Build, tag and push container
         id: build-image
@@ -36,8 +36,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ vars.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-frontend:${{ github.ref_name }}
-            ${{ vars.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-frontend:latest
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-frontend:${{ github.ref_name }}
+            ${{ vars.ARTIFACT_REGISTRY_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ vars.ARTIFACT_REPO }}/project-chaos-frontend:latest
 
   deploy-to-cloud-run:
     runs-on: ubuntu-latest
