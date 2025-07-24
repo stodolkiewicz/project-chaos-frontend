@@ -18,9 +18,11 @@ COPY . .
 
 # Build arguments for environment variables
 ARG NEXT_PUBLIC_OAUTH_REDIRECT_URL
+ARG NEXT_PUBLIC_API_BASE_URL
 
 # Set environment variables for build
 ENV NEXT_PUBLIC_OAUTH_REDIRECT_URL=$NEXT_PUBLIC_OAUTH_REDIRECT_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
 # Rebuild native dependencies for the target platform
 RUN npm rebuild
