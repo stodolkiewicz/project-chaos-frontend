@@ -75,5 +75,6 @@ jobs:
             --image=$ARTIFACT_REGISTRY_REGION-docker.pkg.dev/$PROJECT_ID/$ARTIFACT_REPO/project-chaos-frontend:$IMAGE_TAG \
             --region=$CLOUD_RUN_REGION \
             --platform="managed" \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --max-instances=1
 
