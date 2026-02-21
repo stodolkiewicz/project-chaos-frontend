@@ -9,11 +9,12 @@ Backend Repository: https://github.com/stodolkiewicz/project-chaos-backend
 
 ## Commands
 
-When running the project for the first time or when dependecies added:
+When running the project for the first time or when dependecies were added:
 ```bash
 npm install
 ```
 
+and then:
 ```bash
 npm run dev
 ```
