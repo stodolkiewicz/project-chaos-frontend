@@ -4,6 +4,11 @@ Kanban Board project in Next.js (https://nextjs.org/) and Spring Boot on the bac
 
 ## Commands
 
+When running the project for the first time or when dependecies added:
+```bash
+npm install
+```
+
 ```bash
 npm run dev
 ```
