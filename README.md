@@ -1,5 +1,8 @@
 # Project Chaos
 
+<img src="docs/images/dashboard-screenshot.png" alt="Dashboard" style="max-width: 1200px;" />
+
+
 The Project Chaos is a Kanban-style task board (written in Spring Boot and Next.js).
 It lets users organize tasks across columns, work with other people on shared projects, and assign different member roles to control access and responsibilities.
 
