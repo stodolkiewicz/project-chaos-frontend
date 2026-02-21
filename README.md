@@ -1,6 +1,9 @@
 # Project Chaos
 
-Kanban Board project in Next.js (https://nextjs.org/) and Spring Boot on the backend (https://github.com/stodolkiewicz/project-chaos-backend). Logging in is done via Google oauth2.
+The Project Chaos is a Kanban-style task board (written in Spring Boot and Next.js).
+It lets users organize tasks across columns, work with other people on shared projects, and assign different member roles to control access and responsibilities.
+
+Backend Repository: https://github.com/stodolkiewicz/project-chaos-backend
 
 ## Commands
 
