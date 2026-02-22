@@ -30,6 +30,15 @@ npm run dev
 
 3. shadcn/ui  
    https://ui.shadcn.com/
+   
+   Adding new components:
+   ```bash
+   npx shadcn@latest add button
+   npx shadcn@latest add dialog
+   npx shadcn@latest add dropdown-menu
+   ```
+   
+   Components are added to `/components/ui/` directory and are based on Radix UI primitives with Tailwind CSS styling.
 
 4. React Redux  
    https://react-redux.js.org/
