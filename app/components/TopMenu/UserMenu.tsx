@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Settings, User } from "lucide-react";
+import { Folders, LogOut, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -48,6 +48,13 @@ export default function UserMenu({ email, pictureUrl }: UserMenuProps) {
             <User className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm truncate">{email}</span>
           </div>
+          
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => router.push("/projects")}>
+            <Folders className="h-4 w-4 mr-2"/> Projects
+          </Button>
           <Button
             variant="ghost"
             className="justify-start"
