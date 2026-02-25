@@ -4,7 +4,7 @@ import "./globals.css";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen items-center justify-center ">
+      <body className="flex flex-col min-h-screen items-center justify-center overflow-x-hidden">
         {children}
         <Toaster duration={7500} />
       </body>
