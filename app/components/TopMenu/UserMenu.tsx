@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, User } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -24,8 +24,8 @@ export default function UserMenu({ email, pictureUrl }: UserMenuProps) {
 
   const handleLogout = async () => {
     dispatch(clearUser());
-    deleteCookie("refresh_token");
-    deleteCookie("access_token");
+    await deleteCookie("refresh_token");
+    await deleteCookie("access_token");
     router.push("/");
   };
 
@@ -42,12 +42,18 @@ export default function UserMenu({ email, pictureUrl }: UserMenuProps) {
           />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 border-2 bg-background -translate-x-2 translate-y-1.5">
-        <div className="flex flex-col gap-4 p-2">
+      <PopoverContent className="w-70 border-2 bg-background -translate-x-2 translate-y-1.5">
+        <div className="flex flex-col gap-1 p-2">
           <div className="flex items-center gap-2 px-2">
             <User className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm truncate">{email}</span>
           </div>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => router.push("/settings")}>
+            <Settings className="h-4 w-4 mr-2"/> Settings
+          </Button>
           <Button
             variant="ghost"
             className="justify-start"

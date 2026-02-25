@@ -24,7 +24,10 @@ export function middleware(request: NextRequest) {
 // Definition of paths for which middleware will fire.
 // Here - any path starting with /dashboard
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/settings/:path*"
+  ],
 };
 
 // helper function

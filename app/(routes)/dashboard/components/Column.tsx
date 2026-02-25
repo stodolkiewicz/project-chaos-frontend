@@ -1,4 +1,4 @@
-import BoardTask from "@/app/dashboard/components/BoardTask/BoardTask";
+import BoardTask from "@/app/(routes)/dashboard/components/BoardTask/BoardTask";
 import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
 import CreateTaskForm from "./CreateTask/CreateTaskForm";
 import { ColumnDTO } from "@/app/types/ColumnDTO";

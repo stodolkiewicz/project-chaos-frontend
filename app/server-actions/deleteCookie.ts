@@ -6,5 +6,5 @@ import { cookies } from "next/headers";
 // web browsers do not have access to them.
 // Thus, HttpOnly cookies can only be deleted on the server.
 export async function deleteCookie(cookieName: string): Promise<void> {
-  (await cookies()).set(cookieName, "");
+  (await cookies()).delete(cookieName);
 }

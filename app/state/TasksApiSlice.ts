@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { BoardTaskDTO } from "../types/BoardTasksDTO";
-import { CreateTaskFormData } from "../dashboard/components/CreateTask/CreateTaskForm";
+import { CreateTaskFormData } from "../(routes)/dashboard/components/CreateTask/CreateTaskForm";
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
 import labelsApi from "./LabelsApiSlice";
 import { API_CONFIG } from "@/lib/apiConfig";
