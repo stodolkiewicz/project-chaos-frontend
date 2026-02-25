@@ -93,8 +93,6 @@ export default function DashboardContent() {
     );
   }
 
-  let columnWidthPercentage = 80 / columns?.length;
-
   if (columnsLoading || boardTasksLoading) return <div>Loading...</div>;
   if (columnsError)
     return (
@@ -129,11 +127,17 @@ export default function DashboardContent() {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div>
+      <div className="min-h-screen">
         <ProjectMenu projectName={project.name} currentProjectId={project.id} />
         {/* COLUMNS */}
         {columns?.length > 0 && (
-          <div className="flex justify-center mx-auto">
+          <div 
+            className="grid 
+            grid-cols-1 
+            xl:grid-cols-[repeat(var(--cols),minmax(0,1fr))] 
+            w-[85%] gap-1 mx-auto items-stretch"
+            style={{ '--cols': columns.length } as React.CSSProperties}
+          >
             {columns.map((column, index) => {
               const tasksInColumn = groupedTasks[column.id] || [];
               return (
@@ -141,7 +145,6 @@ export default function DashboardContent() {
                   key={column.id}
                   column={column}
                   tasksInColumn={tasksInColumn}
-                  columnWidthPercentage={columnWidthPercentage}
                 />
               );
             })}

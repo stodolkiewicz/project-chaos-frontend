@@ -7,12 +7,10 @@ import { useDroppable } from "@dnd-kit/core";
 
 export default function Column({
   column,
-  tasksInColumn,
-  columnWidthPercentage,
+  tasksInColumn
 }: {
   column: ColumnDTO;
   tasksInColumn: BoardTaskDTO[];
-  columnWidthPercentage: number;
 }) {
   const maxPositionInColumn =
     tasksInColumn.length > 0
@@ -27,8 +25,7 @@ export default function Column({
     <div
       key={column.id}
       id={column.id}
-      className="flex flex-col box-border border-2 rounded-md ml-2 mr-2 mb-20 min-h-[30rem] shadow-sm"
-      style={{ width: `${columnWidthPercentage}%` }}
+      className="flex flex-col box-border border-2 rounded-md ml-2 mr-2 mb-4 min-h-[30rem] shadow-sm"
       ref={setNodeRef}
     >
       <h6 className="flex items-center px-1 py-1 bg-primary text-primary-foreground hover:bg-primary-darker-1 rounded-t-sm bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300 break-all">
