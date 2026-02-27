@@ -18,7 +18,7 @@ import { ChevronDown, FolderPlus, SmilePlus } from "lucide-react";
 import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
-import { useGetSimpleUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
+import { useGetSimpleUserProjectsQuery, useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
 import { useAppSelector } from "@/app/hooks";
 import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 import AddUserDialog from "./AddUser/AddUserDialog";
@@ -41,12 +41,16 @@ export default function ProjectMenu({
 
   const userEmail = useAppSelector((state) => state.user.email);
   const {
-    data: simpleUserProjects,
+    data: userProjects,
     isLoading,
     error,
-  } = useGetSimpleUserProjectsQuery(userEmail);
+  } = useGetUserProjectsQuery(userEmail);
 
-  const otherProjects = simpleUserProjects?.projects.filter(
+  const currentProject = userProjects?.projects.find(
+    (project) => project.projectId == currentProjectId
+  );
+
+  const otherProjects = userProjects?.projects.filter(
     (project) => project.projectId != currentProjectId
   );
 
@@ -105,6 +109,8 @@ export default function ProjectMenu({
               <FolderPlus className="w-8 h-8 p-0 text-primary-darker-1  hover:border rounded-full duration-300 scale-100" />
               <span className="font-medium">Create new project </span>
             </DropdownMenuItem>
+            
+            {currentProject?.projectRole === "ADMIN" && (
             <DropdownMenuItem
               onClick={(e) => {
                 e.preventDefault();
@@ -116,6 +122,7 @@ export default function ProjectMenu({
               <SmilePlus className="w-8 h-8 p-0 text-primary-darker-1 hover:border rounded-full duration-300 scale-100" />
               <span className="font-medium">Add member</span>
             </DropdownMenuItem>
+          )}
           </DropdownMenuContent>
         </DropdownMenu>
         {/* DropdownMenu messes display of this dialog. That's why it has to be outside of it. */}

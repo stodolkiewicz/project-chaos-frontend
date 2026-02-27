@@ -86,16 +86,17 @@ export default function DeleteProjectAlertDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription className="flex flex-col gap-3">
-            <div>
+          <AlertDialogDescription asChild>
+            <div className="flex flex-col gap-3">
+              <div>
                 This action will <span className="text-red-600 font-bold">permanently delete</span> project: &nbsp;
                 <span className="font-bold">{projectName} </span>
                 {showError && (
-                <span className="text-red-500 block mt-2">Please type the project name correctly to confirm deletion.</span>
+                  <span className="text-red-500 block mt-2">Please type the project name correctly to confirm deletion.</span>
                 )}
+              </div>
+              <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} type="text" placeholder="Type the project name to confirm deletion" />
             </div>
-            <Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} type="text" placeholder="Type the project name to confirm deletion" />
-
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
