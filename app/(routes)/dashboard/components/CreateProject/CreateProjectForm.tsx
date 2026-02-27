@@ -111,7 +111,7 @@ export default function CreateProjectForm({
         <label className="block text-sm font-medium mt-3">Description:</label>
         <Textarea
           className="wrap-anywhere"
-          placeholder="Describe the task."
+          placeholder="Describe the project in a few sentences"
           {...register("description", {
             required: "Description is required.",
             maxLength: {
