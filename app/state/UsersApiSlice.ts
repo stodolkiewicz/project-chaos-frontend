@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
 import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
 import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectRequestDTO";
-import projectsApi from "./ProjectsApiSlice";
 import { AddUserRequestDTO } from "../types/AddUserRequestDTO";
 import { AddUserResponseDTO } from "../types/AddUserResponseDTO";
 import { API_CONFIG } from "@/lib/apiConfig";

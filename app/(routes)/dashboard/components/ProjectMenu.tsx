@@ -18,7 +18,7 @@ import { ChevronDown, FolderPlus, SmilePlus } from "lucide-react";
 import { useState } from "react";
 import CreateProjectDialog from "./CreateProject/CreateProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
-import { useGetSimpleUserProjectsQuery, useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
+import { useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
 import { useAppSelector } from "@/app/hooks";
 import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 import AddUserDialog from "./AddUser/AddUserDialog";

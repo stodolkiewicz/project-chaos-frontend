@@ -55,12 +55,12 @@ export default function UserMenu({ email, pictureUrl }: UserMenuProps) {
             onClick={() => router.push("/projects")}>
             <Folders className="h-4 w-4 mr-2"/> Projects
           </Button>
-          <Button
+          {/* <Button
             variant="ghost"
             className="justify-start"
             onClick={() => router.push("/settings")}>
             <Settings className="h-4 w-4 mr-2"/> Settings
-          </Button>
+          </Button> */}
           <Button
             variant="ghost"
             className="justify-start"
