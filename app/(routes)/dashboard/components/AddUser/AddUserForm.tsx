@@ -1,5 +1,4 @@
-import { useGetDefaultProjectIdQuery } from "@/app/state/ProjectsApiSlice";
-import { useAddUserToProjectMutation } from "@/app/state/UsersApiSlice";
+import { useGetDefaultProjectIdQuery, useAddUserToProjectMutation } from "@/app/state/UsersApiSlice";
 import { AddUserResponseDTO } from "@/app/types/AddUserResponseDTO";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";

@@ -9,7 +9,7 @@ import { API_CONFIG } from "@/lib/apiConfig";
 
 export const usersApi = createApi({
   reducerPath: "UsersApi",
-  tagTypes: ["Users"],
+  tagTypes: ["Users", "DefaultProject"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_CONFIG.baseUrl}/api/v1/users`,
     credentials: "include",
@@ -23,6 +23,12 @@ export const usersApi = createApi({
   }),
   refetchOnFocus: true,
   endpoints: (builder) => ({
+    getDefaultProjectId: builder.query<{ projectId: string }, void>({
+      query: () => `/default-project`,
+      providesTags: () => [
+        { type: "DefaultProject" },
+      ],
+    }),
     getProjectUsers: builder.query<ProjectUsersDTO, string>({
       query: (projectId) => `/${projectId}/users`,
       providesTags: (result, error, projectId) => [
@@ -66,7 +72,7 @@ export const usersApi = createApi({
       ) {
         // Optimistic update - immediately update cache
         const patchResult = dispatch(
-          projectsApi.util.updateQueryData(
+          usersApi.util.updateQueryData(
             "getDefaultProjectId",
             undefined,
             (draft) => {
@@ -89,6 +95,7 @@ export const usersApi = createApi({
 });
 
 export const {
+  useGetDefaultProjectIdQuery,
   useGetProjectUsersQuery,
   useChangeProjectForUserMutation,
   useAddUserToProjectMutation,

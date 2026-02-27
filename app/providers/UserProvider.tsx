@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/app/hooks";
 import { setUser } from "@/app/state/userSlice";
 import { UserData } from "../types/UserData";
-import { useGetDefaultProjectIdQuery } from "../state/ProjectsApiSlice";
+import { useGetDefaultProjectIdQuery } from "../state/UsersApiSlice";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function UserProvider({

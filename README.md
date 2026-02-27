@@ -50,6 +50,11 @@ npm run dev
 6. React Hook Form  
    https://react-hook-form.com/get-started
 
+## Browser Extensions
+1. React Developer Tools
+
+2. Redux DevTools
+
 ## Useful Links
 
 1. Convertico  

@@ -1,7 +1,7 @@
 "use client";
 
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
-import { useGetDefaultProjectIdQuery } from "@/app/state/ProjectsApiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import { useDeleteTaskMutation } from "@/app/state/TasksApiSlice";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import {

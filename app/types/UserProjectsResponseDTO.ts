@@ -9,5 +9,4 @@ interface UserProject {
 
 export interface UserProjectsResponseDTO {
   projects: UserProject[];
-  defaultProjectId: string;
 }

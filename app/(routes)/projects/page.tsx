@@ -1,9 +1,5 @@
+import ProjectsContent from "./components/ProjectsContent";
 
-export default async function Settings() {
-
-  return (
-    <div>
-        Projects
-    </div>
-  );
+export default function Projects() {
+  return <ProjectsContent />;
 }

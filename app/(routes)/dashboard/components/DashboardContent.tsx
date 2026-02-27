@@ -7,9 +7,9 @@ import {
   useMoveTaskMutation,
 } from "@/app/state/TasksApiSlice";
 import {
-  useGetDefaultProjectIdQuery,
   useGetProjectQuery,
 } from "@/app/state/ProjectsApiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import Column from "./Column";
 import { DndContext } from "@dnd-kit/core";
 import CreateFirstProjectDialog from "./CreateProject/CreateFirstProjectDialog";

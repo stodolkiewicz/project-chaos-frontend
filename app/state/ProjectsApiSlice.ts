@@ -6,10 +6,11 @@ import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 import { SimpleUserProjectsResponseDTO } from "../types/SimpleUserProjectsResponseDTO";
 import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
 import { API_CONFIG } from "@/lib/apiConfig";
+import usersApi from "./UsersApiSlice";
 
 export const projectsApi = createApi({
   reducerPath: "ProjectsApi",
-  tagTypes: ["Projects", "DefaultProject", "SimpleProjects"],
+  tagTypes: ["Project"],
   baseQuery: fetchBaseQuery({
     baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
     prepareHeaders: (headers, { getState }) => {
@@ -24,30 +25,34 @@ export const projectsApi = createApi({
   refetchOnFocus: true,
 
   endpoints: (builder) => ({
-    // not used anywhere yet. path does not have email, but email is used for RTK tags
     getUserProjects: builder.query<UserProjectsResponseDTO, string>({
       query: (email) => ``,
-      providesTags: (result, error, email) => [{ type: "Projects" }],
+      providesTags: (result, error, email) => 
+        result ? 
+          [
+            ...result.projects.map(({ projectId }) => ({ type: 'Project' as const, id: projectId })),
+              { type: 'Project', id: 'LIST' }
+          ] 
+        : 
+          [{ type: 'Project', id: 'LIST' }],
     }),
     getSimpleUserProjects: builder.query<SimpleUserProjectsResponseDTO, string>(
       {
         query: (email) => `/simple`,
-        providesTags: (result, error, email) => [{ type: "SimpleProjects" }],
+        providesTags: (result, error, email) => 
+          result ? 
+            [
+              ...result.projects.map(({ projectId }) => ({ type: "Project" as const, id: projectId })),
+              { type: "Project", id: 'LIST' }
+            ]
+          : 
+            [{ type: "Project", id: 'LIST' }],
       }
     ),
     getProject: builder.query<ProjectDTO, string>({
       query: (projectId) => `${projectId}`,
-      providesTags: (result, error, id) => [{ type: "Projects", id }],
+      providesTags: (result, error, id) => [{ type: "Project", id }],
     }),
-
-    // more suitable for User api slice
-    getDefaultProjectId: builder.query<{ projectId: string }, void>({
-      query: () => `/default`,
-      providesTags: (result) => [
-        { type: "DefaultProject", id: result?.projectId },
-      ],
-    }),
-
     createProject: builder.mutation<
       CreateProjectResponseDTO,
       CreateProjectRequestDTO
@@ -63,9 +68,13 @@ export const projectsApi = createApi({
 
           dispatch(
             projectsApi.util.invalidateTags([
-              { type: "Projects", id: data.projectId },
-              { type: "DefaultProject" },
-              { type: "SimpleProjects" },
+              { type: "Project", id: "LIST" }
+            ]),
+          );
+
+          dispatch(
+            usersApi.util.invalidateTags([
+              { type: "DefaultProject" }
             ])
           );
         } catch (error) {
@@ -73,6 +82,34 @@ export const projectsApi = createApi({
         }
       },
     }),
+
+    deleteProject: builder.mutation<void, string>({
+      query: (projectId) => ({
+        url: `/${projectId}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(projectId, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          // Invalidate ProjectsApi cache
+          dispatch(
+            projectsApi.util.invalidateTags([
+              { type: 'Project', id: projectId },
+              { type: 'Project', id: 'LIST' }
+            ])
+          );
+          // Invalidate UsersApi cache (default project might have changed)
+          dispatch(
+            usersApi.util.invalidateTags([
+              { type: "DefaultProject" }
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to delete project:", error);
+        }
+      },
+    }),
+
   }),
 });
 
@@ -80,7 +117,7 @@ export const {
   useGetUserProjectsQuery,
   useGetSimpleUserProjectsQuery,
   useGetProjectQuery,
-  useGetDefaultProjectIdQuery,
   useCreateProjectMutation,
+  useDeleteProjectMutation,
 } = projectsApi;
 export default projectsApi;
