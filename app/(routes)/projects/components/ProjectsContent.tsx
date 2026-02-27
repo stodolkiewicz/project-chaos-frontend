@@ -22,7 +22,6 @@ export default function ProjectsContent() {
   if (isLoading) return <div>Loading...</div>;
 
   const handleProjectActivation = (projectId: string) => {
-    console.log("Changing project to:", projectId);
     changeProjectForUser({ newDefaultProjectId: projectId });
   };
 
