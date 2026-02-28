@@ -45,7 +45,7 @@ export const usersApi = createApi({
           await queryFulfilled;
           // Invalidate tags after successful mutation
           dispatch(
-            projectsApi.util.invalidateTags([{ type: "Users", id: projectId }])
+            usersApi.util.invalidateTags([{ type: "Users", id: projectId }])
           );
         } catch (error) {
           console.error("Failed to add user to project:", error);
