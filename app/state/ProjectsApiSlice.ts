@@ -4,6 +4,7 @@ import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
+import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
 import { API_CONFIG } from "@/lib/apiConfig";
 import usersApi from "./UsersApiSlice";
 
@@ -38,6 +39,12 @@ export const projectsApi = createApi({
     getProject: builder.query<ProjectDTO, string>({
       query: (projectId) => `${projectId}`,
       providesTags: (result, error, id) => [{ type: "Project", id }],
+    }),
+    getProjectUsers: builder.query<ProjectUsersDTO, string>({
+      query: (projectId) => `${projectId}/users`,
+      providesTags: (result, error, projectId) => [
+        { type: "Project", id: projectId },
+      ],
     }),
     createProject: builder.mutation<
       CreateProjectResponseDTO,
@@ -102,6 +109,7 @@ export const projectsApi = createApi({
 export const {
   useGetUserProjectsQuery,
   useGetProjectQuery,
+  useGetProjectUsersQuery,
   useCreateProjectMutation,
   useDeleteProjectMutation,
 } = projectsApi;

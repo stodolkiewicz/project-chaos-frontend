@@ -1,7 +1,7 @@
 "use client";
 
 import { useAppSelector } from "@/app/hooks";
-import { useGetProjectUsersQuery } from "@/app/state/UsersApiSlice";
+import { useGetProjectUsersQuery } from "@/app/state/ProjectsApiSlice";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";

@@ -1,10 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { RootState } from "@/app/store";
-import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
 import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectRequestDTO";
 import { AddUserRequestDTO } from "../types/AddUserRequestDTO";
 import { AddUserResponseDTO } from "../types/AddUserResponseDTO";
+import { RemoveUserResponseDTO } from "../types/RemoveUserResponseDTO";
+import { ChangeUserRoleRequestDTO } from "../types/ChangeUserRoleRequestDTO";
+import { ChangeUserRoleResponseDTO } from "../types/ChangeUserRoleResponseDTO";
 import { API_CONFIG } from "@/lib/apiConfig";
+import projectsApi from "./ProjectsApiSlice";
 
 export const usersApi = createApi({
   reducerPath: "UsersApi",
@@ -28,12 +31,6 @@ export const usersApi = createApi({
         { type: "DefaultProject" },
       ],
     }),
-    getProjectUsers: builder.query<ProjectUsersDTO, string>({
-      query: (projectId) => `/${projectId}/users`,
-      providesTags: (result, error, projectId) => [
-        { type: "Users", id: projectId },
-      ],
-    }),
     addUserToProject: builder.mutation<
       AddUserResponseDTO,
       { projectId: string; userData: AddUserRequestDTO }
@@ -48,10 +45,68 @@ export const usersApi = createApi({
           await queryFulfilled;
           // Invalidate tags after successful mutation
           dispatch(
-            usersApi.util.invalidateTags([{ type: "Users", id: projectId }])
+            projectsApi.util.invalidateTags([{ type: "Users", id: projectId }])
           );
         } catch (error) {
           console.error("Failed to add user to project:", error);
+        }
+      },
+    }),
+    removeUserFromProject: builder.mutation<
+      RemoveUserResponseDTO,
+      { projectId: string; userEmail: string }
+    >({
+      query: ({ projectId, userEmail }) => ({
+        url: `/projects/${projectId}/users/${userEmail}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          // Invalidate tags after successful mutation
+          dispatch(
+            usersApi.util.invalidateTags(
+              [ { type: "Users", id: projectId },
+                { type: "DefaultProject" }
+              ]
+            )
+          );
+
+          dispatch(
+            projectsApi.util.invalidateTags([
+              { type: "Project", id: projectId }
+            ]),
+          );
+
+        } catch (error) {
+          console.error("Failed to remove user from project:", error);
+        }
+      },
+    }),
+
+    changeUserRole: builder.mutation<
+      ChangeUserRoleResponseDTO,
+      { projectId: string; userEmail: string; roleData: ChangeUserRoleRequestDTO }
+    >({
+      query: ({ projectId, userEmail, roleData }) => ({
+        url: `/projects/${projectId}/users/${userEmail}/role`,
+        method: "PUT",
+        body: roleData,
+      }),
+      async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          // Invalidate tags after successful mutation
+          dispatch(
+            usersApi.util.invalidateTags([{ type: "Users", id: projectId }])
+          );
+          dispatch(
+            projectsApi.util.invalidateTags([
+              { type: "Project", id: projectId }
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to change user role:", error);
         }
       },
     }),
@@ -95,8 +150,9 @@ export const usersApi = createApi({
 
 export const {
   useGetDefaultProjectIdQuery,
-  useGetProjectUsersQuery,
   useChangeProjectForUserMutation,
   useAddUserToProjectMutation,
+  useRemoveUserFromProjectMutation,
+  useChangeUserRoleMutation,
 } = usersApi;
 export default usersApi;

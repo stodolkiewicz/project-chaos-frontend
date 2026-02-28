@@ -3,7 +3,8 @@
 import { useAppSelector } from "@/app/hooks";
 import { useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
 import { useGetDefaultProjectIdQuery, useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
-import { Trash2 } from "lucide-react";
+import { Trash2, LogOut, Eye } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import DeleteProjectAlertDialog from "./DeleteProjectAlertDialog";
 
 export default function ProjectsContent() {
@@ -62,13 +63,36 @@ export default function ProjectsContent() {
               
                 <div className="flex justify-between items-center">
                   <div>Joined: {new Date(project.projectJoinedDate).toLocaleDateString()}</div>
-                  { project.projectRole === "ADMIN" && (
-                  <DeleteProjectAlertDialog projectId={project.projectId} projectName={project.projectName} >
-                    <Trash2
-                      className="flex h-4 w-4 text-gray-400 cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200"
-                    />
-                  </DeleteProjectAlertDialog> 
-                  )}
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Eye 
+                          className="h-4 w-4 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors duration-200"
+                          onClick={() => window.location.href = `/projects/${project.projectId}`}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View project details</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <LogOut 
+                          className="h-4 w-4 text-gray-400 hover:text-orange-500 cursor-pointer transition-colors duration-200"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Leave project</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    { project.projectRole === "ADMIN" && (
+                      <DeleteProjectAlertDialog projectId={project.projectId} projectName={project.projectName} >
+                        <Trash2
+                          className="h-4 w-4 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-200"
+                        />
+                      </DeleteProjectAlertDialog> 
+                    )}
+                  </div>
                 </div>
 
               </div>
