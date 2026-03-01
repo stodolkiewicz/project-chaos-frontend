@@ -1,27 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "@/app/store";
 import { LabelResponseDTO } from "../types/LabelResponseDTO";
-import { API_CONFIG } from "@/lib/apiConfig";
+import baseApi from "./baseApi";
 
-export const labelsApi = createApi({
-  reducerPath: "LabelsApi",
-  tagTypes: ["Labels"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).user.accessToken;
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
-  refetchOnFocus: true,
+export const labelsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getLabels: builder.query<LabelResponseDTO, string>({
-      query: (projectId) => `/${projectId}/labels`,
+      query: (projectId) => `/api/v1/projects/${projectId}/labels`,
       providesTags: (result, error, projectId) => [
         { type: "Labels", id: projectId },
       ],

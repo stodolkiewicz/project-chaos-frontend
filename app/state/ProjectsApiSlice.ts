@@ -1,32 +1,14 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "@/app/store";
 import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
 import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
-import { API_CONFIG } from "@/lib/apiConfig";
-import usersApi from "./UsersApiSlice";
+import baseApi from "./baseApi";
 
-export const projectsApi = createApi({
-  reducerPath: "ProjectsApi",
-  tagTypes: ["Project"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).user.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
-  refetchOnFocus: true,
-
+export const projectsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserProjects: builder.query<UserProjectsResponseDTO, string>({
-      query: (email) => ``,
+      query: (email) => `/api/v1/projects`,
       providesTags: (result, error, email) => 
         result ? 
           [
@@ -37,11 +19,11 @@ export const projectsApi = createApi({
           [{ type: 'Project', id: 'LIST' }],
     }),
     getProject: builder.query<ProjectDTO, string>({
-      query: (projectId) => `${projectId}`,
+      query: (projectId) => `/api/v1/projects/${projectId}`,
       providesTags: (result, error, id) => [{ type: "Project", id }],
     }),
     getProjectUsers: builder.query<ProjectUsersDTO, string>({
-      query: (projectId) => `${projectId}/users`,
+      query: (projectId) => `/api/v1/projects/${projectId}/users`,
       providesTags: (result, error, projectId) => [
         { type: "Project", id: projectId },
       ],
@@ -51,7 +33,7 @@ export const projectsApi = createApi({
       CreateProjectRequestDTO
     >({
       query: (createProjectRequestDTO) => ({
-        url: ``,
+        url: `/api/v1/projects`,
         method: "POST",
         body: createProjectRequestDTO,
       }),
@@ -60,13 +42,8 @@ export const projectsApi = createApi({
           const { data } = await queryFulfilled;
 
           dispatch(
-            projectsApi.util.invalidateTags([
-              { type: "Project", id: "LIST" }
-            ]),
-          );
-
-          dispatch(
-            usersApi.util.invalidateTags([
+            baseApi.util.invalidateTags([
+              { type: "Project", id: "LIST" },
               { type: "DefaultProject" }
             ])
           );
@@ -78,22 +55,17 @@ export const projectsApi = createApi({
 
     deleteProject: builder.mutation<void, string>({
       query: (projectId) => ({
-        url: `/${projectId}`,
+        url: `/api/v1/projects/${projectId}`,
         method: "DELETE",
       }),
       async onQueryStarted(projectId, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          // Invalidate ProjectsApi cache
+          // Invalidate cache
           dispatch(
-            projectsApi.util.invalidateTags([
+            baseApi.util.invalidateTags([
               { type: 'Project', id: projectId },
-              { type: 'Project', id: 'LIST' }
-            ])
-          );
-          // Invalidate UsersApi cache (default project might have changed)
-          dispatch(
-            usersApi.util.invalidateTags([
+              { type: 'Project', id: 'LIST' },
               { type: "DefaultProject" }
             ])
           );
@@ -113,4 +85,5 @@ export const {
   useCreateProjectMutation,
   useDeleteProjectMutation,
 } = projectsApi;
+
 export default projectsApi;

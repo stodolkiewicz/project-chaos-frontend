@@ -1,32 +1,15 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "@/app/store";
 import { ChangeDefaultProjectRequestDTO } from "../types/ChangeDefaultProjectRequestDTO";
 import { AddUserRequestDTO } from "../types/AddUserRequestDTO";
 import { AddUserResponseDTO } from "../types/AddUserResponseDTO";
 import { RemoveUserResponseDTO } from "../types/RemoveUserResponseDTO";
 import { ChangeUserRoleRequestDTO } from "../types/ChangeUserRoleRequestDTO";
 import { ChangeUserRoleResponseDTO } from "../types/ChangeUserRoleResponseDTO";
-import { API_CONFIG } from "@/lib/apiConfig";
-import projectsApi from "./ProjectsApiSlice";
+import baseApi from "./baseApi";
 
-export const usersApi = createApi({
-  reducerPath: "UsersApi",
-  tagTypes: ["Users", "DefaultProject"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_CONFIG.baseUrl}/api/v1/users`,
-    credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).user.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
-  refetchOnFocus: true,
+export const usersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDefaultProjectId: builder.query<{ projectId: string }, void>({
-      query: () => `/default-project`,
+      query: () => `/api/v1/users/default-project`,
       providesTags: () => [
         { type: "DefaultProject" },
       ],
@@ -36,7 +19,7 @@ export const usersApi = createApi({
       { projectId: string; userData: AddUserRequestDTO }
     >({
       query: ({ projectId, userData }) => ({
-        url: `/projects/${projectId}`,
+        url: `/api/v1/users/projects/${projectId}`,
         method: "PATCH",
         body: userData,
       }),
@@ -45,7 +28,7 @@ export const usersApi = createApi({
           await queryFulfilled;
           // Invalidate tags after successful mutation
           dispatch(
-            usersApi.util.invalidateTags([{ type: "Users", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "Users", id: projectId }])
           );
         } catch (error) {
           console.error("Failed to add user to project:", error);
@@ -57,7 +40,7 @@ export const usersApi = createApi({
       { projectId: string; userEmail: string }
     >({
       query: ({ projectId, userEmail }) => ({
-        url: `/projects/${projectId}/users/${userEmail}`,
+        url: `/api/v1/users/projects/${projectId}/users/${userEmail}`,
         method: "DELETE",
       }),
       async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
@@ -65,17 +48,11 @@ export const usersApi = createApi({
           await queryFulfilled;
           // Invalidate tags after successful mutation
           dispatch(
-            usersApi.util.invalidateTags(
-              [ { type: "Users", id: projectId },
-                { type: "DefaultProject" }
-              ]
-            )
-          );
-
-          dispatch(
-            projectsApi.util.invalidateTags([
+            baseApi.util.invalidateTags([
+              { type: "Users", id: projectId },
+              { type: "DefaultProject" },
               { type: "Project", id: projectId }
-            ]),
+            ])
           );
 
         } catch (error) {
@@ -89,7 +66,7 @@ export const usersApi = createApi({
       { projectId: string; userEmail: string; roleData: ChangeUserRoleRequestDTO }
     >({
       query: ({ projectId, userEmail, roleData }) => ({
-        url: `/projects/${projectId}/users/${userEmail}/role`,
+        url: `/api/v1/users/projects/${projectId}/users/${userEmail}/role`,
         method: "PUT",
         body: roleData,
       }),
@@ -98,10 +75,8 @@ export const usersApi = createApi({
           await queryFulfilled;
           // Invalidate tags after successful mutation
           dispatch(
-            usersApi.util.invalidateTags([{ type: "Users", id: projectId }])
-          );
-          dispatch(
-            projectsApi.util.invalidateTags([
+            baseApi.util.invalidateTags([
+              { type: "Users", id: projectId },
               { type: "Project", id: projectId }
             ])
           );
@@ -116,7 +91,7 @@ export const usersApi = createApi({
       ChangeDefaultProjectRequestDTO
     >({
       query: (changeDefaultProjectRequestDTO) => ({
-        url: `default-project`,
+        url: `/api/v1/users/default-project`,
         method: "PATCH",
         body: changeDefaultProjectRequestDTO,
       }),
@@ -126,7 +101,7 @@ export const usersApi = createApi({
       ) {
         // Optimistic update - immediately update cache
         const patchResult = dispatch(
-          usersApi.util.updateQueryData(
+          baseApi.util.updateQueryData(
             "getDefaultProjectId",
             undefined,
             (draft) => {

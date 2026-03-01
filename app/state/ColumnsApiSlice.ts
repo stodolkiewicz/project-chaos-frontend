@@ -1,27 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "@/app/store";
 import { ColumnDTO } from "../types/ColumnDTO";
-import { API_CONFIG } from "@/lib/apiConfig";
+import baseApi from "./baseApi";
 
-export const columnsApi = createApi({
-  reducerPath: "ColumnsApi",
-  tagTypes: ["Columns"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).user.accessToken;
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
-  refetchOnFocus: true,
+export const columnsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getColumns: builder.query<ColumnDTO[], string>({
-      query: (projectId) => `/${projectId}/columns`,
+      query: (projectId) => `/api/v1/projects/${projectId}/columns`,
       providesTags: (result, error, projectId) => [
         { type: "Columns", id: projectId },
       ],

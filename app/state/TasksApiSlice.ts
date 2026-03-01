@@ -1,35 +1,19 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "@/app/store";
 import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { CreateTaskFormData } from "../(routes)/dashboard/components/CreateTask/CreateTaskForm";
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
-import labelsApi from "./LabelsApiSlice";
-import { API_CONFIG } from "@/lib/apiConfig";
+import baseApi from "./baseApi";
 
-export const tasksApi = createApi({
-  reducerPath: "TasksApi",
-  tagTypes: ["Tasks", "Labels"],
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${API_CONFIG.baseUrl}/api/v1/projects`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).user.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
-  refetchOnFocus: true,
+export const tasksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBoardTasks: builder.query<BoardTaskDTO[], string>({
-      query: (projectId) => `/${projectId}/tasks`,
+      query: (projectId) => `/api/v1/projects/${projectId}/tasks`,
       providesTags: (result, error, projectId) => [
         { type: "Tasks", id: projectId },
       ],
     }),
     deleteTask: builder.mutation<void, { projectId: string; taskId: string }>({
       query: ({ projectId, taskId }) => ({
-        url: `/${projectId}/tasks/${taskId}`,
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
         method: "DELETE",
       }),
       // pessimistic Query RTK cache update.
@@ -41,7 +25,7 @@ export const tasksApi = createApi({
         try {
           await queryFulfilled;
           dispatch(
-            tasksApi.util.updateQueryData(
+            baseApi.util.updateQueryData(
               "getBoardTasks",
               projectId,
               (draft) => {
@@ -62,7 +46,7 @@ export const tasksApi = createApi({
       { projectId: string; createTaskFormData: CreateTaskFormData }
     >({
       query: ({ projectId, createTaskFormData }) => ({
-        url: `/${projectId}/tasks`,
+        url: `/api/v1/projects/${projectId}/tasks`,
         method: "POST",
         body: createTaskFormData,
       }),
@@ -74,7 +58,7 @@ export const tasksApi = createApi({
         try {
           await queryFulfilled;
           dispatch(
-            tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
           );
           dispatch(
             labelsApi.util.invalidateTags([{ type: "Labels", id: projectId }])
@@ -93,7 +77,7 @@ export const tasksApi = createApi({
       }
     >({
       query: ({ projectId, taskId, updateTaskColumnDTO }) => ({
-        url: `/${projectId}/tasks/${taskId}`,
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
         method: "PATCH",
         body: updateTaskColumnDTO,
       }),
@@ -103,7 +87,7 @@ export const tasksApi = createApi({
       ) {
         // Optimistic update
         dispatch(
-          tasksApi.util.updateQueryData("getBoardTasks", projectId, (draft) => {
+          baseApi.util.updateQueryData("getBoardTasks", projectId, (draft) => {
             const taskIndex = draft.findIndex((task) => task.taskId === taskId);
             if (taskIndex !== -1) {
               // Znajdź nazwę kolumny docelowej
@@ -129,7 +113,7 @@ export const tasksApi = createApi({
         } catch (error) {
           //
           dispatch(
-            tasksApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
           );
           console.error("Failed to move task:", error);
         }
