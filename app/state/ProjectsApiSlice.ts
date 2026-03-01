@@ -66,17 +66,9 @@ export const projectsApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: userData,
       }),
-      async onQueryStarted({ projectId }, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          // Invalidate tags after successful mutation
-          dispatch(
-            baseApi.util.invalidateTags([{ type: "ProjectUsers", id: projectId }])
-          );
-        } catch (error) {
-          console.error("Failed to add user to project:", error);
-        }
-      },
+      // Tylko definicja odświeżania danych
+      invalidatesTags: (result, error, { projectId }) => 
+        error ? [] : [{ type: "ProjectUsers", id: projectId }],
     }),
 
     removeUserFromProject: builder.mutation<

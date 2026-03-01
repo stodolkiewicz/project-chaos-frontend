@@ -44,19 +44,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
       );
       onClose();
     } catch (err) {
-      if (isApiError(err.data)) {
-        if (err.data.title == "Entity not found") {
-          toast.error(
-            "User with email " +
-              data.invitedEmail +
-              " does not exist in the application."
-          );
-        } else {
-          toast.error(err.data.detail);
-        }
-      } else {
-        toast.error(`There was an error while adding the user to the project.`);
-      }
+        toast.error(err.data.detail);
     }
     reset();
   };
