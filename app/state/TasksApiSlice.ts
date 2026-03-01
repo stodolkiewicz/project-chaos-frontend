@@ -25,7 +25,7 @@ export const tasksApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(
-            baseApi.util.updateQueryData(
+            tasksApi.util.updateQueryData(
               "getBoardTasks",
               projectId,
               (draft) => {
@@ -87,7 +87,7 @@ export const tasksApi = baseApi.injectEndpoints({
       ) {
         // Optimistic update
         dispatch(
-          baseApi.util.updateQueryData("getBoardTasks", projectId, (draft) => {
+          tasksApi.util.updateQueryData("getBoardTasks", projectId, (draft) => {
             const taskIndex = draft.findIndex((task) => task.taskId === taskId);
             if (taskIndex !== -1) {
               // Znajdź nazwę kolumny docelowej

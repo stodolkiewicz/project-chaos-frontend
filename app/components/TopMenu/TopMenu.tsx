@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import UserMenu from "./UserMenu";
 import { ChevronLeft } from "lucide-react";

@@ -23,16 +23,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-  const { handleApiError } = useErrorHandler();
-  async function handleOnDeleteProject() {
-    try {
-    //   await deleteTask({ projectId, taskId: boardTask.taskId }).unwrap();
-      toast.success(`Project nazwa projektu has been deleted.`);
-    } catch (error) {
-      handleApiError(error, `Failed to delete project nazwa projektu".`);
-    }
-  }
-
 interface DeleteProjectProps {
   projectId: string;
   projectName: string;

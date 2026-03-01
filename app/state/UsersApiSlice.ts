@@ -25,7 +25,7 @@ export const usersApi = baseApi.injectEndpoints({
         // Optimistic update - immediately update cache
         const patchResult = dispatch(
           
-          baseApi.util.updateQueryData("getDefaultProjectId", undefined,(draft) => {
+          usersApi.util.updateQueryData("getDefaultProjectId", undefined,(draft) => {
               draft.projectId = changeDefaultProjectRequestDTO.newDefaultProjectId;
             }
           )

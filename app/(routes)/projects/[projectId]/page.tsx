@@ -1,11 +1,12 @@
 import ProjectDetailsContent from "./components/ProjectDetailsContent";
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     projectId: string;
-  };
+  }>;
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
-  return <ProjectDetailsContent projectId={params.projectId} />;
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { projectId } = await params;
+  return <ProjectDetailsContent projectId={projectId} />;
 }

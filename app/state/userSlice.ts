@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserData } from "../types/UserData";
 
 const initialState: UserData = {
+  userId: "",
   firstName: "",
   email: "",
   pictureUrl: "",
@@ -14,6 +15,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<UserData>) => {
+      state.userId = action.payload.userId || "";
       state.firstName = action.payload.firstName || "";
       state.email = action.payload.email || "";
       state.pictureUrl = action.payload.pictureUrl || "";
@@ -21,6 +23,7 @@ export const userSlice = createSlice({
       state.refreshToken = action.payload.refreshToken || "";
     },
     clearUser: (state) => {
+      state.userId = "";
       state.firstName = "";
       state.email = "";
       state.pictureUrl = "";

@@ -46,7 +46,7 @@ export default async function Settings() {
         <div className="w-32 h-20 bg-pink-300">Karta 4</div>
       </div>
 
-        6. Wyrównywanie "do dołu" - lini tekstu (Baseline)
+        6. Wyrównywanie do dołu - lini tekstu (Baseline)
         <div className="flex items-baseline gap-4 p-4 bg-yellow-50">
           <span className="text-4xl">Duży</span>
           <span className="text-sm">mały</span>
