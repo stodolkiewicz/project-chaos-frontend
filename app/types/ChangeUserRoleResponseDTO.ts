@@ -1,5 +1,5 @@
 export type ChangeUserRoleResponseDTO = {
   projectId: string;
-  userEmail: string;
+  userId: string;
   newRole: "ADMIN" | "MEMBER" | "VIEWER";
 };

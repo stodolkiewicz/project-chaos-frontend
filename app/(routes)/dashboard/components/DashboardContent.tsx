@@ -6,9 +6,7 @@ import {
   useGetBoardTasksQuery,
   useMoveTaskMutation,
 } from "@/app/state/TasksApiSlice";
-import {
-  useGetProjectQuery,
-} from "@/app/state/ProjectsApiSlice";
+import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import Column from "./Column";
 import { DndContext } from "@dnd-kit/core";

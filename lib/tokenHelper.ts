@@ -17,6 +17,7 @@ export async function extractTokenInfoFromCookies(): Promise<UserAuthPayload | n
     const decodedPayload: UserAuthPayload = {
       firstName: decoded.firstName,
       email: decoded.sub,
+      userId: decoded.userId,
       pictureUrl: decoded.pictureUrl,
       accessToken: accessToken,
       refreshToken: refreshToken,

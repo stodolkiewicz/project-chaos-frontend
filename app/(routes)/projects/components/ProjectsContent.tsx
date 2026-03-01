@@ -2,7 +2,8 @@
 
 import { useAppSelector } from "@/app/hooks";
 import { useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
-import { useGetDefaultProjectIdQuery, useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
+import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 import { Trash2, LogOut, Eye } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import DeleteProjectAlertDialog from "./DeleteProjectAlertDialog";

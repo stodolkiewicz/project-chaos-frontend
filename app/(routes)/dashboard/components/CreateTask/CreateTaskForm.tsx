@@ -2,6 +2,7 @@
 
 import { useAppSelector } from "@/app/hooks";
 import { useGetProjectUsersQuery } from "@/app/state/ProjectsApiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
@@ -17,7 +18,6 @@ import {
 } from "@radix-ui/react-popover";
 import { HexColorPicker } from "react-colorful";
 import { useGetLabelsQuery } from "@/app/state/LabelsApiSlice";
-import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 
 type Label = {

@@ -34,7 +34,7 @@ export const tasksApi = baseApi.injectEndpoints({
             )
           );
           dispatch(
-            labelsApi.util.invalidateTags([{ type: "Labels", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "Labels", id: projectId }])
           );
         } catch (error) {
           console.error("Failed to delete task:", error);
@@ -61,7 +61,7 @@ export const tasksApi = baseApi.injectEndpoints({
             baseApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
           );
           dispatch(
-            labelsApi.util.invalidateTags([{ type: "Labels", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "Labels", id: projectId }])
           );
         } catch (error) {
           console.error("Failed to create task:", error);

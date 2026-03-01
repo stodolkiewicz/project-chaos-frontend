@@ -1,5 +1,6 @@
-import { useGetDefaultProjectIdQuery, useAddUserToProjectMutation } from "@/app/state/UsersApiSlice";
-import { AddUserResponseDTO } from "@/app/types/AddUserResponseDTO";
+import { useAddUserToProjectMutation } from "@/app/state/ProjectsApiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
+import { AssignUserToProjectResponseDTO } from "@/app/types/AssignUserToProjectResponseDTO";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { isApiError } from "@/app/types/ApiError";
@@ -28,18 +29,18 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
 
   const onSubmit: SubmitHandler<AddUserFormData> = async (data) => {
     try {
-      const addUserRequestDTO = {
+      const assignUserRequestDTO = {
         userEmail: data.invitedEmail,
         projectRole: data.projectRole,
       };
 
-      const addUserResponseDTO = (await addUserToProject({
+      const assignUserResponseDTO = (await addUserToProject({
         projectId,
-        userData: addUserRequestDTO,
-      }).unwrap()) as AddUserResponseDTO;
+        userData: assignUserRequestDTO,
+      }).unwrap()) as AssignUserToProjectResponseDTO;
 
       toast.success(
-        `User ${addUserResponseDTO.userEmail} was added to project as ${addUserResponseDTO.projectRole}.`
+        `User ${data.invitedEmail} was added to project as ${assignUserResponseDTO.projectRole}.`
       );
       onClose();
     } catch (err) {

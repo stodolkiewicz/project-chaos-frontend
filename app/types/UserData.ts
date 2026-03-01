@@ -3,6 +3,7 @@ import type { JwtPayload } from "jwt-decode";
 export interface UserCookieData {
   firstName?: string;
   email: string;
+  userId: string;
   pictureUrl?: string;
   accessToken: string;
   refreshToken?: string;

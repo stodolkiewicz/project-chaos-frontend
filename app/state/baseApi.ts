@@ -6,8 +6,9 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   tagTypes: [
     "Project",
-    "Users", 
     "DefaultProject",
+    "ProjectUsers",
+    "Users", 
     "Labels",
     "Columns",
     "TaskPriorities",
