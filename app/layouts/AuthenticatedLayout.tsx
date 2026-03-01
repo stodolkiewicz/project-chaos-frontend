@@ -16,12 +16,12 @@ export default function AuthenticatedLayout({
 }) {
   return (
     <Provider store={store}>
-      <UserProvider user={user}>
-        <div className="min-h-screen min-w-screen">
-          <TopMenu />
+      <div className="min-h-screen min-w-screen">
+        <TopMenu userData={user}/>
+        <UserProvider user={user}>
           <main className="pt-[48px] px-4">{children}</main>
-        </div>
-      </UserProvider>
+        </UserProvider>
+      </div>
     </Provider>
   );
 }

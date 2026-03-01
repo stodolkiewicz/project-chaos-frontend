@@ -1,16 +1,14 @@
 import Link from "next/link";
 import UserMenu from "./UserMenu";
-import { useAppSelector } from "@/app/hooks";
-import { ArrowBigLeft, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { HiArrowNarrowLeft } from "react-icons/hi";
+import { UserData } from "@/app/types/UserData";
 
-export default function TopMenu() {
-  const userData = useAppSelector((state) => state.user);
+export default function TopMenu({ userData }: { userData: UserData }) {
   const path = usePathname();
 
   return (
-    <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1">
+    <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1 z-50">
       {path !== "/dashboard" && (
         <Link 
           href="/dashboard" 
