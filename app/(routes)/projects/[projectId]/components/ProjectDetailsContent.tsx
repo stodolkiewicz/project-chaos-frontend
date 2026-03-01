@@ -93,12 +93,6 @@ export default function ProjectDetailsContent({ projectId }: ProjectDetailsConte
     error: usersError 
   } = useGetProjectUsersQuery(projectId);
 
-  console.log(projectUsers);
-
-  if (projectLoading || usersLoading) {
-    return <div className="container mx-auto py-8">Loading...</div>;
-  }
-
   if (projectError || usersError) {
     return (
       <div className="container mx-auto py-8">

@@ -91,7 +91,6 @@ export default function DashboardContent() {
     );
   }
 
-  if (columnsLoading || boardTasksLoading) return <div>Loading...</div>;
   if (columnsError)
     return (
       <div>
