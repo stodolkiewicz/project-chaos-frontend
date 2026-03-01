@@ -74,7 +74,7 @@ export default function ProjectsContent() {
                         <p>View project details</p>
                       </TooltipContent>
                     </Tooltip>
-                    <Tooltip>
+                    {/* <Tooltip>
                       <TooltipTrigger asChild>
                         <LogOut 
                           className="h-4 w-4 text-gray-400 hover:text-orange-500 cursor-pointer transition-colors duration-200"
@@ -83,7 +83,7 @@ export default function ProjectsContent() {
                       <TooltipContent>
                         <p>Leave project</p>
                       </TooltipContent>
-                    </Tooltip>
+                    </Tooltip> */}
                     { project.projectRole === "ADMIN" && (
                       <DeleteProjectAlertDialog projectId={project.projectId} projectName={project.projectName} >
                         <Trash2
