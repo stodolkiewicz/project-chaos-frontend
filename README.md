@@ -19,6 +19,22 @@ and then:
 npm run dev
 ```
 
+### Before deployment:
+1. Comment out 
+```
+output: "standalone"
+``` 
+in next.config.js
+
+2. Then,
+```
+npm run build
+npx next start
+```
+
+3. Test application
+4. Uncomment 
+
 ## Libraries
 
 1. icons:  
