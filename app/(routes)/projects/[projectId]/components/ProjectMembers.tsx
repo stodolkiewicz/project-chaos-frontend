@@ -19,86 +19,117 @@ interface ProjectMembersProps {
 }
 
 export default function ProjectMembers({ projectUsers }: ProjectMembersProps) {
+  const memberCount = projectUsers?.projectUsers?.length || 0;
+  
   return (
-    <div className="bg-white rounded-lg border p-6">
-      <h2 className="text-xl font-semibold mb-6">
-        Members ({projectUsers?.projectUsers?.length || 0})
-      </h2>
-      <div className="space-y-3">
-        {projectUsers?.projectUsers?.map((user) => (
-          <UserCard key={user.email} user={user} />
-        ))}
-      </div>
-      {(!projectUsers?.projectUsers || projectUsers.projectUsers.length === 0) && (
-        <div className="text-center py-8 text-gray-500">
-          <p>No members found</p>
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+      <div className="px-6 py-5 border-b border-gray-50">
+        <div className="flex items-baseline gap-3">
+          <h2 className="text-xl font-semibold text-gray-900">Team Members</h2>
+          <span className="text-sm text-gray-500 font-medium">
+            ({memberCount})
+          </span>
         </div>
-      )}
+      </div>
+      
+      <div className="p-6 pt-4">
+        {memberCount > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {projectUsers?.projectUsers?.map((user) => (
+              <UserCard key={user.email} user={user} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-gray-400 text-2xl">👥</span>
+            </div>
+            <p className="text-gray-500 font-medium">No team members yet</p>
+            <p className="text-gray-400 text-sm mt-1">Members will appear here when added to the project</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 function UserCard({ user }: { user: User }) {
   const [imageError, setImageError] = useState(false);
+  const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+  const initials = user.firstName 
+    ? `${user.firstName.charAt(0)}${user.lastName?.charAt(0) || ''}`.toUpperCase()
+    : user.email.charAt(0).toUpperCase();
+
+  const getRoleBadgeStyle = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return 'bg-primary-lighter-2 text-primary-darker-2 border-primary-lighter-1';
+      case 'viewer':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'member':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const formatJoinDate = (dateString?: string) => {
+    if (!dateString) return 'Unknown';
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'Unknown' : date.toLocaleDateString();
+  };
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
-      <div className="flex items-start gap-3">
-        {/* Avatar - Google picture or initials */}
-        <div className="flex-shrink-0">
+    <div className="group bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 hover:shadow-sm transition-all duration-200">
+      <div className="flex items-center gap-4">
+        {/* Avatar */}
+        <div className="relative">
           {user.googlePictureLink && !imageError ? (
             <Image 
               src={user.googlePictureLink} 
-              alt={`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email}
-              width={40}
-              height={40}
-              className="rounded-full"
+              alt={fullName || user.email}
+              width={48}
+              height={48}
+              className="rounded-full ring-2 ring-gray-100"
               onError={() => setImageError(true)}
             />
           ) : (
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">
-                {user.firstName ? user.firstName.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-                {user.lastName ? user.lastName.charAt(0).toUpperCase() : ''}
+            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center ring-2 ring-gray-100">
+              <span className="text-white text-lg font-semibold">
+                {initials}
               </span>
             </div>
           )}
+          {/* TODO: Online status indicator - implement WebSocket/heartbeat user tracking first */}
+          {/* <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div> */}
         </div>
         
         {/* User Info */}
-        <div className="flex-1 min-w-0 space-y-1">
-          {/* Name and Email */}
-          <div>
-            {(user.firstName || user.lastName) ? (
-              <div className="font-medium text-gray-900">
-                {user.firstName || ''} {user.lastName || ''}
-              </div>
-            ) : null}
-            <div className={`text-gray-600 ${(user.firstName || user.lastName) ? 'text-base' : 'text-base font-medium'}`}>
-              {user.email}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div>
+              {fullName ? (
+                <>
+                  <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                    {fullName}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{user.email}</p>
+                </>
+              ) : (
+                <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                  {user.email}
+                </h3>
+              )}
             </div>
-          </div>
-          
-          {/* Role */}
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 font-medium">Role:</span>
-            <span className="px-2 text-sm font-medium rounded-full border-2 border-green-800 text-white bg-green-800 leading-none">
+            
+            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeStyle(user.role)}`}>
               {user.role}
             </span>
           </div>
           
-          {/* Joined Date */}
-          <div className="text-sm text-gray-500">
-            <span className="font-medium">Joined:</span> {
-              user.projectJoinDate 
-                ? (() => {
-                    const date = new Date(user.projectJoinDate);
-                    return isNaN(date.getTime()) 
-                      ? 'Unknown date' 
-                      : date.toLocaleDateString()
-                  })()
-                : 'Unknown date'
-            }
+          <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
+            <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+            <span>Joined {formatJoinDate(user.projectJoinDate)}</span>
           </div>
         </div>
       </div>
