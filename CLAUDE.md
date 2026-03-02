@@ -1,5 +1,8 @@
 # Project Chaos Frontend - Claude Instructions
 
+## Critical File Creation Rule
+ALWAYS check if a file exists in the project before creating a new one (use Bash ls or Glob to search). The only exceptions are layout.tsx or page.tsx files which are framework-specific and their locations are predetermined by Next.js routing.
+
 ## Project Overview
 This is a Kanban project management application built with Next.js 15, TypeScript, and Spring Boot backend.
 
