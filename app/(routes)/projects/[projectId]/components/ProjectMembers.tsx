@@ -22,17 +22,17 @@ export default function ProjectMembers({ projectUsers }: ProjectMembersProps) {
   const memberCount = projectUsers?.projectUsers?.length || 0;
   
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-      <div className="px-6 py-5 border-b border-gray-50">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-primary px-6 py-2">
         <div className="flex items-baseline gap-3">
-          <h2 className="text-xl font-semibold text-gray-900">Team Members</h2>
-          <span className="text-sm text-gray-500 font-medium">
+          <h2 className="text-base font-semibold text-primary-foreground">Team Members</h2>
+          <span className="text-sm text-primary-foreground opacity-80 font-bold">
             ({memberCount})
           </span>
         </div>
       </div>
       
-      <div className="p-6 pt-4">
+      <div className="p-6">
         {memberCount > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {projectUsers?.projectUsers?.map((user) => (
@@ -80,7 +80,7 @@ function UserCard({ user }: { user: User }) {
   };
 
   return (
-    <div className="group bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 hover:shadow-sm transition-all duration-200">
+    <div className="group bg-white border border-gray-200 rounded-lg p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-200">
       <div className="flex items-center gap-4">
         {/* Avatar */}
         <div className="relative">

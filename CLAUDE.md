@@ -62,6 +62,11 @@ Additional colors used specifically on dashboard:
 - `green-600`, `green-200` - Used for icon hover effects (add task buttons)
 - Standard Tailwind greens (`green-100`, `green-800`) - Used for role badges and status indicators
 
+**Headers Style (consistent across app):**
+- `bg-primary text-primary-foreground` - Main primary blue background with white text
+- Used in: Dashboard column headers, ProjectInformation header, component headers
+- Standard pattern: `<div className="bg-primary px-6 py-4"><h2 className="text-primary-foreground">Title</h2></div>`
+
 **Color Selection Priority:**
 1. Use custom `primary-*` colors first (brand consistency)
 2. If need different colors, prefer existing dashboard colors (`azure-600`, `green-*`)
