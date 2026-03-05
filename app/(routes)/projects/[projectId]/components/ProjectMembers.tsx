@@ -5,10 +5,19 @@ import Image from "next/image";
 import { useState } from "react";
 import { BsHourglassSplit } from "react-icons/bs";
 import { Trash2 } from "lucide-react";
-import { useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
+import { useGetUserProjectsQuery, useChangeUserRoleMutation } from "@/app/state/ProjectsApiSlice";
 import { useAppSelector } from "@/app/hooks";
+import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 import DeleteInvitationAlertDialog from "./DeleteInvitationAlertDialog";
 import DeleteUserAlertDialog from "./DeleteUserAlertDialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -63,10 +72,32 @@ export default function ProjectMembers({ projectUsers, projectInvitations, proje
 
 function UserCard({ user, isAdmin, projectId }: { user: User; isAdmin: boolean; projectId: string }) {
   const [imageError, setImageError] = useState(false);
+  const [changeUserRole] = useChangeUserRoleMutation();
+  const { handleApiError } = useErrorHandler();
+  
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
   const initials = user.firstName 
     ? `${user.firstName.charAt(0)}${user.lastName?.charAt(0) || ''}`.toUpperCase()
     : user.email.charAt(0).toUpperCase();
+
+  function handleRoleChange(newRole: string) {
+    if (newRole === user.role) return;
+
+    const userName = fullName || user.email;
+    
+    changeUserRole({
+      projectId,
+      userId: user.id,
+      roleData: { projectRole: newRole },
+    })
+    .unwrap()
+    .then(() => {
+      toast.success(`Role changed to ${newRole} for "${userName}".`);
+    })
+    .catch((error) => {
+      handleApiError(error, `Failed to change role for "${userName}".`);
+    });
+  }
 
   const getRoleBadgeStyle = (role: string) => {
     switch (role.toLowerCase()) {
@@ -130,9 +161,25 @@ function UserCard({ user, isAdmin, projectId }: { user: User; isAdmin: boolean; 
               )}
             </div>
             
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeStyle(user.role)}`}>
-              {user.role}
-            </span>
+            {isAdmin && user.role.toLowerCase() !== 'admin' ? (
+              <Select value={user.role} onValueChange={handleRoleChange}>
+                <SelectTrigger 
+                  size="sm"
+                  className={`h-6 px-2 py-1 text-xs font-medium border rounded-full ${getRoleBadgeStyle(user.role)} hover:opacity-80 transition-opacity`}
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                  <SelectItem value="MEMBER">Member</SelectItem>
+                  <SelectItem value="VIEWER">Viewer</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadgeStyle(user.role)}`}>
+                {user.role}
+              </span>
+            )}
           </div>
           
           <div className="flex items-center justify-between mt-2">

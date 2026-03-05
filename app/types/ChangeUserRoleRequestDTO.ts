@@ -1,3 +1,3 @@
 export type ChangeUserRoleRequestDTO = {
-  newRole: "ADMIN" | "MEMBER" | "VIEWER";
+  projectRole: "ADMIN" | "MEMBER" | "VIEWER";
 };

@@ -96,6 +96,25 @@ export const projectsApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: roleData,
       }),
+      async onQueryStarted(
+        { projectId, userId, roleData },
+        { dispatch, queryFulfilled }
+      ) {
+        const patchResult = dispatch(
+          projectsApi.util.updateQueryData('getProjectUsers', projectId, (draft) => {
+            const user = draft.projectUsers?.find(user => user.id === userId);
+            if (user) {
+              user.role = roleData.projectRole;
+            }
+          })
+        );
+        
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
       invalidatesTags: (result, error, { projectId }) => [
         { type: "ProjectUsers", id: projectId }, 
         { type: "Project", id: projectId },
