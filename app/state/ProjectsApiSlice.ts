@@ -25,12 +25,13 @@ export const projectsApi = baseApi.injectEndpoints({
     }),
     getProject: builder.query<ProjectDTO, string>({
       query: (projectId) => `/api/v1/projects/${projectId}`,
-      providesTags: (result, error, id) => [{ type: "ProjectUsers", id }],
+      providesTags: (result, error, id) => [{ type: "Project", id }],
     }),
     getProjectUsers: builder.query<ProjectUsersDTO, string>({
       query: (projectId) => `/api/v1/projects/${projectId}/users`,
       providesTags: (result, error, projectId) => [
         { type: "Project", id: projectId },
+        { type: "ProjectUsers", id: projectId },
       ],
     }),
     createProject: builder.mutation<

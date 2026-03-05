@@ -8,6 +8,7 @@ export const baseApi = createApi({
     "Project",
     "DefaultProject",
     "ProjectUsers",
+    "ProjectInvitations",
     "Users", 
     "Labels",
     "Columns",

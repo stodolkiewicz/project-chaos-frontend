@@ -4,6 +4,7 @@ import { useGetProjectQuery, useGetProjectUsersQuery } from "@/app/state/Project
 import { useAppSelector } from "@/app/hooks";
 import ProjectInformation from "./ProjectInformation";
 import ProjectMembers from "./ProjectMembers";
+import { useGetProjectInvitationsQuery } from "@/app/state/ProjectInvitationsApiSlice";
 
 interface ProjectDetailsContentProps {
   projectId: string;
@@ -23,6 +24,12 @@ export default function ProjectDetailsContent({ projectId }: ProjectDetailsConte
     isLoading: usersLoading, 
     error: usersError 
   } = useGetProjectUsersQuery(projectId);
+
+  const { 
+    data: projectInvitations, 
+    isLoading: invitationsLoading, 
+    error: invitationsError 
+  } = useGetProjectInvitationsQuery(projectId);
 
   if (projectError || usersError) {
     return (
@@ -48,7 +55,11 @@ export default function ProjectDetailsContent({ projectId }: ProjectDetailsConte
 
       <div className="space-y-8">
         <ProjectInformation project={project} />
-        <ProjectMembers projectUsers={projectUsers} />
+        <ProjectMembers 
+          projectUsers={projectUsers?.projectUsers} 
+          projectInvitations={projectInvitations}
+          projectId={projectId}
+        />
       </div>
     </div>
   );

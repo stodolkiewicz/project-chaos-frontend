@@ -5,6 +5,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { isApiError } from "@/app/types/ApiError";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
+import { CreateInvitationRequestDTO } from "@/app/types/ProjectInvitations/CreateInvitationRequestDTO";
+import { CreateInvitationResponseDTO, useCreateProjectInvitationMutation } from "@/app/state/ProjectInvitationsApiSlice";
 
 export type AddUserFormData = {
   invitedEmail: string;
@@ -25,22 +27,23 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
   const { data } = useGetDefaultProjectIdQuery();
   const projectId = data?.projectId;
 
-  const [addUserToProject] = useAddUserToProjectMutation();
+  const [createInvitation] = useCreateProjectInvitationMutation();
 
   const onSubmit: SubmitHandler<AddUserFormData> = async (data) => {
     try {
-      const assignUserRequestDTO = {
-        userEmail: data.invitedEmail,
-        projectRole: data.projectRole,
+      const createInvitationRequestDTO: CreateInvitationRequestDTO = {
+        email: data.invitedEmail,
+        role: data.projectRole,
       };
 
-      const assignUserResponseDTO = (await addUserToProject({
-        projectId,
-        userData: assignUserRequestDTO,
-      }).unwrap()) as AssignUserToProjectResponseDTO;
+      const createInvitationResponseDTO = (await createInvitation({
+        projectId: projectId,
+        request: createInvitationRequestDTO
+      }
+      ).unwrap()) as CreateInvitationResponseDTO;
 
       toast.success(
-        `User ${data.invitedEmail} was added to project as ${assignUserResponseDTO.projectRole}.`
+        `User ${data.invitedEmail} was invited to project as ${createInvitationResponseDTO.role}.`
       );
       onClose();
     } catch (err) {

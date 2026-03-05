@@ -83,7 +83,7 @@ export default function BoardTaskHeader({
         </div>
       </div>
       <div>
-        {boardTask.labels.map((label, id) => (
+        {boardTask.labels?.map((label, id) => (
           <div
             key={id}
             className={`shadow-2xl inline-block hover:opacity-78 duration-300 overflow-hidden text-ellipsis font-medium text-xs  bg-amber-300 rounded-full pr-1.5 pl-1.5 ${

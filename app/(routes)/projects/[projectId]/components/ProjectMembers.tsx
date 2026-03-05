@@ -1,7 +1,13 @@
 "use client";
 
+import { InvitationResponseDTO } from "@/app/state/ProjectInvitationsApiSlice";
 import Image from "next/image";
 import { useState } from "react";
+import { BsHourglassSplit } from "react-icons/bs";
+import { Trash2 } from "lucide-react";
+import { useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
+import { useAppSelector } from "@/app/hooks";
+import DeleteInvitationAlertDialog from "./DeleteInvitationAlertDialog";
 
 interface User {
   email: string;
@@ -13,13 +19,22 @@ interface User {
 }
 
 interface ProjectMembersProps {
-  projectUsers?: {
-    projectUsers: User[];
-  };
+  projectUsers?: User[];
+  projectInvitations?: InvitationResponseDTO[];
+  projectId: string;
 }
 
-export default function ProjectMembers({ projectUsers }: ProjectMembersProps) {
-  const memberCount = projectUsers?.projectUsers?.length || 0;
+
+export default function ProjectMembers({ projectUsers, projectInvitations, projectId }: ProjectMembersProps) {
+  const memberCount = projectUsers?.length || 0;
+  const invitationCount = projectInvitations?.length || 0;
+  
+  const userEmail = useAppSelector((state) => state.user.email);
+  const { data: userProjects } = useGetUserProjectsQuery(userEmail);
+  const currentProject = userProjects?.projects?.find(project => project.projectId === projectId);
+  const isAdmin = currentProject?.projectRole === "ADMIN";
+  
+  console.log(projectInvitations);
   
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -27,27 +42,20 @@ export default function ProjectMembers({ projectUsers }: ProjectMembersProps) {
         <div className="flex items-baseline gap-3">
           <h2 className="text-base font-semibold text-primary-foreground">Team Members</h2>
           <span className="text-sm text-primary-foreground opacity-80 font-bold">
-            ({memberCount})
+            ({memberCount}{invitationCount > 0 && ` + ${invitationCount} pending`})
           </span>
         </div>
       </div>
       
       <div className="p-6">
-        {memberCount > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {projectUsers?.projectUsers?.map((user) => (
-              <UserCard key={user.email} user={user} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-gray-400 text-2xl">👥</span>
-            </div>
-            <p className="text-gray-500 font-medium">No team members yet</p>
-            <p className="text-gray-400 text-sm mt-1">Members will appear here when added to the project</p>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {projectUsers?.map((user) => (
+            <UserCard key={user.email} user={user} />
+          ))}
+          {projectInvitations?.map((invitation) => (
+            <InvitationCard key={invitation.id} invitation={invitation} isAdmin={isAdmin} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -130,6 +138,82 @@ function UserCard({ user }: { user: User }) {
           <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
             <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
             <span>Joined {formatJoinDate(user.projectJoinDate)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InvitationCard({ invitation, isAdmin }: { invitation: InvitationResponseDTO; isAdmin: boolean }) {
+  const initials = invitation.email.charAt(0).toUpperCase();
+  
+  const getRoleBadgeStyle = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return 'bg-primary-lighter-2 text-primary-darker-2 border-primary-lighter-1';
+      case 'viewer':
+        return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'member':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? 'Unknown' : date.toLocaleDateString();
+  };
+
+  return (
+    <div className="group bg-gradient-to-br from-slate-50 to-gray-100 border border-slate-200 rounded-xl p-4 opacity-80 relative overflow-hidden hover:opacity-90 transition-all duration-300 shadow-inner border-dashed">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent"></div>
+      
+      <div className="flex items-center gap-4 relative z-10">
+        {/* Avatar */}
+        <div className="relative">
+          <div className="w-12 h-12 bg-gradient-to-br from-slate-300 to-slate-500 rounded-full flex items-center justify-center ring-1 ring-slate-300/50 shadow-sm">
+            <span className="text-white text-lg font-semibold">
+              {initials}
+            </span>
+          </div>
+        </div>
+        
+        {/* User Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="font-semibold text-gray-900 text-lg leading-tight">
+                {invitation.email}
+              </h3>
+              <p className="text-gray-600 text-sm">Invited by {invitation.invitedByEmail}</p>
+            </div>
+            
+            <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium border backdrop-blur-sm opacity-70 ${getRoleBadgeStyle(invitation.role)}`}>
+              {invitation.role}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
+            <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+            <span>Invited {formatDate(invitation.createdDate)}</span>
+          </div>
+          
+          <div className="flex justify-between items-center mt-3">
+            <div className="flex items-center gap-2">
+              <BsHourglassSplit className="text-slate-400 w-3.5 h-3.5 hover:rotate-180 transition-transform duration-700 cursor-pointer" />
+              <span className="text-xs font-medium text-gray-700 tracking-wide">INVITATION PENDING</span>
+            </div>
+            {isAdmin && (
+              <DeleteInvitationAlertDialog invitation={invitation}>
+                <Trash2 
+                  className="w-4 h-4 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              </DeleteInvitationAlertDialog>
+            )}
           </div>
         </div>
       </div>

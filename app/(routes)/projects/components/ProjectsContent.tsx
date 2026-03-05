@@ -7,8 +7,10 @@ import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 import { Trash2, LogOut, Eye } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import DeleteProjectAlertDialog from "./DeleteProjectAlertDialog";
+import { useRouter } from 'next/navigation'
 
 export default function ProjectsContent() {
+  const router = useRouter();
   const userEmail = useAppSelector((state) => state.user.email);
   const { 
     data: userProjects,
@@ -67,7 +69,7 @@ export default function ProjectsContent() {
                       <TooltipTrigger asChild>
                         <Eye 
                           className="h-4 w-4 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors duration-200"
-                          onClick={() => window.location.href = `/projects/${project.projectId}`}
+                          onClick={() => router.push(`/projects/${project.projectId}`)}
                         />
                       </TooltipTrigger>
                       <TooltipContent>
