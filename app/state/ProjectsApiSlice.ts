@@ -121,6 +121,18 @@ export const projectsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    leaveProject: builder.mutation<void, string>({
+      query: (projectId) => ({
+        url: `/api/v1/projects/${projectId}/leave`,
+        method: "POST",
+      }),
+      invalidatesTags: (result, error, projectId) => [
+        { type: "ProjectUsers", id: projectId },
+        { type: "Project", id: "LIST" },
+        "DefaultProject",
+      ],
+    }),
+
   }),
 });
 
@@ -133,6 +145,7 @@ export const {
   useAddUserToProjectMutation,
   useRemoveUserFromProjectMutation,
   useChangeUserRoleMutation,
+  useLeaveProjectMutation,
 } = projectsApi;
 
 export default projectsApi;

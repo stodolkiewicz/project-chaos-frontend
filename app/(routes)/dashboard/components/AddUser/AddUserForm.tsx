@@ -28,6 +28,7 @@ export default function AddUserForm({ onClose }: { onClose: () => void }) {
   const projectId = data?.projectId;
 
   const [createInvitation] = useCreateProjectInvitationMutation();
+  const { handleApiError } = useErrorHandler();
 
   const onSubmit: SubmitHandler<AddUserFormData> = async (data) => {
     try {

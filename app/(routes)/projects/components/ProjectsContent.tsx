@@ -7,7 +7,8 @@ import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 import { Trash2, LogOut, Eye } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import DeleteProjectAlertDialog from "./DeleteProjectAlertDialog";
-import { useRouter } from 'next/navigation'
+import LeaveProjectAlertDialog from "./LeaveProjectAlertDialog";
+import { useRouter } from 'next/navigation';
 
 export default function ProjectsContent() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function ProjectsContent() {
           return (
             <div 
               key={project.projectId} 
-              className={`border rounded-lg p-6 transition-all group ${
+              className={`border rounded-lg p-6 transition-all group flex flex-col ${
                 isActive 
                   ? 'border-primary bg-primary/5 hover:shadow-lg' 
                   : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
@@ -56,46 +57,41 @@ export default function ProjectsContent() {
                   {isActive ? 'Active' : 'Activate'}
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">{project.projectDescription}</p>
+              <p className="text-gray-600 mb-4 line-clamp-2">{project.projectDescription}</p>
               
-              <div className="space-y-2 text-sm text-gray-500">
+              <div className="space-y-2 text-sm text-gray-500 mt-auto">
                 <div>Role: <span className="font-medium">{project.projectRole}</span></div>
                 <div>Created: {new Date(project.projectCreatedDate).toLocaleDateString()}</div>
-              
                 <div className="flex justify-between items-center">
                   <div>Joined: {new Date(project.projectJoinedDate).toLocaleDateString()}</div>
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <div className="flex gap-1">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Eye 
-                          className="h-4 w-4 text-gray-400 hover:text-blue-500 cursor-pointer transition-colors duration-200"
+                        <button 
+                          className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300 transition-all duration-200 text-gray-500"
                           onClick={() => router.push(`/projects/${project.projectId}`)}
-                        />
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>View project details</p>
                       </TooltipContent>
                     </Tooltip>
-                    {/* <Tooltip>
-                      <TooltipTrigger asChild>
-                        <LogOut 
-                          className="h-4 w-4 text-gray-400 hover:text-orange-500 cursor-pointer transition-colors duration-200"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Leave project</p>
-                      </TooltipContent>
-                    </Tooltip> */}
+                    <LeaveProjectAlertDialog projectId={project.projectId} projectName={project.projectName}>
+                      <button className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-orange-100 hover:text-orange-600 hover:border-orange-300 transition-all duration-200 text-gray-500">
+                        <LogOut className="h-4 w-4" />
+                      </button>
+                    </LeaveProjectAlertDialog>
                     { project.projectRole === "ADMIN" && (
                       <DeleteProjectAlertDialog projectId={project.projectId} projectName={project.projectName} >
-                        <Trash2
-                          className="h-4 w-4 text-gray-400 hover:text-red-500 cursor-pointer transition-colors duration-200"
-                        />
+                        <button className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 transition-all duration-200 text-gray-500">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </DeleteProjectAlertDialog> 
                     )}
                   </div>
                 </div>
-
               </div>
             </div>
 

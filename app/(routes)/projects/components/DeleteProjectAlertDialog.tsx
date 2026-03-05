@@ -64,7 +64,7 @@ export default function DeleteProjectAlertDialog({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <AlertDialogTrigger className="cursor-pointer">
+          <AlertDialogTrigger asChild>
             {children}
           </AlertDialogTrigger>
         </TooltipTrigger>
