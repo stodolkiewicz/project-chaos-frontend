@@ -74,12 +74,11 @@ export const projectsApi = baseApi.injectEndpoints({
 
     removeUserFromProject: builder.mutation<
       void,
-      { projectId: string; userData: UnassignUserFromProjectRequestDTO }
+      { projectId: string; userId: string }
     >({
-      query: ({ projectId, userData }) => ({
-        url: `/api/v1/projects/${projectId}/users`,
+      query: ({ projectId, userId }) => ({
+        url: `/api/v1/projects/${projectId}/users/${userId}`,
         method: "DELETE",
-        body: userData,
       }),
       invalidatesTags: (result, error, { projectId }) => [
         { type: "ProjectUsers", id: projectId },

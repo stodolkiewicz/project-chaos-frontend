@@ -8,8 +8,10 @@ import { Trash2 } from "lucide-react";
 import { useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
 import { useAppSelector } from "@/app/hooks";
 import DeleteInvitationAlertDialog from "./DeleteInvitationAlertDialog";
+import DeleteUserAlertDialog from "./DeleteUserAlertDialog";
 
 interface User {
+  id: string;
   email: string;
   firstName?: string;
   lastName?: string;
@@ -34,8 +36,6 @@ export default function ProjectMembers({ projectUsers, projectInvitations, proje
   const currentProject = userProjects?.projects?.find(project => project.projectId === projectId);
   const isAdmin = currentProject?.projectRole === "ADMIN";
   
-  console.log(projectInvitations);
-  
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="bg-primary hover:bg-primary-darker-1 px-6 py-2 transition-colors cursor-pointer">
@@ -50,7 +50,7 @@ export default function ProjectMembers({ projectUsers, projectInvitations, proje
       <div className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {projectUsers?.map((user) => (
-            <UserCard key={user.email} user={user} />
+            <UserCard key={user.id} user={user} isAdmin={isAdmin} projectId={projectId} />
           ))}
           {projectInvitations?.map((invitation) => (
             <InvitationCard key={invitation.id} invitation={invitation} isAdmin={isAdmin} />
@@ -61,7 +61,7 @@ export default function ProjectMembers({ projectUsers, projectInvitations, proje
   );
 }
 
-function UserCard({ user }: { user: User }) {
+function UserCard({ user, isAdmin, projectId }: { user: User; isAdmin: boolean; projectId: string }) {
   const [imageError, setImageError] = useState(false);
   const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
   const initials = user.firstName 
@@ -135,9 +135,20 @@ function UserCard({ user }: { user: User }) {
             </span>
           </div>
           
-          <div className="flex items-center gap-1 mt-2 text-sm text-gray-500">
-            <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
-            <span>Joined {formatJoinDate(user.projectJoinDate)}</span>
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <span className="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>
+              <span>Joined {formatJoinDate(user.projectJoinDate)}</span>
+            </div>
+            
+            {isAdmin && user.role.toLowerCase() !== 'admin' && (
+              <DeleteUserAlertDialog user={user} projectId={projectId}>
+                <Trash2 
+                  className="w-4 h-4 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              </DeleteUserAlertDialog>
+            )}
           </div>
         </div>
       </div>
