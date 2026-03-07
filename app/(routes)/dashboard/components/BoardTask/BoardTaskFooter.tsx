@@ -1,14 +1,82 @@
+import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import DeleteTaskAlertDialog from "./DeleteTaskAlertDialog";
+import TaskCommentsDialog from "./TaskCommentsDialog";
+import { MoreVertical, Trash2, MessageSquare } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+
 interface BoardTaskFooterProps {
   assigneeEmail: string;
+  boardTask: BoardTaskDTO;
 }
 
 export default function BoardTaskFooter({
   assigneeEmail,
+  boardTask,
 }: BoardTaskFooterProps) {
   return (
-    <div className="flex flex-col xl:flex-row mt-3">
-      <div className="text-xs font-medium flex-1">assigned&nbsp;to:</div>
-      <div className="text-xs break-all">{assigneeEmail}</div>
+    <div className="flex flex-col mt-3">
+      {assigneeEmail && (
+        <>
+          <div className="text-xs font-medium">assigned to:</div>
+          <div className="flex justify-between items-center">
+            <div className="text-xs break-all">{assigneeEmail}</div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <MoreVertical
+                  className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground ml-2"
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
+                <TaskCommentsDialog boardTask={boardTask}>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Comments
+                  </DropdownMenuItem>
+                </TaskCommentsDialog>
+                <DeleteTaskAlertDialog boardTask={boardTask}>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Task
+                  </DropdownMenuItem>
+                </DeleteTaskAlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </>
+      )}
+      {!assigneeEmail && (
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <MoreVertical
+                className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground ml-2"
+                onPointerDown={(e) => e.stopPropagation()}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
+              <TaskCommentsDialog boardTask={boardTask}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Comments
+                </DropdownMenuItem>
+              </TaskCommentsDialog>
+              <DeleteTaskAlertDialog boardTask={boardTask}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Task
+                </DropdownMenuItem>
+              </DeleteTaskAlertDialog>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
     </div>
   );
 }

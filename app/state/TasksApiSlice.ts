@@ -34,7 +34,10 @@ export const tasksApi = baseApi.injectEndpoints({
             )
           );
           dispatch(
-            baseApi.util.invalidateTags([{ type: "Labels", id: projectId }])
+            baseApi.util.invalidateTags([
+              { type: "Labels", id: projectId },
+              { type: "TaskComments", id: taskId }
+            ])
           );
         } catch (error) {
           console.error("Failed to delete task:", error);

@@ -124,7 +124,7 @@ export default function DashboardContent() {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className="min-h-screen">
+      <div>
         <ProjectMenu projectName={project?.name} currentProjectId={project?.id} />
         {/* COLUMNS */}
         {columns?.length > 0 && (

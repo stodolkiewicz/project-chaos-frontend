@@ -32,7 +32,7 @@ export default function BoardTask({ boardTask }: BoardTaskProps) {
       />
       <Separator className="bg-border h-[1.5px]" />
       <div className="mt-1 break-all">{boardTask.description}</div>
-      <BoardTaskFooter assigneeEmail={boardTask.assignee.email} />
+      <BoardTaskFooter assigneeEmail={boardTask.assignee.email} boardTask={boardTask} />
     </div>
   );
 }

@@ -15,11 +15,6 @@ import {
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 
 export default function DeleteTaskAlertDialog({
@@ -47,16 +42,9 @@ export default function DeleteTaskAlertDialog({
 
   return (
     <AlertDialog>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <AlertDialogTrigger className="cursor-pointer">
-            {children}
-          </AlertDialogTrigger>
-        </TooltipTrigger>
-        <TooltipContent align="center" className="-translate-x-[4px] border-1">
-          <p>Delete this task</p>
-        </TooltipContent>
-      </Tooltip>
+      <AlertDialogTrigger asChild>
+        {children}
+      </AlertDialogTrigger>
 
       <AlertDialogContent>
         <AlertDialogHeader>

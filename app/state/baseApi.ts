@@ -13,7 +13,8 @@ export const baseApi = createApi({
     "Labels",
     "Columns",
     "TaskPriorities",
-    "Tasks"
+    "Tasks",
+    "TaskComments"
   ],
   baseQuery: fetchBaseQuery({
     baseUrl: API_CONFIG.baseUrl,

@@ -66,6 +66,13 @@ npx next start
 6. React Hook Form  
    https://react-hook-form.com/get-started
 
+7. TipTap - Rich Text Editor  
+   https://tiptap.dev/
+   
+   Using Minimal TipTap - A lightweight, customizable rich text editor component styled with Shadcn UI:  
+   https://github.com/Aslam97/minimal-tiptap  
+   https://shadcn-minimal-tiptap.vercel.app/
+
 ## Browser Extensions
 1. React Developer Tools
 
