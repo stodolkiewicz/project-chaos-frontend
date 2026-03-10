@@ -3,6 +3,7 @@
 import { Comment } from '@/app/types/Comment'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
+import { JSONContent } from '@tiptap/react'
 
 interface CommentDisplayProps {
   comment: Comment
@@ -12,7 +13,14 @@ interface CommentDisplayProps {
 
 const CommentDisplay = ({ comment, replies, onReply }: CommentDisplayProps) => {
   // Convert TipTap JSON to HTML for display
-  const htmlContent = generateHTML(comment.content, [StarterKit])
+  const getHtmlContent = (content: any): string => {
+    if (typeof content === 'string') {
+      return content
+    }
+    return generateHTML(content as JSONContent, [StarterKit])
+  }
+  
+  const htmlContent = getHtmlContent(comment.content)
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
@@ -54,7 +62,7 @@ const CommentDisplay = ({ comment, replies, onReply }: CommentDisplayProps) => {
       {replies.length > 0 && (
         <div className="mt-2 ml-3 border-l-2 border-gray-200 pl-3 space-y-2">
           {replies.map((reply) => {
-            const replyHtml = generateHTML(reply.content, [StarterKit])
+            const replyHtml = getHtmlContent(reply.content)
             return (
               <div key={reply.id} className="bg-gray-50 border border-gray-100 rounded-lg p-2">
                 {/* Reply header */}

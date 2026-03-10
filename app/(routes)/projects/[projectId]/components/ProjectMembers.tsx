@@ -88,7 +88,7 @@ function UserCard({ user, isAdmin, projectId }: { user: User; isAdmin: boolean; 
     changeUserRole({
       projectId,
       userId: user.id,
-      roleData: { projectRole: newRole },
+      roleData: { projectRole: newRole as "ADMIN" | "MEMBER" | "VIEWER" },
     })
     .unwrap()
     .then(() => {
