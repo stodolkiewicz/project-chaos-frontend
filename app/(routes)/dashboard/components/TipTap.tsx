@@ -1,27 +1,29 @@
 'use client'
 
 import { Content } from "@tiptap/react"
-import { MinimalTiptapEditor } from "@/components/ui/minimal-tiptap/minimal-tiptap"
+import { CustomTiptapEditor } from "@/components/ui/minimal-tiptap/CustomTiptapEditor"
 
 interface TiptapProps {
   value?: Content
   onChange?: (value: Content) => void
+  toolbarSections?: ('headings' | 'formatting' | 'colors' | 'lists' | 'blocks')[]
 }
 
-const Tiptap = ({ value, onChange }: TiptapProps) => {
+const Tiptap = ({ value, onChange, toolbarSections = ['headings', 'formatting'] }: TiptapProps) => {
   const defaultContent: Content = { type: 'doc', content: [] }
 
   return (
-    <MinimalTiptapEditor
+    <CustomTiptapEditor
       value={value ?? defaultContent}
       onChange={onChange}
       className="w-full"
       editorContentClassName="p-5"
       output="json"
-      placeholder="Napisz coś..."
+      placeholder="Type your comment here..."
       autofocus={true}
       editable={true}
       editorClassName="focus:outline-none"
+      enabledSections={toolbarSections}
     />
   )
 }

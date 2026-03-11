@@ -5,14 +5,17 @@ import { Content } from '@tiptap/react'
 import { TaskCommentWithRepliesResponseDTO } from '@/app/state/TaskCommentsApiSlice'
 import TipTap from '../TipTap'
 import CommentDisplay from './CommentDisplay'
-import { convertTipTapContentToHtml, extractTextFromTipTapContent } from '@/lib/tiptapUtils'
+import { extractTextFromTipTapContent } from '@/lib/tiptapUtils'
+import { PaginationControls } from '@/app/components/pagination/PaginationControls'
+import PaginationProps from '@/app/components/pagination/PaginationProps'
 
 interface CommentSystemProps {
   comments: TaskCommentWithRepliesResponseDTO[]
   onAddComment: (content: Content, replyTo?: string) => void
+  pagination?: PaginationProps
 }
 
-const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
+const CommentSystem = ({ comments, onAddComment, pagination }: CommentSystemProps) => {
   const [newComment, setNewComment] = useState<Content>({ type: 'doc', content: [] })
   const [replyingTo, setReplyingTo] = useState<TaskCommentWithRepliesResponseDTO | null>(null)
 
@@ -53,13 +56,24 @@ const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
         )}
       </div>
 
+        {/* Pagination */}
+        <PaginationControls
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={pagination.onPageChange}
+          currentPageSize={pagination.pageSize}
+          onPageSizeChange={pagination.onPageSizeChange}
+          totalElements={pagination.totalElements}
+          className="mb-4 mt-4"
+        />
+
       {/* New comment */}
-      <div className="border-t pt-4">
+      <div className="border-t pt-8 bg-slate-50 p-4 rounded-md">
         <h3 className="text-lg font-semibold mb-4">Add Comment</h3>
         
         {/* Show comment being replied to */}
         {replyingTo && (
-          <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+          <div className="mb-4 bg-blue-50 border-l-4 border-blue-500 p-3 rounded-md">
             <div className="flex justify-between items-start">
               <div>
                 <div className="text-sm text-blue-600 mb-1">
@@ -84,17 +98,19 @@ const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
           key={resetKey}
           value={newComment}
           onChange={setNewComment}
+          toolbarSections={['headings', 'formatting']}
         />
         
-        <div className="flex justify-end mt-4">
+        <div className="flex mt-4">
           <button
             onClick={handleSubmit}
-            className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-darker-1"
+            className="bg-primary text-white px-3 py-1 text-base rounded-md hover:bg-primary-darker-1 ml-auto"
             disabled={!newComment}
           >
             {replyingTo ? 'Post Reply' : 'Post Comment'}
           </button>
         </div>
+
       </div>
     </div>
   )
