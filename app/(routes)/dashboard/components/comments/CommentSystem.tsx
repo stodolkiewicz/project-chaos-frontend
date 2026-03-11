@@ -2,28 +2,35 @@
 
 import { useState } from 'react'
 import { Content } from '@tiptap/react'
-import { Comment } from '@/app/types/Comment'
+import { TaskCommentWithRepliesResponseDTO } from '@/app/state/TaskCommentsApiSlice'
 import TipTap from '../TipTap'
 import CommentDisplay from './CommentDisplay'
+import { convertTipTapContentToHtml, extractTextFromTipTapContent } from '@/lib/tiptapUtils'
 
 interface CommentSystemProps {
-  comments: Comment[]
+  comments: TaskCommentWithRepliesResponseDTO[]
   onAddComment: (content: Content, replyTo?: string) => void
 }
 
 const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
-  const [newComment, setNewComment] = useState<Content>("")
-  const [replyingTo, setReplyingTo] = useState<Comment | null>(null)
+  const [newComment, setNewComment] = useState<Content>({ type: 'doc', content: [] })
+  const [replyingTo, setReplyingTo] = useState<TaskCommentWithRepliesResponseDTO | null>(null)
+
+  const [resetKey, setResetKey] = useState(0)
+  const emptyContent: Content = { type: 'doc', content: [] };
 
   const handleSubmit = () => {
     if (newComment) {
       onAddComment(newComment, replyingTo?.id || undefined)
-      setNewComment("")
       setReplyingTo(null)
+      
+      // force reset TipTap editor by changing its key as seNewComment does not work
+      setNewComment(emptyContent)
+      setResetKey(prev => prev + 1)
     }
   }
 
-  const handleReply = (comment: Comment) => {
+  const handleReply = (comment: TaskCommentWithRepliesResponseDTO) => {
     setReplyingTo(comment)
   }
 
@@ -31,22 +38,18 @@ const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
     <div className="space-y-4">
       {/* Comments list */}
       <div className="space-y-3">
-        {comments.filter(comment => !comment.replyTo).length === 0 ? (
+        {comments.length === 0 ? (
           <div className="text-center py-6 text-gray-500">
             <p>No comments yet. Be the first to add a comment!</p>
           </div>
         ) : (
-          comments.filter(comment => !comment.replyTo).map((comment) => {
-            const replies = comments.filter(reply => reply.replyTo === comment.id)
-            return (
-              <CommentDisplay 
-                key={comment.id} 
-                comment={comment} 
-                replies={replies}
-                onReply={() => handleReply(comment)}
-              />
-            )
-          })
+          comments.map((comment) => (
+            <CommentDisplay 
+              key={comment.id} 
+              comment={comment} 
+              onReply={() => handleReply(comment)}
+            />
+          ))
         )}
       </div>
 
@@ -60,10 +63,10 @@ const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
             <div className="flex justify-between items-start">
               <div>
                 <div className="text-sm text-blue-600 mb-1">
-                  Replying to {replyingTo.author.name}:
+                  Replying to {replyingTo.lastModifiedBy}:
                 </div>
                 <div className="text-sm italic text-gray-700">
-                  "{extractTextFromContent(replyingTo.content).slice(0, 150)}..."
+                  "{extractTextFromTipTapContent(replyingTo.content).slice(0, 150)}..."
                 </div>
               </div>
               <button 
@@ -78,6 +81,7 @@ const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
 
         {/* Editor */}
         <TipTap 
+          key={resetKey}
           value={newComment}
           onChange={setNewComment}
         />
@@ -96,20 +100,5 @@ const CommentSystem = ({ comments, onAddComment }: CommentSystemProps) => {
   )
 }
 
-// Helper function to extract text from TipTap content
-function extractTextFromContent(content: Content): string {
-  if (typeof content === 'string') return content
-  
-  if (content && typeof content === 'object' && 'content' in content) {
-    const nodes = content.content || []
-    return nodes.map((node: any) => {
-      if (node.type === 'text') return node.text || ''
-      if (node.content) return extractTextFromContent({ content: node.content })
-      return ''
-    }).join(' ')
-  }
-  
-  return ''
-}
 
 export default CommentSystem

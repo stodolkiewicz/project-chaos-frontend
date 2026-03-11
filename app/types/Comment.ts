@@ -12,4 +12,5 @@ export interface Comment {
   author: User
   timestamp: Date
   replyTo?: string // ID of the comment being replied to
+  replies?: Comment[] // Nested replies
 }
