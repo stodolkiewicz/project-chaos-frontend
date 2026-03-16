@@ -66,6 +66,10 @@
   --primary-darker-2: #0f3b99;
   --primary-darker-3: #092773;
   --primary-darker-4: #010721;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f5f9;
+  --color-border: #e2e8f0;
 
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
@@ -133,6 +137,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    background: var(--color-bg);
   }
 
   h1,

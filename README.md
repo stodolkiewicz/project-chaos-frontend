@@ -35,6 +35,17 @@ npx next start
 3. Test application
 4. Uncomment 
 
+5. Check the last tag on the main branch (on which you are on)
+```
+git describe --tags --abbrev=0 // 1.32.4
+```
+
+6. Tag appropriately and push the tag
+```declarative
+git tag 1.32.5
+git push origin 1.32.5
+```
+
 ## Libraries
 
 1. icons:  

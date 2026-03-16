@@ -21,6 +21,7 @@ export default function DashboardContent() {
   const defaultProjectId = data?.projectId;
 
   const [moveTask] = useMoveTaskMutation();
+  const isAIChatOpen = useAppSelector((state) => state.ui.isAIChatOpen);
 
   const { handleApiError } = useErrorHandler();
 
@@ -124,15 +125,15 @@ export default function DashboardContent() {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div>
+      <div className={`transition-all duration-300 ${isAIChatOpen ? 'mr-[450px]' : ''}`}>
         <ProjectMenu projectName={project?.name} currentProjectId={project?.id} />
         {/* COLUMNS */}
         {columns?.length > 0 && (
           <div 
-            className="grid 
+            className={`grid 
             grid-cols-1 
             xl:grid-cols-[repeat(var(--cols),minmax(0,1fr))] 
-            w-[85%] gap-1 mx-auto items-stretch"
+            ${isAIChatOpen ? 'w-[97%]' : 'w-[85%]'} gap-1 mx-auto items-stretch transition-all duration-300`}
             style={{ '--cols': columns.length } as React.CSSProperties}
           >
             {columns.map((column, index) => {
@@ -149,5 +150,6 @@ export default function DashboardContent() {
         )}
       </div>
     </DndContext>
+        
   );
 }

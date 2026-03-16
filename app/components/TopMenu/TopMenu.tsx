@@ -1,15 +1,20 @@
 "use client";
 
-import Link from "next/link";
 import UserMenu from "./UserMenu";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Bot } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { UserData } from "@/app/types/UserData";
 import { useRouter } from "next/navigation";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import AIChatSheet from "./AIChatSheet";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import { setAIChatOpen } from "@/app/state/uiSlice";
 
 export default function TopMenu({ userData }: { userData: UserData }) {
   const router = useRouter();
   const path = usePathname();
+  const dispatch = useAppDispatch();
+  const isAIChatOpen = useAppSelector((state) => state.ui.isAIChatOpen);
 
   return (
     <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1 z-50">
@@ -25,7 +30,20 @@ export default function TopMenu({ userData }: { userData: UserData }) {
         </button>
       )}
       <div className="flex-1" />
-      <div className="flex justify-end items-center gap-2 mr-10">
+      <div className="flex justify-end items-center gap-3 mr-10">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button 
+              onClick={() => dispatch(setAIChatOpen(true))}
+              className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all cursor-pointer hover:scale-105"
+            >
+              <Bot className="h-5 w-5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>AI Assistant</p>
+          </TooltipContent>
+        </Tooltip>
         {userData ? (
           <UserMenu email={userData.email} pictureUrl={userData.pictureUrl} />
         ) : (
@@ -34,6 +52,11 @@ export default function TopMenu({ userData }: { userData: UserData }) {
           </div>
         )}
       </div>
+
+      <AIChatSheet 
+        open={isAIChatOpen}
+        onOpenChange={(open) => dispatch(setAIChatOpen(open))}
+      />
     </div>
   );
 }
