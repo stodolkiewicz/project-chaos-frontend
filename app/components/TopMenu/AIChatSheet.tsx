@@ -31,7 +31,12 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
         side="right" 
         showOverlay={false} 
         className="flex flex-col h-full !w-[450px] !max-w-[450px]"
-        style={{ width: '450px', maxWidth: '450px' }}
+        style={{ 
+          width: '450px', 
+          maxWidth: '450px',
+          background: 'var(--color-page)',
+          borderLeft: '1px solid var(--color-border)'
+        }}
       >
         <SheetHeader>
           <SheetTitle className="text-left text-base">AI Assistant</SheetTitle>
@@ -44,17 +49,17 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
               Start a conversation with AI Assistant
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2.5 pr-3">
               {messages.map((msg, index) => (
                 <div
                   key={index}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg px-3 py-2 break-words overflow-hidden ${
+                    className={`max-w-[65%] rounded-lg px-3 py-1 break-words overflow-hidden ${
                       msg.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-gray-100 text-gray-900'
+                        ? 'bg-chat-user text-white'
+                        : 'bg-chat-assistant text-foreground'
                     }`}
                   >
                     {msg.content}

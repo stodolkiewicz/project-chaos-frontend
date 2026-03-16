@@ -69,7 +69,7 @@ export default function BoardTaskHeader({
             className="w-2 h-1 rounded-full"
             style={{ backgroundColor: boardTask.priority.color }}
           />
-          <div className="text-xs text-muted-foreground font-medium">
+          <div className="text-xs text-text-muted font-medium">
             {boardTask.priority.name}
           </div>
         </div>

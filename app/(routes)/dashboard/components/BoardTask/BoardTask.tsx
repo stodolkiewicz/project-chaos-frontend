@@ -21,9 +21,12 @@ export default function BoardTask({ boardTask }: BoardTaskProps) {
 
   return (
     <div
-      className="group rounded-md p-2 m-2 flex flex-col border-1 shadow-sm hover:shadow-md transition-shadow duration-300 bg-amber-100"
+      className="group rounded-md p-2 m-2 flex flex-col hover:shadow-md hover:bg-hover transition-all duration-300 bg-panel border border-divider"
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+      }}
     >
       <BoardTaskHeader
         boardTask={boardTask}

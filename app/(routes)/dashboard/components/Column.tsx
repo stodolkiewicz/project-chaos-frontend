@@ -25,7 +25,8 @@ export default function Column({
     <div
       key={column.id}
       id={column.id}
-      className="flex flex-col box-border border-2 rounded-md ml-2 mr-2 mb-4 min-h-[30rem] shadow-sm"
+      className="flex flex-col box-border border-2 ml-2 mr-2 mb-4 min-h-[30rem] shadow-sm bg-panel-muted"
+      style={{ borderRadius: '12px', padding: '12px' }}
       ref={setNodeRef}
     >
       <h6 className="flex items-center px-1 py-1 bg-primary text-primary-foreground hover:bg-primary-darker-1 rounded-t-sm bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300 break-all">

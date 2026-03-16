@@ -23,9 +23,9 @@ export default function BoardTaskFooter({
     <div className="flex flex-col mt-3">
       {assigneeEmail && (
         <>
-          <div className="text-xs font-medium">assigned to:</div>
+          <div className="text-xs font-medium text-text-muted">assigned to:</div>
           <div className="flex justify-between items-center">
-            <div className="text-xs break-all">{assigneeEmail}</div>
+            <div className="text-xs break-all text-text-muted">{assigneeEmail}</div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <MoreVertical
