@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { UserData } from "@/app/types/UserData";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import AIChatSheet from "./AIChatSheet";
+import AIChatSheet from "@/app/features/ai/AIChatSheet";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { setAIChatOpen } from "@/app/state/uiSlice";
 
