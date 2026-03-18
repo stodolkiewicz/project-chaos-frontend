@@ -2,11 +2,10 @@ import { useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { aiService } from './aiService';
 
-import { ChatMessage, UseAIChatReturn } from './types';
-import { conversationsApi } from '@/app/state/ConversationsApiSlice';
+import { UseAIChatReturn } from './types';
+import { conversationsApi, ChatMemoryResponseDTO } from '@/app/state/ConversationsApiSlice';
 
 export const useAIChat = (): UseAIChatReturn => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const accessToken = useAppSelector((state) => state.user.accessToken);
@@ -23,13 +22,32 @@ export const useAIChat = (): UseAIChatReturn => {
     setIsLoading(true);
     setError(null);
 
-    // Add user message immediately
-    const userMessage: ChatMessage = { role: 'USER', content: message };
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message to cache immediately
+    const userMessage: ChatMemoryResponseDTO = { 
+      id: crypto.randomUUID(), 
+      conversationId: conversationId, 
+      content: message, 
+      type: 'USER', 
+      timestamp: new Date().toISOString() 
+    };
 
-    // Prepare assistant message placeholder
-    const assistantMessage: ChatMessage = { role: 'ASSISTANT', content: '' };
-    setMessages(prev => [...prev, assistantMessage]);
+    // Add assistant message placeholder to cache
+    const assistantMessageId = crypto.randomUUID();
+    const assistantMessage: ChatMemoryResponseDTO = { 
+      id: assistantMessageId, 
+      conversationId: conversationId, 
+      content: '', 
+      type: 'ASSISTANT', 
+      timestamp: new Date().toISOString() 
+    };
+
+    // Update cache with user message and placeholder assistant
+    dispatch(conversationsApi.util.updateQueryData('getChatHistory', 
+      { projectId, userId, conversationId }, 
+      (draft) => {
+        draft.push(userMessage, assistantMessage);
+      }
+    ));
 
     try {
       await aiService.streamChat(
@@ -38,62 +56,65 @@ export const useAIChat = (): UseAIChatReturn => {
         message,
         conversationId,
         accessToken || '',
-        // onChunk - update the last message (assistant)
+        // onChunk - update the assistant message in cache
         (chunk: string) => {
-          setMessages(prev => {
-            const updated = [...prev];
-            const lastIndex = updated.length - 1;
-            const lastMessage = updated[lastIndex];
-
-            // updating assistant message
-            // new object (address) so that react can spot the change
-            updated[lastIndex] = {
-              ...lastMessage,
-              content: lastMessage.content + chunk 
-            };   
-                      
-            return updated;
-          });
+          dispatch(conversationsApi.util.updateQueryData('getChatHistory', 
+            { projectId, userId, conversationId }, 
+            (draft) => {
+              const lastMessage = draft[draft.length - 1];
+              if (lastMessage && lastMessage.id === assistantMessageId) {
+                lastMessage.content += chunk;
+              }
+            }
+          ));
         },
         // onError
         (error: Error) => {
           setError(error.message);
           // Remove the empty assistant message on error
-          setMessages(prev => prev.slice(0, -1));
+          dispatch(conversationsApi.util.updateQueryData('getChatHistory', 
+            { projectId, userId, conversationId }, 
+            (draft) => {
+              const lastIndex = draft.length - 1;
+              if (draft[lastIndex] && draft[lastIndex].id === assistantMessageId) {
+                draft.splice(lastIndex, 1);
+              }
+            }
+          ));
         },
         // onComplete
         () => {
-            if (messages.length === 2) {
-              dispatch(conversationsApi.util.invalidateTags([{ type: "Conversations", id: "LIST" }]));
-            }
+          // Invalidate conversations list after successful message
+          dispatch(conversationsApi.util.invalidateTags([{ type: "Conversations", id: "LIST" }]));
         }
       );
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMessage);
       // Remove the empty assistant message on error
-      setMessages(prev => prev.slice(0, -1));
+      dispatch(conversationsApi.util.updateQueryData('getChatHistory', 
+        { projectId, userId, conversationId }, 
+        (draft) => {
+          const lastIndex = draft.length - 1;
+          if (draft[lastIndex] && draft[lastIndex].id === assistantMessageId) {
+            draft.splice(lastIndex, 1);
+          }
+        }
+      ));
     } finally {
       setIsLoading(false);
     }
   }, [isLoading, accessToken]);
 
-  const clearMessages = useCallback(() => {
-    setMessages([]);
-    setError(null);
-  }, []);
 
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
   return {
-    messages,
     isLoading,
     error,
-    setMessages,
     sendMessage,
-    clearMessages,
     clearError,
   };
 };

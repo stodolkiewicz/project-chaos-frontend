@@ -36,7 +36,7 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
     skip: !defaultProjectId || !userId
   });
 
-  const { messages, isLoading, error, setMessages, sendMessage, clearError } = useAIChat();
+  const { isLoading, error, sendMessage, clearError } = useAIChat();
 
   const [currentConversationId, setCurrentConversationId] = useState<string>(crypto.randomUUID());
 
@@ -50,21 +50,7 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
       { skip: !defaultProjectId || !userId || !currentConversationId }
    );
 
-  useEffect(() => {
-    if (isChatHistorySuccess && chatHistory) {
-      setMessages(chatHistory.map((chat, index) => {
-        return {
-          role: chat.type as 'USER' | 'ASSISTANT',
-          content: chat.content
-        };
-      }));
-    }
-  }, [isChatHistorySuccess, chatHistory]); 
-
-  // on switching conversation, invalidate the cache for that conversation to ensure we fetch the latest history (including new messages)
-    useEffect(() => {
-      dispatch(conversationsApi.util.invalidateTags([{ type: "Conversations", id: currentConversationId }]));
-  }, [currentConversationId]); 
+ 
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || !defaultProjectId || !userId) return;
@@ -78,8 +64,6 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
   const handleNewChat = () => {
     // Create new conversation ID
     setCurrentConversationId(crypto.randomUUID());
-    // Clear current messages
-    // setMessages([]);
   };
 
   return (
@@ -128,25 +112,25 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto py-4">
-          {messages.length === 0 ? (
+          {!chatHistory || chatHistory.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
               Start a conversation with AI Assistant
             </div>
           ) : (
             <div className="space-y-2.5 pr-3">
-              {messages.map((msg, index) => (
+              {chatHistory.map((chat, index) => (
                 <div
-                  key={index}
-                  className={`flex ${msg.role === 'USER' ? 'justify-end' : 'justify-start'}`}
+                  key={chat.id || index}
+                  className={`flex ${chat.type === 'USER' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
                     className={`max-w-[65%] rounded-lg px-3 py-1 wrap-break-word overflow-hidden ${
-                      msg.role === 'USER'
+                      chat.type === 'USER'
                         ? 'bg-chat-user text-white'
                         : 'bg-chat-assistant text-foreground'
                     }`}
                   >
-                    {msg.content}
+                    {chat.content}
                   </div>
                 </div>
               ))}
