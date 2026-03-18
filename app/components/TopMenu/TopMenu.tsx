@@ -9,12 +9,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import AIChatSheet from "@/app/features/ai/AIChatSheet";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { setAIChatOpen } from "@/app/state/uiSlice";
+import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 
 export default function TopMenu({ userData }: { userData: UserData }) {
   const router = useRouter();
   const path = usePathname();
   const dispatch = useAppDispatch();
   const isAIChatOpen = useAppSelector((state) => state.ui.isAIChatOpen);
+
+  // do not show AI icon if there user does not have any project created yet
+  const { data } = useGetDefaultProjectIdQuery();
+  const defaultProjectId = data?.projectId;
 
   return (
     <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1 z-50">
@@ -31,6 +36,7 @@ export default function TopMenu({ userData }: { userData: UserData }) {
       )}
       <div className="flex-1" />
       <div className="flex justify-end items-center gap-3 mr-10">
+        {defaultProjectId && (
         <Tooltip>
           <TooltipTrigger asChild>
             <button 
@@ -44,6 +50,8 @@ export default function TopMenu({ userData }: { userData: UserData }) {
             <p>AI Assistant</p>
           </TooltipContent>
         </Tooltip>
+        )}
+
         {userData ? (
           <UserMenu email={userData.email} pictureUrl={userData.pictureUrl} />
         ) : (
