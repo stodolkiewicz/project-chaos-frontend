@@ -1,10 +1,10 @@
-import { ChatMessage, ChatRequestDTO } from './types';
+import { ChatRequestDTO } from './types';
 
-export class AIService {
+class AIService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+    this.baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
   }
 
   async streamChat(
@@ -12,13 +12,12 @@ export class AIService {
     userId: string,
     message: string,
     conversationId: string = 'default',
-    token: string,
+    accessToken: string,
     onChunk: (chunk: string) => void,
     onError: (error: Error) => void,
     onComplete: () => void
   ): Promise<void> {
     try {
-      
       const response = await fetch(
         `${this.baseUrl}/api/v1/projects/${projectId}/users/${userId}/chat`,
         {
@@ -27,7 +26,7 @@ export class AIService {
             'Content-Type': 'application/json',
             'Accept': 'text/event-stream',
             'X_AI_CONVERSATION_ID': conversationId,
-            'Authorization': `Bearer ${token}`,
+            'Authorization': `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ content: message } as ChatRequestDTO),
         }
@@ -37,13 +36,16 @@ export class AIService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('Failed to get response reader');
+      if (!response.body) {
+        throw new Error('Response body is null');
       }
 
-      const decoder = new TextDecoder();
-      let buffer = ''; // <--- DODAJEMY BUFOR
+      // TextDecoderStream - decodes bytes to text
+      const reader = response.body
+        .pipeThrough(new TextDecoderStream())
+        .getReader();
+
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -53,27 +55,20 @@ export class AIService {
           break;
         }
 
-        // 1. Dekodujemy i dodajemy do bufora
-        buffer += decoder.decode(value, { stream: true });
+        buffer += value;
         
-        // 2. Dzielimy bufor na linie
-        const lines = buffer.split('\n');
-
-        // 3. Ostatni element (może być niepełną linią) zostawiamy w buforze
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data:')) {
-              
-              // 2. Wycinamy dokładnie "data:" (5 znaków) i NIC WIĘCEJ
-              const content = line.slice(5);
-
-              // 3. Sprawdzamy, czy to nie koniec streamu
-              if (content.trim() === '[DONE]') continue;
-
-              // 4. Przekazujemy content "tak jak jest" (z zachowaniem spacji na początku)
-              onChunk(content);
-            }
+        // backend sends a few chunks at once:
+        // data: Ala\ndata: ma\ndata: kota\n
+        // data: Ala\n
+        // data: ma\n
+        // data: kota\n
+        
+        let chunkEndIndex;
+        while ((chunkEndIndex = buffer.indexOf('\n')) !== -1) {
+          const chunk = buffer.slice(0, chunkEndIndex);
+          buffer = buffer.slice(chunkEndIndex + 1);
+          
+          this.processChunk(chunk, onChunk);
         }
       }
     } catch (error) {
@@ -81,6 +76,16 @@ export class AIService {
     }
   }
 
+  private processChunk(line: string, onChunk: (chunk: string) => void) {
+    if (line.startsWith('data:')) {
+      const content = line.slice(5);
+      
+      if (content.trim() === '[DONE]') return;
+
+      // return content to onChunk method
+      onChunk(content);
+    }
+  }
 }
 
 export const aiService = new AIService();

@@ -1,14 +1,17 @@
 import { useState, useCallback } from 'react';
-import { useAppSelector } from '@/app/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { aiService } from './aiService';
+
 import { ChatMessage, UseAIChatReturn } from './types';
+import { conversationsApi } from '@/app/state/ConversationsApiSlice';
 
 export const useAIChat = (): UseAIChatReturn => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const accessToken = useAppSelector((state) => state.user.accessToken);
-
+  const dispatch = useAppDispatch();
+  
   const sendMessage = useCallback(async (
     message: string,
     projectId: string,
@@ -21,11 +24,11 @@ export const useAIChat = (): UseAIChatReturn => {
     setError(null);
 
     // Add user message immediately
-    const userMessage: ChatMessage = { role: 'user', content: message };
+    const userMessage: ChatMessage = { role: 'USER', content: message };
     setMessages(prev => [...prev, userMessage]);
 
     // Prepare assistant message placeholder
-    const assistantMessage: ChatMessage = { role: 'assistant', content: '' };
+    const assistantMessage: ChatMessage = { role: 'ASSISTANT', content: '' };
     setMessages(prev => [...prev, assistantMessage]);
 
     try {
@@ -38,19 +41,17 @@ export const useAIChat = (): UseAIChatReturn => {
         // onChunk - update the last message (assistant)
         (chunk: string) => {
           setMessages(prev => {
-            // 1. Kopiujemy tablicę (płytka kopia)
             const updated = [...prev];
             const lastIndex = updated.length - 1;
             const lastMessage = updated[lastIndex];
 
-            if (lastMessage && lastMessage.role === 'assistant') {
-              // 2. Tworzymy nowy obiekt wiadomości (Deep copy ostatniej wiadomości)
-              // To kluczowe, by React poprawnie wykrył zmianę wewnątrz obiektu!
-              updated[lastIndex] = {
-                ...lastMessage,
-                content: lastMessage.content + chunk // Po prostu doklejamy surowy chunk
-              };
-            }
+            // updating assistant message
+            // new object (address) so that react can spot the change
+            updated[lastIndex] = {
+              ...lastMessage,
+              content: lastMessage.content + chunk 
+            };   
+                      
             return updated;
           });
         },
@@ -62,7 +63,9 @@ export const useAIChat = (): UseAIChatReturn => {
         },
         // onComplete
         () => {
-          // Stream completed successfully
+            if (messages.length === 2) {
+              dispatch(conversationsApi.util.invalidateTags([{ type: "Conversations", id: "LIST" }]));
+            }
         }
       );
     } catch (err) {
@@ -88,6 +91,7 @@ export const useAIChat = (): UseAIChatReturn => {
     messages,
     isLoading,
     error,
+    setMessages,
     sendMessage,
     clearMessages,
     clearError,

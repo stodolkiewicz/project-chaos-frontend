@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Send, AlertCircle } from "lucide-react";
+import { Send, AlertCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
-import { useAppSelector } from "@/app/hooks";
+import { useGetChatHistoryQuery, useGetConversationsQuery, conversationsApi } from "@/app/state/ConversationsApiSlice";
+import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { useAIChat } from "./useAIChat";
+import ConversationHistory from "./ConversationHistory";
 
 interface AIChatSheetProps {
   open: boolean;
@@ -19,13 +21,50 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
   
   const accessToken = useAppSelector((state) => state.user.accessToken);
   const userId = useAppSelector((state) => state.user.userId);
-  
+  const dispatch = useAppDispatch();
+
   const { data } = useGetDefaultProjectIdQuery(undefined, {
     skip: !accessToken || !userId
   });
   const defaultProjectId = data?.projectId;
 
-  const { messages, isLoading, error, sendMessage, clearError } = useAIChat();
+  const {
+    data: conversations,
+    isLoading: conversationsLoading,
+    error: conversationsError,
+  } = useGetConversationsQuery({projectId: defaultProjectId, userId: userId}, {
+    skip: !defaultProjectId || !userId
+  });
+
+  const { messages, isLoading, error, setMessages, sendMessage, clearError } = useAIChat();
+
+  const [currentConversationId, setCurrentConversationId] = useState<string>(crypto.randomUUID());
+
+
+  const {
+    data: chatHistory,
+    isSuccess: isChatHistorySuccess,
+    isLoading: chatHistoryLoading,
+    error: chatHistoryError,
+  } = useGetChatHistoryQuery({projectId: defaultProjectId, userId: userId, conversationId: currentConversationId},
+      { skip: !defaultProjectId || !userId || !currentConversationId }
+   );
+
+  useEffect(() => {
+    if (isChatHistorySuccess && chatHistory) {
+      setMessages(chatHistory.map((chat, index) => {
+        return {
+          role: chat.type as 'USER' | 'ASSISTANT',
+          content: chat.content
+        };
+      }));
+    }
+  }, [isChatHistorySuccess, chatHistory]); 
+
+  // on switching conversation, invalidate the cache for that conversation to ensure we fetch the latest history (including new messages)
+    useEffect(() => {
+      dispatch(conversationsApi.util.invalidateTags([{ type: "Conversations", id: currentConversationId }]));
+  }, [currentConversationId]); 
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || !defaultProjectId || !userId) return;
@@ -33,7 +72,14 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
     const messageText = message;
     setMessage("");
     
-    await sendMessage(messageText, defaultProjectId, userId);
+    await sendMessage(messageText, defaultProjectId, userId, currentConversationId);
+  };
+
+  const handleNewChat = () => {
+    // Create new conversation ID
+    setCurrentConversationId(crypto.randomUUID());
+    // Clear current messages
+    // setMessages([]);
   };
 
   return (
@@ -41,16 +87,32 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
       <SheetContent 
         side="right" 
         showOverlay={false} 
-        className="flex flex-col h-full !w-[450px] !max-w-[450px]"
+        className="flex flex-col h-full w-[450px]! max-w-[450px]! bg-color-page border-l border-color-border"
         style={{ 
-          width: '450px', 
-          maxWidth: '450px',
           background: 'var(--color-page)',
-          borderLeft: '1px solid var(--color-border)'
         }}
       >
         <SheetHeader>
-          <SheetTitle className="text-left text-base">AI Assistant</SheetTitle>
+          <div className="flex items-center justify-between">
+            <SheetTitle className="text-left text-base">AI Assistant</SheetTitle>
+            <div className="flex items-center gap-2 mr-5">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleNewChat}
+                className="h-8 w-8 p-0 hover:bg-hover"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <ConversationHistory 
+                conversations={conversations}
+                conversationsLoading={conversationsLoading}
+                conversationsError={conversationsError}
+                currentConversationId={currentConversationId}
+                setCurrentConversationId={setCurrentConversationId}
+              />
+            </div>
+          </div>
         </SheetHeader>
 
         {/* Error Display */}
@@ -75,11 +137,11 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
               {messages.map((msg, index) => (
                 <div
                   key={index}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.role === 'USER' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[65%] rounded-lg px-3 py-1 break-words overflow-hidden ${
-                      msg.role === 'user'
+                    className={`max-w-[65%] rounded-lg px-3 py-1 wrap-break-word overflow-hidden ${
+                      msg.role === 'USER'
                         ? 'bg-chat-user text-white'
                         : 'bg-chat-assistant text-foreground'
                     }`}

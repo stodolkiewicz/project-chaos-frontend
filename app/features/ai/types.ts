@@ -1,5 +1,5 @@
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  role: 'USER' | 'ASSISTANT';
   content: string;
 }
 
@@ -11,7 +11,8 @@ export interface UseAIChatReturn {
   messages: ChatMessage[];
   isLoading: boolean;
   error: string | null;
-  sendMessage: (message: string, projectId: string, userId: string, conversationId?: string) => Promise<void>;
+  setMessages: (messages: ChatMessage[]) => void;
+  sendMessage: (message: string, projectId: string, userId: string, conversationId: string) => Promise<void>;
   clearMessages: () => void;
   clearError: () => void;
 }
