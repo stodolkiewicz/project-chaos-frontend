@@ -17,8 +17,8 @@ export default function AuthenticatedLayout({
   return (
     <Provider store={store}>
       <div className="min-h-screen min-w-screen" style={{ background: 'var(--color-bg)' }}>
-        <TopMenu userData={user}/>
         <UserProvider user={user}>
+          <TopMenu userData={user}/>
           <main className="pt-[48px] px-4">{children}</main>
         </UserProvider>
       </div>
