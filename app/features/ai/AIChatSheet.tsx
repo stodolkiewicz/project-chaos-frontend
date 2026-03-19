@@ -67,11 +67,13 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
       <SheetContent 
         side="right" 
         showOverlay={false} 
-        className="flex flex-col h-full w-[450px]! max-w-[450px]! bg-color-page border-l border-color-border"
+        onInteractOutside={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        className="flex flex-col h-full !w-[480px] !max-w-[480px] bg-color-page border-l border-color-border"
         style={{ 
           background: 'var(--color-page)',
         }}
@@ -124,7 +126,7 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
                   className={`flex ${chat.type === 'USER' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[65%] rounded-lg px-3 py-1 wrap-break-word overflow-hidden ${
+                    className={`max-w-[89%] rounded-lg px-3 py-1 wrap-break-word overflow-hidden ${
                       chat.type === 'USER'
                         ? 'bg-chat-user text-white'
                         : 'bg-chat-assistant text-foreground'

@@ -125,7 +125,7 @@ export default function DashboardContent() {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div className={`transition-all duration-300 ${isAIChatOpen ? 'mr-[450px]' : ''}`}>
+      <div className={`transition-all duration-300 ${isAIChatOpen ? 'mr-[480px]' : ''}`}>
         <ProjectMenu projectName={project?.name} currentProjectId={project?.id} />
         {/* COLUMNS */}
         {columns?.length > 0 && (
