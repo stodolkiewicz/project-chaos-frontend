@@ -1,16 +1,20 @@
 import { Separator } from "@radix-ui/react-separator";
-import BoardTaskHeader from "./BoardTaskHeader";
-import BoardTaskFooter from "./BoardTaskFooter";
+import TaskHeader from "./TaskHeader";
+import TaskFooter from "./TaskFooter";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { TaskStage } from "@/app/types/TaskStage";
 import { useDraggable } from "@dnd-kit/core";
 
-interface BoardTaskProps {
+interface TaskProps {
   boardTask: BoardTaskDTO;
+  stage: TaskStage;
+  disableDrag?: boolean;
 }
 
-export default function BoardTask({ boardTask }: BoardTaskProps) {
+export default function Task({ boardTask, stage, disableDrag = false }: TaskProps) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: boardTask.taskId,
+    disabled: disableDrag,
   });
 
   const style = transform
@@ -28,14 +32,15 @@ export default function BoardTask({ boardTask }: BoardTaskProps) {
         boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
       }}
     >
-      <BoardTaskHeader
+      <TaskHeader
         boardTask={boardTask}
-        listeners={listeners}
-        attributes={attributes}
+        listeners={disableDrag ? undefined : listeners}
+        attributes={disableDrag ? undefined : attributes}
+        disableDrag={disableDrag}
       />
       <Separator className="bg-border h-[1.5px]" />
       <div className="mt-1 break-all">{boardTask.description}</div>
-      <BoardTaskFooter assigneeEmail={boardTask.assignee.email} boardTask={boardTask} />
+      <TaskFooter assigneeEmail={boardTask.assignee.email} boardTask={boardTask} stage={stage} />
     </div>
   );
 }

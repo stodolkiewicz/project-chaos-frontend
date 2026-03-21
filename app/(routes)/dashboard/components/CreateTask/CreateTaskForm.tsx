@@ -25,6 +25,8 @@ type Label = {
   color: string;
 };
 
+import { TaskStage } from "@/app/types/TaskStage";
+
 export type CreateTaskFormData = {
   title: string;
   description: string;
@@ -33,6 +35,7 @@ export type CreateTaskFormData = {
   assigneeEmail: string;
   priorityId: string;
   labels: Label[];
+  stage: TaskStage;
 };
 
 type CreateTaskFormProps = {
@@ -109,6 +112,7 @@ export default function CreateTaskForm({
   const onSubmit = async (createTaskFormData: CreateTaskFormData) => {
     const createTaskFormDataNoEmptyLabels: CreateTaskFormData = {
       ...createTaskFormData,
+      stage: TaskStage.BOARD,
       labels: createTaskFormData.labels.filter((label, index, array) => {
         const firstOccurrenceIndex = array.findIndex(
           (l) => l.name.trim() === label.name.trim()

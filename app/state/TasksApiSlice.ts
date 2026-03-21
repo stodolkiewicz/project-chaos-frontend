@@ -6,18 +6,28 @@ import baseApi from "./baseApi";
 export const tasksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getBoardTasks: builder.query<BoardTaskDTO[], string>({
-      query: (projectId) => `/api/v1/projects/${projectId}/tasks`,
+      query: (projectId) => `/api/v1/projects/${projectId}/tasks?stage=BOARD`,
       providesTags: (result, error, projectId) => [
-        { type: "Tasks", id: projectId },
+        { type: "BoardTasks", id: projectId },
       ],
     }),
-    deleteTask: builder.mutation<void, { projectId: string; taskId: string }>({
+    getBacklogTasks: builder.query<BoardTaskDTO[], string>({
+      query: (projectId) => `/api/v1/projects/${projectId}/tasks?stage=BACKLOG`,
+      providesTags: (result, error, projectId) => [
+        { type: "BacklogTasks", id: projectId },
+      ],
+    }),
+    getArchivedTasks: builder.query<BoardTaskDTO[], string>({
+      query: (projectId) => `/api/v1/projects/${projectId}/tasks?stage=ARCHIVED`,
+      providesTags: (result, error, projectId) => [
+        { type: "ArchivedTasks", id: projectId },
+      ],
+    }),
+    deleteBoardTask: builder.mutation<void, { projectId: string; taskId: string }>({
       query: ({ projectId, taskId }) => ({
         url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
         method: "DELETE",
       }),
-      // pessimistic Query RTK cache update.
-      // Wait for queryFulfilled, no error? -> delete boardTask from cache of getBoardTasks endpoint
       async onQueryStarted(
         { projectId, taskId },
         { dispatch, queryFulfilled }
@@ -40,7 +50,69 @@ export const tasksApi = baseApi.injectEndpoints({
             ])
           );
         } catch (error) {
-          console.error("Failed to delete task:", error);
+          console.error("Failed to delete board task:", error);
+        }
+      },
+    }),
+    deleteBacklogTask: builder.mutation<void, { projectId: string; taskId: string }>({
+      query: ({ projectId, taskId }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { projectId, taskId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            tasksApi.util.updateQueryData(
+              "getBacklogTasks",
+              projectId,
+              (draft) => {
+                return draft.filter((backlogTask) => backlogTask.taskId !== taskId);
+              }
+            )
+          );
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "Labels", id: projectId },
+              { type: "TaskComments", id: taskId }
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to delete backlog task:", error);
+        }
+      },
+    }),
+    deleteArchivedTask: builder.mutation<void, { projectId: string; taskId: string }>({
+      query: ({ projectId, taskId }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { projectId, taskId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            tasksApi.util.updateQueryData(
+              "getArchivedTasks",
+              projectId,
+              (draft) => {
+                return draft.filter((archivedTask) => archivedTask.taskId !== taskId);
+              }
+            )
+          );
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "Labels", id: projectId },
+              { type: "TaskComments", id: taskId }
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to delete archived task:", error);
         }
       },
     }),
@@ -61,7 +133,7 @@ export const tasksApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(
-            baseApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "BoardTasks", id: projectId }])
           );
           dispatch(
             baseApi.util.invalidateTags([{ type: "Labels", id: projectId }])
@@ -116,7 +188,7 @@ export const tasksApi = baseApi.injectEndpoints({
         } catch (error) {
           //
           dispatch(
-            baseApi.util.invalidateTags([{ type: "Tasks", id: projectId }])
+            baseApi.util.invalidateTags([{ type: "BoardTasks", id: projectId }])
           );
           console.error("Failed to move task:", error);
         }
@@ -127,7 +199,11 @@ export const tasksApi = baseApi.injectEndpoints({
 
 export const {
   useGetBoardTasksQuery,
-  useDeleteTaskMutation,
+  useGetBacklogTasksQuery,
+  useGetArchivedTasksQuery,
+  useDeleteBoardTaskMutation,
+  useDeleteBacklogTaskMutation,
+  useDeleteArchivedTaskMutation,
   useCreateTaskMutation,
   useMoveTaskMutation,
 } = tasksApi;

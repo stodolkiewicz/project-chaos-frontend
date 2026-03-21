@@ -15,6 +15,7 @@ import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
+import Backlog from "./Backlog/Backlog";
 
 export default function DashboardContent() {
   const { data } = useGetDefaultProjectIdQuery();
@@ -148,6 +149,11 @@ export default function DashboardContent() {
             })}
           </div>
         )}
+        
+        {/* BACKLOG SECTION */}
+        <div className="mt-12">
+          <Backlog />
+        </div>
       </div>
     </DndContext>
         

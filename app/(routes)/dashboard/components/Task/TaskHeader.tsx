@@ -9,10 +9,6 @@ import {
 import { useDndContext } from "@dnd-kit/core";
 import { useState } from "react";
 
-interface BoardTaskHeaderProps {
-  boardTask: BoardTaskDTO;
-}
-
 function isColorDark(hexColor: string): boolean {
   const hex = hexColor.replace("#", "");
   const r = parseInt(hex.substring(0, 2), 16);
@@ -23,17 +19,19 @@ function isColorDark(hexColor: string): boolean {
   return luminance < 128;
 }
 
-interface BoardTaskHeaderProps {
+interface TaskHeaderProps {
   boardTask: BoardTaskDTO;
   listeners?: React.HTMLAttributes<HTMLDivElement>;
   attributes?: React.HTMLAttributes<HTMLDivElement>;
+  disableDrag?: boolean;
 }
 
-export default function BoardTaskHeader({
+export default function TaskHeader({
   boardTask,
   listeners,
   attributes,
-}: BoardTaskHeaderProps) {
+  disableDrag = false,
+}: TaskHeaderProps) {
   const { active } = useDndContext();
   const isDragging = active?.id === boardTask.taskId;
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -41,25 +39,27 @@ export default function BoardTaskHeader({
   return (
     <>
       <div className="flex">
-        <Tooltip
-          open={isDragging ? false : tooltipOpen}
-          onOpenChange={setTooltipOpen}
-        >
-          <TooltipTrigger asChild>
-            <div
-              className={`flex items-center mr-1  ${
-                isDragging ? "cursor-grabbing" : "cursor-grab"
-              }`}
-              {...listeners}
-              {...attributes}
-            >
-              <MdDragIndicator />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent align="center" className="translate-x-[1px] border-1">
-            <p>Drag to another column</p>
-          </TooltipContent>
-        </Tooltip>
+        {!disableDrag && (
+          <Tooltip
+            open={isDragging ? false : tooltipOpen}
+            onOpenChange={setTooltipOpen}
+          >
+            <TooltipTrigger asChild>
+              <div
+                className={`flex items-center mr-1  ${
+                  isDragging ? "cursor-grabbing" : "cursor-grab"
+                }`}
+                {...listeners}
+                {...attributes}
+              >
+                <MdDragIndicator />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent align="center" className="translate-x-[1px] border-1">
+              <p>Drag to another column</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
         <h6 className="flex-1 ">{boardTask.title}</h6>
 

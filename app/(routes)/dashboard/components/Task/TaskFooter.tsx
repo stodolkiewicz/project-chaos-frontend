@@ -1,4 +1,5 @@
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { TaskStage } from "@/app/types/TaskStage";
 import DeleteTaskAlertDialog from "./DeleteTaskAlertDialog";
 import TaskCommentsDialog from "./TaskCommentsDialog";
 import { MoreVertical, Trash2, MessageSquare } from "lucide-react";
@@ -10,15 +11,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 
-interface BoardTaskFooterProps {
+interface TaskFooterProps {
   assigneeEmail: string;
   boardTask: BoardTaskDTO;
+  stage: TaskStage;
 }
 
-export default function BoardTaskFooter({
+export default function TaskFooter({
   assigneeEmail,
   boardTask,
-}: BoardTaskFooterProps) {
+  stage,
+}: TaskFooterProps) {
   return (
     <div className="flex flex-col mt-3">
       {assigneeEmail && (
@@ -40,7 +43,7 @@ export default function BoardTaskFooter({
                     Comments
                   </DropdownMenuItem>
                 </TaskCommentsDialog>
-                <DeleteTaskAlertDialog boardTask={boardTask}>
+                <DeleteTaskAlertDialog boardTask={boardTask} stage={stage}>
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Task
@@ -67,7 +70,7 @@ export default function BoardTaskFooter({
                   Comments
                 </DropdownMenuItem>
               </TaskCommentsDialog>
-              <DeleteTaskAlertDialog boardTask={boardTask}>
+              <DeleteTaskAlertDialog boardTask={boardTask} stage={stage}>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Task

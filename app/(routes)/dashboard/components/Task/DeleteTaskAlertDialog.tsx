@@ -2,8 +2,13 @@
 
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
-import { useDeleteTaskMutation } from "@/app/state/TasksApiSlice";
+import { 
+  useDeleteBoardTaskMutation,
+  useDeleteBacklogTaskMutation,
+  useDeleteArchivedTaskMutation
+} from "@/app/state/TasksApiSlice";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { TaskStage } from "@/app/types/TaskStage";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -19,12 +24,16 @@ import { toast } from "sonner";
 
 export default function DeleteTaskAlertDialog({
   boardTask,
+  stage,
   children,
 }: {
   boardTask: BoardTaskDTO;
+  stage: TaskStage;
   children: React.ReactNode;
 }) {
-  const [deleteTask] = useDeleteTaskMutation();
+  const [deleteBoardTask] = useDeleteBoardTaskMutation();
+  const [deleteBacklogTask] = useDeleteBacklogTaskMutation();
+  const [deleteArchivedTask] = useDeleteArchivedTaskMutation();
 
   const { data } = useGetDefaultProjectIdQuery();
   const projectId = data?.projectId;
@@ -33,7 +42,13 @@ export default function DeleteTaskAlertDialog({
 
   async function handleOnDeleteTask() {
     try {
-      await deleteTask({ projectId, taskId: boardTask.taskId }).unwrap();
+      if (stage === TaskStage.BOARD) {
+        await deleteBoardTask({ projectId, taskId: boardTask.taskId }).unwrap();
+      } else if (stage === TaskStage.BACKLOG) {
+        await deleteBacklogTask({ projectId, taskId: boardTask.taskId }).unwrap();
+      } else if (stage === TaskStage.ARCHIVED) {
+        await deleteArchivedTask({ projectId, taskId: boardTask.taskId }).unwrap();
+      }
       toast.success(`Task "${boardTask.title}" has been deleted.`);
     } catch (error) {
       handleApiError(error, `Failed to delete task "${boardTask.title}".`);

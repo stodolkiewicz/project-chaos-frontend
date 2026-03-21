@@ -13,7 +13,9 @@ export const baseApi = createApi({
     "Labels",
     "Columns",
     "TaskPriorities",
-    "Tasks",
+    "BoardTasks",
+    "BacklogTasks", 
+    "ArchivedTasks",
     "TaskComments",
     "Conversations",
     "ChatHistory"

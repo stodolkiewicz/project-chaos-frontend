@@ -1,8 +1,9 @@
-import BoardTask from "@/app/(routes)/dashboard/components/BoardTask/BoardTask";
+import Task from "@/app/(routes)/dashboard/components/Task/Task";
 import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
 import CreateTaskForm from "./CreateTask/CreateTaskForm";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { TaskStage } from "@/app/types/TaskStage";
 import { useDroppable } from "@dnd-kit/core";
 
 export default function Column({
@@ -34,7 +35,7 @@ export default function Column({
       </h6>
 
       {tasksInColumn.map((taskInColumn) => (
-        <BoardTask key={taskInColumn.taskId} boardTask={taskInColumn} />
+        <Task key={taskInColumn.taskId} boardTask={taskInColumn} stage={TaskStage.BOARD} />
       ))}
 
       <div className="w-full flex flex-1 justify-end items-end px-2 py-3">
