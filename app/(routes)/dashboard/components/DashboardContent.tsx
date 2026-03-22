@@ -8,7 +8,6 @@ import {
 } from "@/app/state/TasksApiSlice";
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
-import Column from "./Column";
 import { DndContext } from "@dnd-kit/core";
 import CreateFirstProjectDialog from "./CreateProject/CreateFirstProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
@@ -17,6 +16,7 @@ import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 import Backlog from "./Backlog/Backlog";
 import Archived from "./Archived/Archived";
+import KanbanBoard from "./KanbanBoard";
 
 export default function DashboardContent() {
   const { data } = useGetDefaultProjectIdQuery();
@@ -24,6 +24,10 @@ export default function DashboardContent() {
 
   const [moveTask] = useMoveTaskMutation();
   const isAIChatOpen = useAppSelector((state) => state.ui.isAIChatOpen);
+  
+  const isBacklogOpen = useAppSelector((state) => state.ui.isBacklogOpen);
+  const isBoardOpen = useAppSelector((state) => state.ui.isBoardOpen);
+  const isArchiveOpen = useAppSelector((state) => state.ui.isArchiveOpen);
 
   const { handleApiError } = useErrorHandler();
 
@@ -129,37 +133,22 @@ export default function DashboardContent() {
     <DndContext onDragEnd={handleDragEnd}>
       <div className={`transition-all duration-300 ${isAIChatOpen ? 'mr-[480px]' : ''}`}>
         <ProjectMenu projectName={project?.name} currentProjectId={project?.id} />
-        {/* COLUMNS */}
-        {columns?.length > 0 && (
-          <div 
-            className={`grid 
-            grid-cols-1 
-            xl:grid-cols-[repeat(var(--cols),minmax(0,1fr))] 
-            ${isAIChatOpen ? 'w-[97%]' : 'w-[85%]'} gap-1 mx-auto items-stretch transition-all duration-300`}
-            style={{ '--cols': columns.length } as React.CSSProperties}
-          >
-            {columns.map((column, index) => {
-              const tasksInColumn = groupedTasks[column.id] || [];
-              return (
-                <Column
-                  key={column.id}
-                  column={column}
-                  tasksInColumn={tasksInColumn}
-                />
-              );
-            })}
+        
+        <KanbanBoard columns={columns} groupedTasks={groupedTasks} />
+        
+        {/* BACKLOG SECTION */}
+        {isBacklogOpen && (
+          <div className="mt-12">
+            <Backlog />
           </div>
         )}
         
-        {/* BACKLOG SECTION */}
-        <div className="mt-12">
-          <Backlog />
-        </div>
-        
         {/* DONE SECTION */}
-        <div className="mt-12 mbe-28">
-          <Archived />
-        </div>
+        {isArchiveOpen && (
+          <div className="mt-12 mbe-28">
+            <Archived />
+          </div>
+        )}
       </div>
     </DndContext>
         

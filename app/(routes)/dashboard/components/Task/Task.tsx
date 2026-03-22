@@ -25,23 +25,21 @@ export default function Task({ boardTask, stage, disableDrag = false }: TaskProp
 
   return (
     <div
-      className="group rounded-md p-2 m-2 flex flex-col hover:shadow-md hover:bg-hover transition-all duration-300 bg-panel border border-divider h-full"
+      className="group rounded-md p-2 m-2 flex flex-col hover:shadow-md hover:bg-hover transition-all duration-300 bg-panel border border-divider"
       ref={setNodeRef}
       style={{
         ...style,
         boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
       }}
     >
-      <div className="flex flex-col flex-grow">
-        <TaskHeader
-          boardTask={boardTask}
-          listeners={disableDrag ? undefined : listeners}
-          attributes={disableDrag ? undefined : attributes}
-          disableDrag={disableDrag}
-        />
-        <Separator className="bg-border h-[1.5px]" />
-        <div className="mt-1 break-all flex-grow">{boardTask.description}</div>
-      </div>
+      <TaskHeader
+        boardTask={boardTask}
+        listeners={disableDrag ? undefined : listeners}
+        attributes={disableDrag ? undefined : attributes}
+        disableDrag={disableDrag}
+      />
+      <Separator className="bg-border h-[1.5px]" />
+      <div className="mt-1 break-all">{boardTask.description}</div>
       <TaskFooter assigneeEmail={boardTask.assignee.email} boardTask={boardTask} stage={stage} />
     </div>
   );

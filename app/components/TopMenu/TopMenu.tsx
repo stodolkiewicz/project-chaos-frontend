@@ -5,7 +5,6 @@ import { ChevronLeft, Bot } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { UserData } from "@/app/types/UserData";
 import { useRouter } from "next/navigation";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import AIChatSheet from "@/app/features/ai/AIChatSheet";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { setAIChatOpen } from "@/app/state/uiSlice";
@@ -46,19 +45,13 @@ export default function TopMenu({ userData }: { userData: UserData }) {
       <div className="flex-1" />
       <div className="flex justify-end items-center gap-3 mr-10">
         {defaultProjectId && (
-        <Tooltip>
-          <TooltipTrigger asChild>
             <button 
               onClick={() => dispatch(setAIChatOpen(true))}
+              title="AI Assistant"
               className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all cursor-pointer hover:scale-105"
             >
               <Bot className="h-5 w-5" />
             </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>AI Assistant</p>
-          </TooltipContent>
-        </Tooltip>
         )}
 
         {userData ? (
