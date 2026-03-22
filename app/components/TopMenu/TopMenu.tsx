@@ -10,6 +10,7 @@ import AIChatSheet from "@/app/features/ai/AIChatSheet";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { setAIChatOpen } from "@/app/state/uiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
+import ShowHideSections from "./ShowHideSections";
 
 export default function TopMenu({ userData }: { userData: UserData }) {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function TopMenu({ userData }: { userData: UserData }) {
   const defaultProjectId = data?.projectId;
 
   return (
-    <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1 z-50">
+    <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1 z-50 relative">
       {path !== "/dashboard" && (
         <button 
           onClick={() => router.back()}
@@ -34,6 +35,14 @@ export default function TopMenu({ userData }: { userData: UserData }) {
           />
         </button>
       )}
+      
+      {/* Absolute centered ShowHideSections */}
+      {defaultProjectId && path == "/dashboard" && (
+        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <ShowHideSections />
+        </div>
+      )}
+      
       <div className="flex-1" />
       <div className="flex justify-end items-center gap-3 mr-10">
         {defaultProjectId && (
