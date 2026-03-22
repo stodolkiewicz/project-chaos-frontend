@@ -1,6 +1,7 @@
 import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { CreateTaskFormData } from "../(routes)/dashboard/components/CreateTask/CreateTaskForm";
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
+import { MoveTasksRequestDTO } from "../types/MoveTasksRequestDTO";
 import baseApi from "./baseApi";
 
 export const tasksApi = baseApi.injectEndpoints({
@@ -194,6 +195,87 @@ export const tasksApi = baseApi.injectEndpoints({
         }
       },
     }),
+    moveTasksToBacklog: builder.mutation<
+      void,
+      { projectId: string; taskIds: string[] }
+    >({
+      query: ({ projectId, taskIds }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/move-to-backlog`,
+        method: "POST",
+        body: { taskIds },
+      }),
+      async onQueryStarted(
+        { projectId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "BoardTasks", id: projectId },
+              { type: "BacklogTasks", id: projectId },
+              { type: "ArchivedTasks", id: projectId },
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to move tasks to backlog:", error);
+        }
+      },
+    }),
+    moveTasksToArchive: builder.mutation<
+      void,
+      { projectId: string; taskIds: string[] }
+    >({
+      query: ({ projectId, taskIds }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/move-to-archive`,
+        method: "POST",
+        body: { taskIds },
+      }),
+      async onQueryStarted(
+        { projectId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "BoardTasks", id: projectId },
+              { type: "BacklogTasks", id: projectId },
+              { type: "ArchivedTasks", id: projectId },
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to move tasks to archive:", error);
+        }
+      },
+    }),
+    moveTasksToBoard: builder.mutation<
+      void,
+      { projectId: string; taskIds: string[] }
+    >({
+      query: ({ projectId, taskIds }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/move-to-board`,
+        method: "POST",
+        body: { taskIds },
+      }),
+      async onQueryStarted(
+        { projectId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "BoardTasks", id: projectId },
+              { type: "BacklogTasks", id: projectId },
+              { type: "ArchivedTasks", id: projectId },
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to move tasks to board:", error);
+        }
+      },
+    }),
   }),
 });
 
@@ -206,5 +288,8 @@ export const {
   useDeleteArchivedTaskMutation,
   useCreateTaskMutation,
   useMoveTaskMutation,
+  useMoveTasksToBacklogMutation,
+  useMoveTasksToArchiveMutation,
+  useMoveTasksToBoardMutation,
 } = tasksApi;
 export default tasksApi;

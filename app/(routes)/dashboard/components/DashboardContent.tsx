@@ -16,6 +16,7 @@ import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 import Backlog from "./Backlog/Backlog";
+import Archived from "./Archived/Archived";
 
 export default function DashboardContent() {
   const { data } = useGetDefaultProjectIdQuery();
@@ -153,6 +154,11 @@ export default function DashboardContent() {
         {/* BACKLOG SECTION */}
         <div className="mt-12">
           <Backlog />
+        </div>
+        
+        {/* DONE SECTION */}
+        <div className="mt-12 mbe-28">
+          <Archived />
         </div>
       </div>
     </DndContext>
