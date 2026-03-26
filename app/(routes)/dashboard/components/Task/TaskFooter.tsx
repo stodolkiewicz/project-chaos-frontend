@@ -1,7 +1,7 @@
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { TaskStage } from "@/app/types/TaskStage";
 import DeleteTaskAlertDialog from "./DeleteTaskAlertDialog";
-import TaskCommentsDialog from "./TaskCommentsDialog";
+import TaskCommentsDialog from "./TaskDetailsDialog";
 import { MoreVertical, Trash2, MessageSquare, Archive, RotateCcw, Calendar, CheckCheck, ArrowUpLeft, Undo2, Play, LayoutDashboard, Inbox, ListPlus, FileText } from "lucide-react";
 import { 
   useMoveTasksToBacklogMutation, 

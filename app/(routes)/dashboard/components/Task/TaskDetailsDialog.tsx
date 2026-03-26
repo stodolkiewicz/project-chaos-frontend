@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import TaskCommentsContainer from "../comments/TaskCommentsContainer";
-import { TaskAttachments } from "./TaskAttachments";
+import { TaskAttachments } from "./attachments/TaskAttachments";
 
 export default function TaskCommentsDialog({
   boardTask,
