@@ -12,9 +12,10 @@ interface TaskAttachmentUploadProps {
   taskId: string;
   onUploadStart?: (fileName: string) => void;
   onUploadEnd?: () => void;
+  compact?: boolean;
 }
 
-export function TaskAttachmentUpload({ projectId, taskId, onUploadStart, onUploadEnd }: TaskAttachmentUploadProps) {
+export function TaskAttachmentUpload({ projectId, taskId, onUploadStart, onUploadEnd, compact = false }: TaskAttachmentUploadProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -109,6 +110,67 @@ export function TaskAttachmentUpload({ projectId, taskId, onUploadStart, onUploa
     }
   };
 
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2">
+        <input
+          ref={fileInputRef}
+          type="file"
+          onChange={handleFileSelect}
+          className="hidden"
+          disabled={isLoading}
+        />
+        
+        {selectedFile ? (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 px-2 py-1 bg-primary-lighter-3 rounded text-xs">
+              <FileText className="h-3 w-3 text-primary" />
+              <span className="truncate max-w-20" title={selectedFile.name}>
+                {selectedFile.name}
+              </span>
+            </div>
+            
+            <Button
+              onClick={handleRemoveFile}
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 hover:bg-red-50"
+              title="Remove"
+            >
+              <X className="h-3 w-3 text-red-600" />
+            </Button>
+            
+            <Button
+              onClick={handleUploadClick}
+              size="sm"
+              disabled={isLoading}
+              className="h-6 px-2 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+            >
+              {isLoading ? (
+                <>
+                  <Spinner className="h-2 w-2 mr-1" />
+                  Uploading...
+                </>
+              ) : (
+                "Upload"
+              )}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            onClick={handleClick}
+            size="sm"
+            disabled={isLoading}
+            className="h-6 px-2 text-xs cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+          >
+            <Plus className="h-3 w-3 mr-1" />
+            Add file
+          </Button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="w-full lg:w-80">
       <div
@@ -175,7 +237,7 @@ export function TaskAttachmentUpload({ projectId, taskId, onUploadStart, onUploa
               }}
               size="sm"
               disabled={isLoading}
-              className="h-8 px-3 text-xs pointer-events-auto"
+              className="h-8 px-3 text-xs pointer-events-auto cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
             >
               {isLoading ? (
                 <>

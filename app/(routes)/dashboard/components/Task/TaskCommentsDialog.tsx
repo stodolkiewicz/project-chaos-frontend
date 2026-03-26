@@ -29,12 +29,12 @@ export default function TaskCommentsDialog({
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-[70vw] w-full max-h-[90vh] overflow-y-auto sm:max-w-[70vw] top-[50vh]">
+      <DialogContent className="max-w-[70vw] w-full max-h-[90vh] overflow-y-auto sm:max-w-[70vw] top-[50vh] bg-gray-50">
         <DialogHeader>
-          <DialogTitle>Comments</DialogTitle>
+          <DialogTitle>Task Details</DialogTitle>
         </DialogHeader>
-        <div className="p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-semibold text-lg mb-1">{boardTask.title}</h3>
+        <div className="p-3 bg-white rounded-lg">
+          <h4 className="font-semibold text-base mb-1">{boardTask.title}</h4>
           {boardTask.priority.name && (
             <div className="text-xs text-gray-500 mb-2">Priority: {boardTask.priority.name}</div>
           )}

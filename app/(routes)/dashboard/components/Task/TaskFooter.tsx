@@ -2,7 +2,7 @@ import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { TaskStage } from "@/app/types/TaskStage";
 import DeleteTaskAlertDialog from "./DeleteTaskAlertDialog";
 import TaskCommentsDialog from "./TaskCommentsDialog";
-import { MoreVertical, Trash2, MessageSquare, Archive, RotateCcw, Calendar, CheckCheck, ArrowUpLeft, Undo2, Play, LayoutDashboard, Inbox, ListPlus } from "lucide-react";
+import { MoreVertical, Trash2, MessageSquare, Archive, RotateCcw, Calendar, CheckCheck, ArrowUpLeft, Undo2, Play, LayoutDashboard, Inbox, ListPlus, FileText } from "lucide-react";
 import { 
   useMoveTasksToBacklogMutation, 
   useMoveTasksToArchiveMutation, 
@@ -67,8 +67,8 @@ export default function TaskFooter({
       component: (
         <TaskCommentsDialog key="comments" boardTask={boardTask}>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Comments
+            <FileText className="h-4 w-4 mr-2" />
+            Task Details
           </DropdownMenuItem>
         </TaskCommentsDialog>
       )

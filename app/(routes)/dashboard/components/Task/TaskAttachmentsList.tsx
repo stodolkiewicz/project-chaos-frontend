@@ -18,9 +18,10 @@ interface TaskAttachmentsListProps {
   taskId: string;
   uploadingFileName?: string | null;
   hideHeader?: boolean;
+  compact?: boolean;
 }
 
-export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hideHeader = false }: TaskAttachmentsListProps) {
+export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hideHeader = false, compact = false }: TaskAttachmentsListProps) {
   const { 
     data: attachmentsData, 
     isLoading, 
@@ -76,15 +77,24 @@ export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hide
   };
 
   const getFileIcon = (contentType: string) => {
+    const iconSize = compact ? "h-3 w-3" : "h-4 w-4";
+    
     if (contentType.startsWith('image/')) {
-      return <Image className="h-4 w-4 text-blue-500" />;
+      return <Image className={`${iconSize} text-blue-500`} />;
     } else if (contentType === 'application/pdf') {
-      return <FileText className="h-4 w-4 text-red-500" />;
+      return <FileText className={`${iconSize} text-red-500`} />;
     } else if (contentType.includes('zip')) {
-      return <Archive className="h-4 w-4 text-yellow-500" />;
+      return <Archive className={`${iconSize} text-yellow-500`} />;
     } else {
-      return <File className="h-4 w-4 text-gray-500" />;
+      return <File className={`${iconSize} text-gray-500`} />;
     }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
   if (isLoading) {
@@ -110,6 +120,71 @@ export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hide
 
   if (!showUploadingSection) {
     return null;
+  }
+
+  if (compact) {
+    return (
+      <div className="flex flex-wrap gap-2">
+        {uploadingFileName && (
+          <div className="flex items-center gap-1 px-2 py-1 bg-gray-200 rounded text-xs animate-pulse">
+            <File className="h-3 w-3 text-gray-400" />
+            <span>Uploading...</span>
+          </div>
+        )}
+        {attachments.map((attachment) => (
+          <div
+            key={attachment.id}
+            className="flex items-center gap-2 px-2 py-1.5 bg-white border border-gray-200 hover:border-primary rounded text-xs group transition-all duration-200"
+          >
+            <div className="flex-shrink-0">
+              {getFileIcon(attachment.contentType)}
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <div 
+                className="truncate max-w-40 font-medium" 
+                title={attachment.originalName}
+              >
+                {attachment.originalName}
+              </div>
+              <div className="text-xs text-gray-500 leading-tight">
+                {formatFileSize(attachment.fileSizeInBytes)}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleDownload(attachment)}
+                disabled={!attachment.presignedUrl}
+                className="h-4 w-4 p-0 hover:bg-blue-100 cursor-pointer"
+                title="Download"
+              >
+                <Download className="h-2 w-2 text-blue-600" />
+              </Button>
+              
+              <DeleteConfirmationPopover
+                isOpen={deletePopoverOpen === attachment.id}
+                onOpenChange={(open) => setDeletePopoverOpen(open ? attachment.id : null)}
+                onConfirm={() => handleDeleteConfirm(attachment.id, attachment.originalName)}
+                title="Delete file?"
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-4 w-4 p-0 text-red-600 hover:text-red-800 hover:bg-red-100 cursor-pointer"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-2 w-2" />
+                  </Button>
+                }
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   return (
@@ -146,7 +221,7 @@ export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hide
                   size="sm"
                   onClick={() => handleDownload(attachment)}
                   disabled={!attachment.presignedUrl}
-                  className="h-5 w-5 p-0 hover:bg-blue-50"
+                  className="h-5 w-5 p-0 hover:bg-blue-50 cursor-pointer"
                   title="Download"
                 >
                   <Download className="h-2.5 w-2.5 text-blue-600" />
@@ -161,7 +236,7 @@ export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hide
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-5 w-5 p-0 text-red-600 hover:text-red-800 hover:bg-red-50"
+                      className="h-5 w-5 p-0 text-red-600 hover:text-red-800 hover:bg-red-50 cursor-pointer"
                       title="Delete"
                     >
                       <Trash2 className="h-2.5 w-2.5" />

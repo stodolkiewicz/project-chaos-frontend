@@ -71,7 +71,8 @@ const TaskCommentsContainer = ({ taskId, projectId }: TaskCommentsContainerProps
   }
 
   return (
-    <div className="w-full">
+    <div className="p-3 bg-white rounded-lg">
+      <h4 className="text-base font-semibold mb-3">Comments</h4>
       <CommentSystem 
         comments={comments}
         onAddComment={handleAddComment}
