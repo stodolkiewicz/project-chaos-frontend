@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import TaskCommentsContainer from "../comments/TaskCommentsContainer";
+import { TaskAttachments } from "./TaskAttachments";
 
 export default function TaskCommentsDialog({
   boardTask,
@@ -32,7 +33,7 @@ export default function TaskCommentsDialog({
         <DialogHeader>
           <DialogTitle>Comments</DialogTitle>
         </DialogHeader>
-        <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+        <div className="p-4 bg-gray-50 rounded-lg">
           <h3 className="font-semibold text-lg mb-1">{boardTask.title}</h3>
           {boardTask.priority.name && (
             <div className="text-xs text-gray-500 mb-2">Priority: {boardTask.priority.name}</div>
@@ -44,6 +45,8 @@ export default function TaskCommentsDialog({
             </div>
           )}
         </div>
+        
+        <TaskAttachments projectId={projectId} taskId={boardTask.taskId} />
         <TaskCommentsContainer 
           taskId={boardTask.taskId} 
           projectId={projectId} 

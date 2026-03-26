@@ -61,10 +61,6 @@ export default function Backlog() {
     );
   }
 
-  if (backlogTasksLoading) {
-    return <div>Loading backlog...</div>;
-  }
-
   return (
     <div className={`transition-all duration-300`}>
       {/* BACKLOG HEADER */}

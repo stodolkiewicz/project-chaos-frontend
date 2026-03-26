@@ -69,7 +69,7 @@ const CommentSystem = ({ comments, onAddComment, pagination }: CommentSystemProp
 
       {/* New comment */}
       <div className="border-t pt-8 bg-slate-50 p-4 rounded-md">
-        <h3 className="text-lg font-semibold mb-4">Add Comment</h3>
+        <h3 className="text-base font-semibold mb-4">Add Comment</h3>
         
         {/* Show comment being replied to */}
         {replyingTo && (

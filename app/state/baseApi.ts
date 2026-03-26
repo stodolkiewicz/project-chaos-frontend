@@ -18,7 +18,8 @@ export const baseApi = createApi({
     "ArchivedTasks",
     "TaskComments",
     "Conversations",
-    "ChatHistory"
+    "ChatHistory",
+    "TaskAttachments"
   ],
   baseQuery: fetchBaseQuery({
     baseUrl: API_CONFIG.baseUrl,

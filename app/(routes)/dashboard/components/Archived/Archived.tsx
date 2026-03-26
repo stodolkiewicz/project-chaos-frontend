@@ -61,10 +61,6 @@ export default function Archived() {
     );
   }
 
-  if (archivedTasksLoading) {
-    return <div>Loading completed tasks...</div>;
-  }
-
   return (
     <div className={`transition-all duration-300`}>
       {/* DONE HEADER */}
