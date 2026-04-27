@@ -74,6 +74,18 @@ Additional colors used specifically on dashboard:
 
 ## Commands
 - `npm run dev` - Development server
-- `npm run build` - Production build
-- `npm run lint` - ESLint checking
-- `npm run typecheck` - TypeScript checking
+- `npm run build` - Production build (also runs the TypeScript type-check; this
+  is the only mechanical correctness gate used in this project)
+- `npm run start` - Run the production build (`node server.js` per `package.json`)
+
+Note: `next lint` exists in `package.json` but is intentionally NOT part of the
+workflow — do not add `npm run lint` to plans, tasks, or quality gates. There
+is no separate `typecheck` script; the type-check happens during `npm run build`.
+
+<!-- SPECKIT START -->
+Active Spec Kit feature: `001-confetti-on-completion`.
+For technical context, structure, dependencies, and the constitution-check
+verdict for this feature, read:
+`specs/001-confetti-on-completion/plan.md`
+(plus its sibling `research.md`, `data-model.md`, `quickstart.md`, and `spec.md`).
+<!-- SPECKIT END -->

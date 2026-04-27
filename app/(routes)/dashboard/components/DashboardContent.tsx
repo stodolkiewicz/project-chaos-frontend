@@ -14,6 +14,7 @@ import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
+import { celebrate, isLastColumn } from "@/lib/celebrate";
 import Backlog from "./Backlog/Backlog";
 import Archived from "./Archived/Archived";
 import KanbanBoard from "./KanbanBoard";
@@ -36,6 +37,11 @@ export default function DashboardContent() {
     const taskBeingDraggedId = event.active.id;
     const columnBeingDroppedIntoId = event.over.id;
 
+    const sourceColumnId = boardTasks?.find(
+      (task) => task.taskId === taskBeingDraggedId
+    )?.column.id;
+    const taskRectAtDrop = event.active.rect.current.translated;
+
     // Oblicz maxPosition bezpośrednio z aktualnych danych
     const tasksInTargetColumn = groupedTasks[columnBeingDroppedIntoId] || [];
     const maxPositionInTargetColumn =
@@ -57,6 +63,24 @@ export default function DashboardContent() {
           nearestNeighboursPositionInColumn: [1, 3],
         },
       }).unwrap();
+
+      if (
+        sourceColumnId &&
+        sourceColumnId !== columnBeingDroppedIntoId &&
+        isLastColumn(columnBeingDroppedIntoId, columns)
+      ) {
+        const origin = taskRectAtDrop
+          ? {
+              x:
+                (taskRectAtDrop.left + taskRectAtDrop.width / 2) /
+                window.innerWidth,
+              y:
+                (taskRectAtDrop.top + taskRectAtDrop.height / 2) /
+                window.innerHeight,
+            }
+          : undefined;
+        celebrate(origin);
+      }
     } catch (err) {
       handleApiError(err);
     }
