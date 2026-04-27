@@ -4,6 +4,7 @@ import TaskFooter from "./TaskFooter";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { TaskStage } from "@/app/types/TaskStage";
 import { useDraggable } from "@dnd-kit/core";
+import { memo } from "react";
 
 interface TaskProps {
   boardTask: BoardTaskDTO;
@@ -11,8 +12,8 @@ interface TaskProps {
   disableDrag?: boolean;
 }
 
-export default function Task({ boardTask, stage, disableDrag = false }: TaskProps) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+const Task = memo(function Task({ boardTask, stage, disableDrag = false }: TaskProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: boardTask.taskId,
     disabled: disableDrag,
   });
@@ -25,12 +26,16 @@ export default function Task({ boardTask, stage, disableDrag = false }: TaskProp
 
   return (
     <div
-      className="group rounded-md p-2 m-2 flex flex-col hover:shadow-md hover:bg-hover transition-all duration-300 bg-panel border border-divider"
       ref={setNodeRef}
       style={{
         ...style,
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+        transition: transform ? 'none' : 'all 0.300s ease',
       }}
+      className={`
+        group rounded-md p-2 m-2 flex flex-col border border-divider transition-all duration-300
+        bg-panel 
+        ${isDragging ? "shadow-xl scale-101 z-50" : "shadow-sm"}
+      `}
     >
       <TaskHeader
         boardTask={boardTask}
@@ -43,4 +48,6 @@ export default function Task({ boardTask, stage, disableDrag = false }: TaskProp
       <TaskFooter assigneeEmail={boardTask.assignee.email} boardTask={boardTask} stage={stage} />
     </div>
   );
-}
+});
+
+export default Task;
