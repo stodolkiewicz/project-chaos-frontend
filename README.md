@@ -84,6 +84,9 @@ git push origin 1.32.5
    https://github.com/Aslam97/minimal-tiptap  
    https://shadcn-minimal-tiptap.vercel.app/
 
+8. Canvas Confetti
+   https://github.com/catdad/canvas-confetti
+
 ## Browser Extensions
 1. React Developer Tools
 

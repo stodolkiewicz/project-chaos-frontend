@@ -14,7 +14,7 @@ import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
-import { celebrate, isLastColumn } from "@/lib/celebrate";
+import { celebrate, isLastColumn, playRandomCelebratoryAudio } from "@/lib/celebrate";
 import Backlog from "./Backlog/Backlog";
 import Archived from "./Archived/Archived";
 import KanbanBoard from "./KanbanBoard";
@@ -49,10 +49,6 @@ export default function DashboardContent() {
         ? Math.max(...tasksInTargetColumn.map((task) => task.positionInColumn))
         : 0;
 
-    // console.log("maxPositionInTargetColumn");
-    // console.log(maxPositionInTargetColumn);
-    // console.log(event.active.data);
-
     try {
       await moveTask({
         projectId: defaultProjectId,
@@ -79,13 +75,15 @@ export default function DashboardContent() {
                 window.innerHeight,
             }
           : undefined;
+
         celebrate(origin);
+        playRandomCelebratoryAudio();
       }
     } catch (err) {
       handleApiError(err);
     }
   }
-
+  
   const {
     data: project,
     isLoading: projectLoading,

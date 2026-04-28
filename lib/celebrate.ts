@@ -25,3 +25,31 @@ export function isLastColumn(
 ): boolean {
   return columns[columns.length - 1].id === columnId;
 }
+
+const sounds = [
+  { audio: new Audio("/sounds/wow.mp3"), weight: 0.15 },
+  { audio: new Audio("/sounds/tada.mp3"), weight: 0.6 },
+  { audio: new Audio("/sounds/yeahboy.mp3"), weight: 0.15 },
+  { audio: new Audio("/sounds/sogood.mp3"), weight: 0.1 },
+];
+
+sounds.forEach(s => s.audio.preload = "auto");
+
+export function playRandomCelebratoryAudio(clone = false) {
+  let r = Math.random();
+
+  for (const { audio, weight } of sounds) {
+    if (r < weight) {
+      const a = clone
+        ? (audio.cloneNode(true) as HTMLAudioElement)
+        : audio;
+
+      if (!clone) a.currentTime = 0;
+
+      a.volume = 0.2;
+      a.play().catch(() => {});
+      return;
+    }
+    r -= weight;
+  }
+}
