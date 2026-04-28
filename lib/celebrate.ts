@@ -27,10 +27,10 @@ export function isLastColumn(
 }
 
 const sounds = [
-  { audio: new Audio("/sounds/wow.mp3"), weight: 0.15 },
-  { audio: new Audio("/sounds/tada.mp3"), weight: 0.6 },
-  { audio: new Audio("/sounds/yeahboy.mp3"), weight: 0.15 },
-  { audio: new Audio("/sounds/sogood.mp3"), weight: 0.1 },
+  { audio: new Audio("/sounds/wow.mp3"), weight: 0.15, volume: 0.7 },
+  { audio: new Audio("/sounds/tada.mp3"), weight: 0.6, volume: 0.7 },
+  { audio: new Audio("/sounds/yeahboy.mp3"), weight: 0.15, volume: 0.7 },
+  { audio: new Audio("/sounds/sogood.mp3"), weight: 0.1, volume: 1.0 },
 ];
 
 sounds.forEach(s => s.audio.preload = "auto");
@@ -38,7 +38,7 @@ sounds.forEach(s => s.audio.preload = "auto");
 export function playRandomCelebratoryAudio(clone = false) {
   let r = Math.random();
 
-  for (const { audio, weight } of sounds) {
+  for (const { audio, weight, volume } of sounds) {
     if (r < weight) {
       const a = clone
         ? (audio.cloneNode(true) as HTMLAudioElement)
@@ -46,7 +46,7 @@ export function playRandomCelebratoryAudio(clone = false) {
 
       if (!clone) a.currentTime = 0;
 
-      a.volume = 0.2;
+      a.volume = volume;
       a.play().catch(() => {});
       return;
     }
