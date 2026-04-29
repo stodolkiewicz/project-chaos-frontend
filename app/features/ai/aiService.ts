@@ -45,45 +45,52 @@ class AIService {
         .pipeThrough(new TextDecoderStream())
         .getReader();
 
+      // Standard SSE (RFC EventSource) parser:
+      // - one event = group of lines terminated by an empty line
+      // - inside an event, multiple `data:` lines are joined with `\n`
+      // - an empty `data:` line contributes "" (preserves token-level newlines)
       let buffer = '';
+      let dataLines: string[] = [];
+
+      const flushEvent = () => {
+        if (dataLines.length === 0) return;
+        const content = dataLines.join('\n');
+        dataLines = [];
+        if (content.trim() === '[DONE]') return;
+        // empty event = upstream newline token; emit "\n" so markdown structure survives
+        onChunk(content === '' ? '\n' : content);
+      };
 
       while (true) {
         const { done, value } = await reader.read();
-        
+
         if (done) {
+          flushEvent();
           onComplete();
           break;
         }
 
         buffer += value;
-        
-        // backend sends a few chunks at once:
-        // data: Ala\ndata: ma\ndata: kota\n
-        // data: Ala\n
-        // data: ma\n
-        // data: kota\n
-        
-        let chunkEndIndex;
-        while ((chunkEndIndex = buffer.indexOf('\n')) !== -1) {
-          const chunk = buffer.slice(0, chunkEndIndex);
-          buffer = buffer.slice(chunkEndIndex + 1);
-          
-          this.processChunk(chunk, onChunk);
+
+        let lineEnd;
+        while ((lineEnd = buffer.indexOf('\n')) !== -1) {
+          const line = buffer.slice(0, lineEnd).replace(/\r$/, '');
+          buffer = buffer.slice(lineEnd + 1);
+
+          if (line === '') {
+            flushEvent();
+          } else if (line.startsWith('data:')) {
+            // Spring's Flux<String> SSE writer emits "data:<content>\n\n" with no
+            // space separator, so the content starts right after the colon.
+            // Stripping a leading space here would eat real spaces from LLM tokens
+            // like " H1" and produce "#H1" instead of "# H1".
+            dataLines.push(line.slice(5));
+          }
+          // ignore comment lines (":") and other SSE fields (event:, id:, retry:)
         }
       }
     } catch (error) {
       onError(error instanceof Error ? error : new Error('Unknown error'));
-    }
-  }
-
-  private processChunk(line: string, onChunk: (chunk: string) => void) {
-    if (line.startsWith('data:')) {
-      const content = line.slice(5);
-      
-      if (content.trim() === '[DONE]') return;
-
-      // return content to onChunk method
-      onChunk(content);
     }
   }
 }

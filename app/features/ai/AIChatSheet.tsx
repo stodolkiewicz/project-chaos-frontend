@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Streamdown } from "streamdown";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Send, AlertCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
-import { useGetChatHistoryQuery, useGetConversationsQuery, conversationsApi } from "@/app/state/ConversationsApiSlice";
+import { useGetChatHistoryQuery, useGetConversationsQuery } from "@/app/state/ConversationsApiSlice";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { useAIChat } from "./useAIChat";
 import ConversationHistory from "./ConversationHistory";
@@ -132,7 +133,17 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
                         : 'bg-chat-assistant text-foreground'
                     }`}
                   >
-                    {chat.content}
+                    {chat.type === 'USER' ? (
+                      chat.content
+                    ) : (
+                      <div className="prose prose-sm dark:prose-invert max-w-none break-words prose-p:my-6 prose-headings:my-6 prose-ul:my-4 prose-ol:my-4 prose-pre:my-4">
+                       <Streamdown
+                          key={index}
+                        >
+                          {chat.content}
+                        </Streamdown>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
