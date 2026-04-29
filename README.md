@@ -87,6 +87,9 @@ git push origin 1.32.5
 8. Canvas Confetti
    https://github.com/catdad/canvas-confetti
 
+9. Streamdown - a markdown renderer designed for streaming content from AI models
+   https://streamdown.ai/
+   
 ## Browser Extensions
 1. React Developer Tools
 
