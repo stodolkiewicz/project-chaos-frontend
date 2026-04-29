@@ -46,7 +46,7 @@ export default function TaskHeader({
           >
             <TooltipTrigger asChild>
               <div
-                className={`flex items-center mr-1  ${
+                className={`flex items-center mr-1 touch-none select-none ${
                   isDragging ? "cursor-grabbing" : "cursor-grab"
                 }`}
                 {...listeners}

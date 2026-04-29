@@ -8,7 +8,14 @@ import {
 } from "@/app/state/TasksApiSlice";
 import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
-import { DndContext } from "@dnd-kit/core";
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import CreateFirstProjectDialog from "./CreateProject/CreateFirstProjectDialog";
 import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
@@ -31,6 +38,16 @@ export default function DashboardContent() {
   const isArchiveOpen = useAppSelector((state) => state.ui.isArchiveOpen);
 
   const { handleApiError } = useErrorHandler();
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 5 },
+    }),
+    useSensor(KeyboardSensor)
+  );
 
   async function handleDragEnd(event) {
     const { over } = event;
@@ -152,7 +169,7 @@ export default function DashboardContent() {
   );
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className={`transition-all duration-300 ${isAIChatOpen ? 'mr-[480px]' : ''}`}>
         <ProjectMenu projectName={project?.name} currentProjectId={project?.id} />
         
