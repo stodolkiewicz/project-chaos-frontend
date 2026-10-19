@@ -41,11 +41,22 @@ export const conversationsApi = baseApi.injectEndpoints({
         { type: "Conversations", id: "LIST" },
       ],
     }),
+    deleteConversation: builder.mutation<void, { projectId: string; userId: string; conversationId: string }>({
+      query: ({ projectId, userId, conversationId }) => ({
+        url: `/api/v1/projects/${projectId}/users/${userId}/conversations/${conversationId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { conversationId }) => [
+        { type: "ChatHistory", id: conversationId },
+        { type: "Conversations", id: "LIST" },
+      ],
+    }),
   }),
 });
 
-export const { 
+export const {
   useGetConversationsQuery,
   useGetChatHistoryQuery,
-  useDeleteChatHistoryMutation
+  useDeleteChatHistoryMutation,
+  useDeleteConversationMutation
 } = conversationsApi;

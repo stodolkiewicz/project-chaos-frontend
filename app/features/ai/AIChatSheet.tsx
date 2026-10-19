@@ -7,7 +7,7 @@ import { Send, AlertCircle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
-import { useGetChatHistoryQuery, useGetConversationsQuery } from "@/app/state/ConversationsApiSlice";
+import { useDeleteConversationMutation, useGetChatHistoryQuery, useGetConversationsQuery } from "@/app/state/ConversationsApiSlice";
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { useAIChat } from "./useAIChat";
 import ConversationHistory from "./ConversationHistory";
@@ -72,6 +72,23 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
     setCurrentConversationId(crypto.randomUUID());
   };
 
+  const [deleteConversation] = useDeleteConversationMutation();
+
+  const handleDeleteConversation = async (conversationId: string) => {
+    if (!defaultProjectId || !userId) return;
+
+    await deleteConversation({
+      projectId: defaultProjectId,
+      userId: userId,
+      conversationId: conversationId,
+    }).unwrap();
+
+    // Start a fresh chat when the open conversation was deleted
+    if (conversationId === currentConversationId) {
+      handleNewChat();
+    }
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange} modal={false}>
       <SheetContent 
@@ -102,6 +119,7 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
                 conversationsError={conversationsError}
                 currentConversationId={currentConversationId}
                 setCurrentConversationId={setCurrentConversationId}
+                onDeleteConversation={handleDeleteConversation}
               />
             </div>
           </div>

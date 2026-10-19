@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { History } from "lucide-react";
+import { History, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConversationResponseDTO, useGetChatHistoryQuery } from "@/app/state/ConversationsApiSlice";
+import DeleteConversationAlertDialog from "./DeleteConversationAlertDialog";
 import { formatDistanceToNow, format, isToday, isYesterday, differenceInHours } from "date-fns";
 
 const formatConversationTime = (createdAt: string): string => {
@@ -33,6 +34,7 @@ interface ConversationHistoryProps {
   conversationsError?: any;
   currentConversationId: string;
   setCurrentConversationId: (conversationId: string) => void;
+  onDeleteConversation: (conversationId: string) => Promise<void>;
 }
 
 export default function ConversationHistory({ 
@@ -40,14 +42,19 @@ export default function ConversationHistory({
   conversationsLoading,
   conversationsError,
   currentConversationId,
-  setCurrentConversationId
+  setCurrentConversationId,
+  onDeleteConversation
 }: ConversationHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [conversationToDelete, setConversationToDelete] = useState<ConversationResponseDTO | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   // Close overlay when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // The delete dialog renders outside the overlay, so its clicks must not close the overlay
+      if (conversationToDelete) return;
+
       if (overlayRef.current && !overlayRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -57,7 +64,7 @@ export default function ConversationHistory({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [isOpen]);
+  }, [isOpen, conversationToDelete]);
 
   const handleSetCurrentConversation = (conversationId: string) => {
     setCurrentConversationId(conversationId);
@@ -97,15 +104,29 @@ export default function ConversationHistory({
                 
                 return (
                   <div key={conversation.id || `conversation-${index}`} 
-                      className={`p-2 hover:bg-hover rounded-md cursor-pointer 
+                      className={`group flex items-start justify-between gap-2 p-2 hover:bg-hover rounded-md cursor-pointer 
                         ${conversation.id === currentConversationId ? 'bg-slate-50 border-l-4 border-emerald-300' : ''}
                       `}
                       onClick={() => handleSetCurrentConversation(conversation.id)}
                       >
-                    <div className="text-sm font-medium">
-                      {conversation.title || 'Untitled Conversation'}
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium">
+                        {conversation.title || 'Untitled Conversation'}
+                      </div>
+                      <div className="text-xs text-text-subtle mt-1">{timeAgo}</div>
                     </div>
-                    <div className="text-xs text-text-subtle mt-1">{timeAgo}</div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(event) => {
+                        // Prevent the click from also selecting the conversation
+                        event.stopPropagation();
+                        setConversationToDelete(conversation);
+                      }}
+                      className="h-6 w-6 p-0 shrink-0 opacity-0 group-hover:opacity-100 hover:text-red-500"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 );
               })
@@ -117,6 +138,14 @@ export default function ConversationHistory({
             </div>
           </div>
         </div>
+      )}
+
+      {conversationToDelete && (
+        <DeleteConversationAlertDialog
+          conversation={conversationToDelete}
+          onConfirm={() => onDeleteConversation(conversationToDelete.id)}
+          onClose={() => setConversationToDelete(null)}
+        />
       )}
     </div>
   );
