@@ -182,7 +182,6 @@ export default function CreateTaskForm({
           className="wrap-anywhere"
           placeholder="Describe the task."
           {...register("description", {
-            required: "Description is required.",
             maxLength: {
               value: 5000,
               message: "Description must be at most 5000 characters",
