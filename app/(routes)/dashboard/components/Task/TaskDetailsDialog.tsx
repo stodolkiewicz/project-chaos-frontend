@@ -2,9 +2,11 @@
 
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
+import { useMarkTaskCommentsAsReadMutation } from "@/app/state/TaskCommentsApiSlice";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -21,17 +23,30 @@ export default function TaskCommentsDialog({
 }) {
   const { data } = useGetDefaultProjectIdQuery();
   const projectId = data?.projectId;
+  const [markTaskCommentsAsRead] = useMarkTaskCommentsAsReadMutation();
 
   if (!projectId) return null;
 
+  // Comments are marked as read on close, not on open.
+  // Marking on open refetches the task list with a zero count.
+  // The unread badge then unmounts and closes this dialog with it.
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      markTaskCommentsAsRead({ projectId, taskId: boardTask.taskId });
+    }
+  };
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
       <DialogContent className="max-w-[70vw] w-full max-h-[90vh] overflow-y-auto sm:max-w-[70vw] top-[50vh] bg-gray-50">
         <DialogHeader>
           <DialogTitle>Task Details</DialogTitle>
+          <DialogDescription className="sr-only">
+            Details, attachments and comments of the task.
+          </DialogDescription>
         </DialogHeader>
         <div className="p-3 bg-white rounded-lg">
           <h4 className="font-semibold text-base mb-1">{boardTask.title}</h4>

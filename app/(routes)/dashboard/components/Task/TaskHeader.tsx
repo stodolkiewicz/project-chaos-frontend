@@ -1,26 +1,20 @@
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { TaskStage } from "@/app/types/TaskStage";
 import { MdDragIndicator } from "react-icons/md";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useDndContext } from "@dnd-kit/core";
 import { useState } from "react";
-
-function isColorDark(hexColor: string): boolean {
-  const hex = hexColor.replace("#", "");
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return luminance < 128;
-}
+import TaskMenu from "./TaskMenu";
+import UnreadCommentsButton from "./UnreadCommentsButton";
+import { getLabelColors } from "./taskCardStyles";
 
 interface TaskHeaderProps {
   boardTask: BoardTaskDTO;
+  stage: TaskStage;
   listeners?: React.HTMLAttributes<HTMLDivElement>;
   attributes?: React.HTMLAttributes<HTMLDivElement>;
   disableDrag?: boolean;
@@ -28,6 +22,7 @@ interface TaskHeaderProps {
 
 export default function TaskHeader({
   boardTask,
+  stage,
   listeners,
   attributes,
   disableDrag = false,
@@ -38,7 +33,7 @@ export default function TaskHeader({
 
   return (
     <>
-      <div className="flex">
+      <div className="flex items-center gap-[var(--task-header-gap)]">
         {!disableDrag && (
           <Tooltip
             open={isDragging ? false : tooltipOpen}
@@ -46,13 +41,16 @@ export default function TaskHeader({
           >
             <TooltipTrigger asChild>
               <div
-                className={`flex items-center mr-1 touch-none select-none ${
+                className={`flex items-center shrink-0 text-muted-foreground touch-none select-none ${
                   isDragging ? "cursor-grabbing" : "cursor-grab"
                 }`}
                 {...listeners}
                 {...attributes}
               >
-                <MdDragIndicator />
+                <MdDragIndicator
+                  className="size-[var(--task-drag-handle-size)]"
+                  aria-hidden="true"
+                />
               </div>
             </TooltipTrigger>
             <TooltipContent align="center" className="translate-x-[1px] border-1">
@@ -61,32 +59,26 @@ export default function TaskHeader({
           </Tooltip>
         )}
 
-        <h6 className="flex-1 ">{boardTask.title}</h6>
+        <h6 className="flex-1 min-w-0 font-medium break-words">{boardTask.title}</h6>
 
+        <UnreadCommentsButton boardTask={boardTask} />
 
-        <div className="flex flex-col items-end mr-2">
-          <div
-            className="w-2 h-1 rounded-full"
-            style={{ backgroundColor: boardTask.priority.color }}
-          />
-          <div className="text-xs text-text-muted font-medium">
-            {boardTask.priority.name}
-          </div>
+        <TaskMenu boardTask={boardTask} stage={stage} />
+      </div>
+
+      {boardTask.labels?.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {boardTask.labels.map((label) => (
+            <span
+              key={label.id}
+              className="rounded-full px-2 py-0 text-xs font-medium"
+              style={getLabelColors(label.color)}
+            >
+              {label.name}
+            </span>
+          ))}
         </div>
-      </div>
-      <div>
-        {boardTask.labels?.map((label, id) => (
-          <div
-            key={id}
-            className={`shadow-2xl inline-block hover:opacity-78 duration-300 overflow-hidden text-ellipsis font-medium text-xs  bg-amber-300 rounded-full pr-1.5 pl-1.5 ${
-              isColorDark(label.color) ? "text-white" : ""
-            }`}
-            style={{ backgroundColor: label.color }}
-          >
-            {"#" + label.name + " "}
-          </div>
-        ))}
-      </div>
+      )}
     </>
   );
 }

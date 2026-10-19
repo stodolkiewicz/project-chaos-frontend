@@ -52,12 +52,25 @@ export const taskCommentsApi = baseApi.injectEndpoints({
         { type: "TaskComments", id: taskId }
       ],
     }),
+    markTaskCommentsAsRead: builder.mutation<void, { projectId: string; taskId: string }>({
+      query: ({ projectId, taskId }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}/comments/read`,
+        method: "PUT",
+      }),
+      // Task lists carry unreadCommentsCount, so they must be refetched
+      invalidatesTags: (result, error, { projectId }) => [
+        { type: "BoardTasks", id: projectId },
+        { type: "BacklogTasks", id: projectId },
+        { type: "ArchivedTasks", id: projectId },
+      ],
+    }),
   }),
 });
 
 export const {
   useGetTaskCommentsQuery,
   useCreateTaskCommentMutation,
+  useMarkTaskCommentsAsReadMutation,
 } = taskCommentsApi;
 
 export default taskCommentsApi;

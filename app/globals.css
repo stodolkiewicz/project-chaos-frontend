@@ -101,6 +101,10 @@
   /* hover */
   --color-hover: #eef2f7;
 
+  /* task card */
+  --task-drag-handle-size: 16px;
+  --task-header-gap: 6px;
+
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -202,4 +206,11 @@
 /* has data-sonner-toast and data-type attributes */
 [data-sonner-toast][data-type="error"] {
   color: #d40404 !important;
+}
+
+@layer components {
+  /* Aligns card content below the header with the task title */
+  .task-card-indent {
+    padding-left: calc(var(--task-drag-handle-size) + var(--task-header-gap));
+  }
 }

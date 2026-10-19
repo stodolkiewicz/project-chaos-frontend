@@ -29,4 +29,5 @@ export interface BoardTaskDTO {
   column: Column;
   assignee: Assignee;
   labels: Label[];
+  unreadCommentsCount: number;
 }

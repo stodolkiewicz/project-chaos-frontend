@@ -24,6 +24,9 @@ const Task = memo(function Task({ boardTask, stage, disableDrag = false }: TaskP
       }
     : undefined;
 
+  // Without the drag handle the title starts at the card edge, so content needs no indent
+  const contentIndentClass = disableDrag ? "" : "task-card-indent";
+
   return (
     <div
       ref={setNodeRef}
@@ -32,20 +35,28 @@ const Task = memo(function Task({ boardTask, stage, disableDrag = false }: TaskP
         transition: transform ? 'none' : 'all 0.300s ease',
       }}
       className={`
-        group rounded-md p-2 m-2 flex flex-col border border-divider transition-all duration-300
+        group rounded-md px-3 py-2.5 m-2 flex flex-col border border-divider transition-all duration-300
         bg-panel 
         ${isDragging ? "shadow-xl scale-101 z-50" : "shadow-sm"}
       `}
     >
       <TaskHeader
         boardTask={boardTask}
+        stage={stage}
         listeners={disableDrag ? undefined : listeners}
         attributes={disableDrag ? undefined : attributes}
         disableDrag={disableDrag}
       />
-      <Separator className="bg-border h-[1.5px]" />
-      <div className="mt-1 break-all">{boardTask.description}</div>
-      <TaskFooter assigneeEmail={boardTask.assignee.email} boardTask={boardTask} stage={stage} />
+      <Separator className="mt-0.5 bg-border h-[1.5px]" />
+      {boardTask.description?.trim() ? (
+        <div className={`mt-2 text-sm text-text-muted line-clamp-3 break-words ${contentIndentClass}`}>
+          {boardTask.description}
+        </div>
+      ) : !boardTask.assignee.email && (
+        // Keeps one empty text line so the card body does not collapse
+        <div className="mt-2 text-sm" aria-hidden="true">&nbsp;</div>
+      )}
+      <TaskFooter boardTask={boardTask} />
     </div>
   );
 });
