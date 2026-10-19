@@ -89,6 +89,11 @@ git push origin 1.32.5
 
 9. Streamdown - a markdown renderer designed for streaming content from AI models
    https://streamdown.ai/
+
+10. Fetch Event Source - reads Server-Sent Events from a `POST` request (the native `EventSource` supports only `GET`)
+   https://github.com/Azure/fetch-event-source
+   
+   The AI chat uses it. The flow is described in `docs/how-app-works-technically/ai-chat-task-proposals.md`.
    
 ## Browser Extensions
 1. React Developer Tools

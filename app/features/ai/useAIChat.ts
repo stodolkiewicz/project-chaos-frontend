@@ -2,12 +2,13 @@ import { useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { aiService } from './aiService';
 
-import { UseAIChatReturn } from './types';
+import { TaskProposal, UseAIChatReturn } from './types';
 import { conversationsApi, ChatMemoryResponseDTO } from '@/app/state/ConversationsApiSlice';
 
 export const useAIChat = (): UseAIChatReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [proposals, setProposals] = useState<TaskProposal[]>([]);
   const accessToken = useAppSelector((state) => state.user.accessToken);
   const dispatch = useAppDispatch();
   
@@ -68,6 +69,14 @@ export const useAIChat = (): UseAIChatReturn => {
             }
           ));
         },
+        // onRequestCreateTask
+        (data) => {
+          setProposals((prev) => [...prev, { id: crypto.randomUUID(), type: 'RequestCreateTask', data }]);
+        },
+        // onRequestDeleteTask
+        (data) => {
+          setProposals((prev) => [...prev, { id: crypto.randomUUID(), type: 'RequestDeleteTask', data }]);
+        },
         // onError
         (error: Error) => {
           setError(error.message);
@@ -111,10 +120,16 @@ export const useAIChat = (): UseAIChatReturn => {
     setError(null);
   }, []);
 
+  const dismissProposal = useCallback((id: string) => {
+    setProposals((prev) => prev.filter((proposal) => proposal.id !== id));
+  }, []);
+
   return {
     isLoading,
     error,
     sendMessage,
     clearError,
+    proposals,
+    dismissProposal,
   };
 };

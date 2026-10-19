@@ -11,6 +11,8 @@ import { useGetChatHistoryQuery, useGetConversationsQuery } from "@/app/state/Co
 import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { useAIChat } from "./useAIChat";
 import ConversationHistory from "./ConversationHistory";
+import AICreateTaskDialog from "./AICreateTaskDialog";
+import AIDeleteTaskAlertDialog from "./AIDeleteTaskAlertDialog";
 
 interface AIChatSheetProps {
   open: boolean;
@@ -37,7 +39,10 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
     skip: !defaultProjectId || !userId
   });
 
-  const { isLoading, error, sendMessage, clearError } = useAIChat();
+  const { isLoading, error, sendMessage, clearError, proposals, dismissProposal } = useAIChat();
+
+  // Proposals are shown one at a time, in the order the AI made them
+  const currentProposal = proposals[0];
 
   const [currentConversationId, setCurrentConversationId] = useState<string>(crypto.randomUUID());
 
@@ -116,8 +121,9 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto py-4">
           {!chatHistory || chatHistory.length === 0 ? (
-            <div className="text-center text-gray-500 mt-8">
-              Start a conversation with AI Assistant
+            <div className="text-center text-gray-400 mt-8">
+              Start a conversation with the AI Assistant! <br></br>
+              It knows your project and can create tasks for you.
             </div>
           ) : (
             <div className="space-y-2.5 pr-3">
@@ -172,6 +178,23 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
           </div>
         </div>
       </SheetContent>
+      {currentProposal && defaultProjectId && (
+        currentProposal.type === 'RequestCreateTask' ? (
+          <AICreateTaskDialog
+            key={currentProposal.id}
+            projectId={defaultProjectId}
+            proposal={currentProposal.data}
+            onClose={() => dismissProposal(currentProposal.id)}
+          />
+        ) : (
+          <AIDeleteTaskAlertDialog
+            key={currentProposal.id}
+            projectId={defaultProjectId}
+            proposal={currentProposal.data}
+            onClose={() => dismissProposal(currentProposal.id)}
+          />
+        )
+      )}
     </Sheet>
   );
 }

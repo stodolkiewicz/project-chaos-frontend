@@ -42,6 +42,8 @@ type CreateTaskFormProps = {
   positionInColumn: number;
   columnId: string;
   onClose: () => void;
+  initialTitle?: string;
+  initialDescription?: string;
 };
 
 const generateRandomColor = () => {
@@ -57,6 +59,8 @@ export default function CreateTaskForm({
   positionInColumn,
   columnId,
   onClose,
+  initialTitle,
+  initialDescription,
 }: CreateTaskFormProps) {
   const {
     register,
@@ -65,7 +69,12 @@ export default function CreateTaskForm({
     reset,
     setValue,
     formState: { errors },
-  } = useForm<CreateTaskFormData>();
+  } = useForm<CreateTaskFormData>({
+    defaultValues: {
+      title: initialTitle,
+      description: initialDescription,
+    },
+  });
 
   const { data } = useGetDefaultProjectIdQuery();
   const defaultProjectId = data?.projectId;

@@ -117,6 +117,32 @@ export const tasksApi = baseApi.injectEndpoints({
         }
       },
     }),
+    // Used by the AI chat, which does not know the stage of the task
+    deleteTask: builder.mutation<void, { projectId: string; taskId: string }>({
+      query: ({ projectId, taskId }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
+        method: "DELETE",
+      }),
+      async onQueryStarted(
+        { projectId, taskId },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "BoardTasks", id: projectId },
+              { type: "BacklogTasks", id: projectId },
+              { type: "ArchivedTasks", id: projectId },
+              { type: "Labels", id: projectId },
+              { type: "TaskComments", id: taskId }
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to delete task:", error);
+        }
+      },
+    }),
     createTask: builder.mutation<
       void, // what backend returns, void = we don't care
       { projectId: string; createTaskFormData: CreateTaskFormData }
@@ -286,6 +312,7 @@ export const {
   useDeleteBoardTaskMutation,
   useDeleteBacklogTaskMutation,
   useDeleteArchivedTaskMutation,
+  useDeleteTaskMutation,
   useCreateTaskMutation,
   useMoveTaskMutation,
   useMoveTasksToBacklogMutation,
