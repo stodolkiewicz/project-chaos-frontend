@@ -8,6 +8,8 @@ import Task from "../Task/Task";
 import { TaskStage } from "@/app/types/TaskStage";
 import CreateFirstProjectDialog from "../CreateProject/CreateFirstProjectDialog";
 import CreateProjectForm from "../CreateProject/CreateProjectForm";
+import CreateTaskDialog from "../CreateTask/CreateTaskDialog";
+import CreateTaskForm from "../CreateTask/CreateTaskForm";
 
 export default function Backlog() {
   const { data } = useGetDefaultProjectIdQuery();
@@ -84,6 +86,18 @@ export default function Backlog() {
                 <p className="text-lg">No tasks in backlog</p>
               </div>
             )}
+          </div>
+
+          <div className="w-full flex justify-end px-2 py-3">
+            <CreateTaskDialog>
+              {(onClose) => (
+                <CreateTaskForm
+                  positionInColumn={0}
+                  stage={TaskStage.BACKLOG}
+                  onClose={onClose}
+                />
+              )}
+            </CreateTaskDialog>
           </div>
         </div>
       </div>

@@ -160,7 +160,11 @@ export const tasksApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(
-            baseApi.util.invalidateTags([{ type: "BoardTasks", id: projectId }])
+            baseApi.util.invalidateTags([
+              { type: "BoardTasks", id: projectId },
+              { type: "BacklogTasks", id: projectId },
+              { type: "ArchivedTasks", id: projectId },
+            ])
           );
           dispatch(
             baseApi.util.invalidateTags([{ type: "Labels", id: projectId }])

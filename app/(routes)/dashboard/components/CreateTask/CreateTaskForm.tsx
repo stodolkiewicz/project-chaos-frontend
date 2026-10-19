@@ -40,7 +40,9 @@ export type CreateTaskFormData = {
 
 type CreateTaskFormProps = {
   positionInColumn: number;
-  columnId: string;
+  // Backlog and archived tasks have no column
+  columnId?: string;
+  stage?: TaskStage;
   onClose: () => void;
   initialTitle?: string;
   initialDescription?: string;
@@ -58,6 +60,7 @@ const generateRandomColor = () => {
 export default function CreateTaskForm({
   positionInColumn,
   columnId,
+  stage = TaskStage.BOARD,
   onClose,
   initialTitle,
   initialDescription,
@@ -121,7 +124,7 @@ export default function CreateTaskForm({
   const onSubmit = async (createTaskFormData: CreateTaskFormData) => {
     const createTaskFormDataNoEmptyLabels: CreateTaskFormData = {
       ...createTaskFormData,
-      stage: TaskStage.BOARD,
+      stage,
       labels: createTaskFormData.labels.filter((label, index, array) => {
         const firstOccurrenceIndex = array.findIndex(
           (l) => l.name.trim() === label.name.trim()
