@@ -47,7 +47,7 @@ export default function ShowHideSections() {
       <ToggleGroupItem 
         value="archive" 
         aria-label="Toggle archive"
-        title={`${isArchiveOpen ? 'Hide' : 'Show'} Archive`}
+        title={`${isArchiveOpen ? 'Hide' : 'Show'} Archived`}
         className="p-2 text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer data-[state=on]:bg-white data-[state=on]:text-black !rounded-l-none !rounded-r-lg"
       >
         <CheckCheck className="h-5 w-5" />

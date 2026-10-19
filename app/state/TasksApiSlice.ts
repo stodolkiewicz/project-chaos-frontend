@@ -3,7 +3,34 @@ import { CreateTaskFormData } from "../(routes)/dashboard/components/CreateTask/
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
 import { MoveTasksRequestDTO } from "../types/MoveTasksRequestDTO";
 import { UpdateTaskDTO } from "../types/UpdateTaskDTO";
+import { NO_VALUE, TaskFilters } from "../types/TaskFilters";
+import { PageResponseDTO } from "./TaskCommentsApiSlice";
 import baseApi from "./baseApi";
+
+export interface TasksPageArgs {
+  projectId: string;
+  page: number;
+  size: number;
+  filters: TaskFilters;
+}
+
+// Empty filters become undefined, so they are left out of the URL
+function toFilterParams({ priorities, labels, assignees }: TaskFilters) {
+  const ids = (values: string[]) => {
+    const selectedIds = values.filter((value) => value !== NO_VALUE);
+    return selectedIds.length > 0 ? selectedIds.join(",") : undefined;
+  };
+  const includesNoValue = (values: string[]) => values.includes(NO_VALUE) || undefined;
+
+  return {
+    priorityIds: ids(priorities),
+    withoutPriority: includesNoValue(priorities),
+    labelIds: ids(labels),
+    withoutLabel: includesNoValue(labels),
+    assigneeIds: ids(assignees),
+    unassigned: includesNoValue(assignees),
+  };
+}
 
 export const tasksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,15 +40,21 @@ export const tasksApi = baseApi.injectEndpoints({
         { type: "BoardTasks", id: projectId },
       ],
     }),
-    getBacklogTasks: builder.query<BoardTaskDTO[], string>({
-      query: (projectId) => `/api/v1/projects/${projectId}/tasks?stage=BACKLOG`,
-      providesTags: (result, error, projectId) => [
+    getBacklogTasks: builder.query<PageResponseDTO<BoardTaskDTO>, TasksPageArgs>({
+      query: ({ projectId, page, size, filters }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/paged`,
+        params: { stage: "BACKLOG", page, size, ...toFilterParams(filters) },
+      }),
+      providesTags: (result, error, { projectId }) => [
         { type: "BacklogTasks", id: projectId },
       ],
     }),
-    getArchivedTasks: builder.query<BoardTaskDTO[], string>({
-      query: (projectId) => `/api/v1/projects/${projectId}/tasks?stage=ARCHIVED`,
-      providesTags: (result, error, projectId) => [
+    getArchivedTasks: builder.query<PageResponseDTO<BoardTaskDTO>, TasksPageArgs>({
+      query: ({ projectId, page, size, filters }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/paged`,
+        params: { stage: "ARCHIVED", page, size, ...toFilterParams(filters) },
+      }),
+      providesTags: (result, error, { projectId }) => [
         { type: "ArchivedTasks", id: projectId },
       ],
     }),
@@ -67,17 +100,10 @@ export const tasksApi = baseApi.injectEndpoints({
       ) {
         try {
           await queryFulfilled;
-          dispatch(
-            tasksApi.util.updateQueryData(
-              "getBacklogTasks",
-              projectId,
-              (draft) => {
-                return draft.filter((backlogTask) => backlogTask.taskId !== taskId);
-              }
-            )
-          );
+          // The refetch fills the page with the next task, so the page is not patched locally
           dispatch(
             baseApi.util.invalidateTags([
+              { type: "BacklogTasks", id: projectId },
               { type: "Labels", id: projectId },
               { type: "TaskComments", id: taskId }
             ])
@@ -98,17 +124,10 @@ export const tasksApi = baseApi.injectEndpoints({
       ) {
         try {
           await queryFulfilled;
-          dispatch(
-            tasksApi.util.updateQueryData(
-              "getArchivedTasks",
-              projectId,
-              (draft) => {
-                return draft.filter((archivedTask) => archivedTask.taskId !== taskId);
-              }
-            )
-          );
+          // The refetch fills the page with the next task, so the page is not patched locally
           dispatch(
             baseApi.util.invalidateTags([
+              { type: "ArchivedTasks", id: projectId },
               { type: "Labels", id: projectId },
               { type: "TaskComments", id: taskId }
             ])
@@ -193,7 +212,7 @@ export const tasksApi = baseApi.injectEndpoints({
       // pessimistic update; the cache is patched before the refetch, so the card does not flash old data
       async onQueryStarted(
         { projectId, taskId, updatedTask },
-        { dispatch, queryFulfilled }
+        { dispatch, getState, queryFulfilled }
       ) {
         try {
           await queryFulfilled;
@@ -204,8 +223,19 @@ export const tasksApi = baseApi.injectEndpoints({
             }
           };
           dispatch(tasksApi.util.updateQueryData("getBoardTasks", projectId, replaceTask));
-          dispatch(tasksApi.util.updateQueryData("getBacklogTasks", projectId, replaceTask));
-          dispatch(tasksApi.util.updateQueryData("getArchivedTasks", projectId, replaceTask));
+          // Every cached page is patched, because the task can be on any of them
+          for (const queryName of ["getBacklogTasks", "getArchivedTasks"] as const) {
+            tasksApi.util
+              .selectCachedArgsForQuery(getState(), queryName)
+              .filter((args) => args.projectId === projectId)
+              .forEach((args) =>
+                dispatch(
+                  tasksApi.util.updateQueryData(queryName, args, (draft) =>
+                    replaceTask(draft.content)
+                  )
+                )
+              );
+          }
           dispatch(
             baseApi.util.invalidateTags([
               { type: "BoardTasks", id: projectId },

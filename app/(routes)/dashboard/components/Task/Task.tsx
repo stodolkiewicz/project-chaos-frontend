@@ -45,6 +45,9 @@ const Task = memo(function Task({ boardTask, stage, disableDrag = false }: TaskP
   // Without the drag handle the title starts at the card edge, so content needs no indent
   const contentIndentClass = disableDrag ? "" : "task-card-indent";
 
+  const hasDescription = !!boardTask.description?.trim();
+  const hasBody = hasDescription || !!boardTask.priority.name || !!boardTask.assignee.email;
+
   const stateClasses = isEditing
     ? "border-primary -translate-y-1 shadow-lg"
     : `border-divider ${isDragging ? "shadow-xl scale-101 z-50" : "shadow-sm"}`;
@@ -79,8 +82,9 @@ const Task = memo(function Task({ boardTask, stage, disableDrag = false }: TaskP
             disableDrag={disableDrag}
             onStartEdit={handleStartEdit}
           />
-          <Separator className="mt-0.5 bg-border h-[1.5px]" />
-          {boardTask.description?.trim() ? (
+          {/* A card with only a title stays compact, without the divider and the empty body */}
+          {hasBody && <Separator className="mt-0.5 bg-border h-[1.5px]" />}
+          {hasDescription && (
             // The indent sits outside the highlighted area, so the hover background covers only the text
             <div className={`mt-2 ${contentIndentClass}`}>
               <div
@@ -89,15 +93,6 @@ const Task = memo(function Task({ boardTask, stage, disableDrag = false }: TaskP
               >
                 {boardTask.description}
               </div>
-            </div>
-          ) : !boardTask.assignee.email && (
-            // Keeps one empty text line so the card body does not collapse
-            <div
-              className={`mt-2 text-sm ${EDITABLE_FIELD_CLASS}`}
-              aria-hidden="true"
-              {...editTriggerProps("description", handleStartEdit)}
-            >
-              &nbsp;
             </div>
           )}
           <TaskFooter boardTask={boardTask} onStartEdit={handleStartEdit} />

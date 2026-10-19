@@ -32,6 +32,7 @@ export default function KanbanBoard({ columns, groupedTasks }: KanbanBoardProps)
                 key={column.id}
                 column={column}
                 tasksInColumn={tasksInColumn}
+                isFirstColumn={index === 0}
               />
             );
           })}

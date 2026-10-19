@@ -29,5 +29,7 @@ export interface BoardTaskDTO {
   column: Column;
   assignee: Assignee;
   labels: Label[];
+  // ISO 8601 timestamp
+  createdDate: string;
   unreadCommentsCount: number;
 }

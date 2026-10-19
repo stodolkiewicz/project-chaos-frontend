@@ -1,6 +1,5 @@
 import Task from "@/app/(routes)/dashboard/components/Task/Task";
-import CreateTaskDialog from "./CreateTask/CreateTaskDialog";
-import CreateTaskForm from "./CreateTask/CreateTaskForm";
+import AddTaskGhostCard from "./CreateTask/AddTaskGhostCard";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { TaskStage } from "@/app/types/TaskStage";
@@ -8,10 +7,13 @@ import { useDroppable } from "@dnd-kit/core";
 
 export default function Column({
   column,
-  tasksInColumn
+  tasksInColumn,
+  isFirstColumn,
 }: {
   column: ColumnDTO;
   tasksInColumn: BoardTaskDTO[];
+  // New tasks are added only to the first column
+  isFirstColumn: boolean;
 }) {
   const maxPositionInColumn =
     tasksInColumn.length > 0
@@ -38,20 +40,16 @@ export default function Column({
         <Task key={taskInColumn.taskId} boardTask={taskInColumn} stage={TaskStage.BOARD} />
       ))}
 
-      <div className="w-full flex flex-1 justify-end items-end px-2 py-3">
-        <CreateTaskDialog>
-          {/* children function returns React.ReactNode */}
-          {(onClose) => (
-            <>
-              <CreateTaskForm
-                positionInColumn={maxPositionInColumn + 1}
-                columnId={column.id}
-                onClose={onClose}
-              />
-            </>
-          )}
-        </CreateTaskDialog>
-      </div>
+      {isFirstColumn && (
+        // The auto top margin pushes the card to the bottom of the column
+        <div className="mt-auto flex flex-col">
+          <AddTaskGhostCard
+            columnId={column.id}
+            positionInColumn={maxPositionInColumn + 1}
+            compact
+          />
+        </div>
+      )}
     </div>
   );
 }

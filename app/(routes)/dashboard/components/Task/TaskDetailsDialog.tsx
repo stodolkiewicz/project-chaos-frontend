@@ -117,6 +117,17 @@ export default function TaskCommentsDialog({
               )}
             </>
           )}
+          {/* The creation date cannot be edited, so it stays visible in the edit mode too */}
+          <div className="text-xs text-gray-500 mt-2">
+            Created:{" "}
+            {new Date(boardTask.createdDate).toLocaleString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </div>
         </div>
         
         <TaskAttachments projectId={projectId} taskId={boardTask.taskId} />
