@@ -12,6 +12,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -22,6 +29,9 @@ import { useErrorHandler } from "@/app/hooks/useErrorHandler";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { UpdateTaskDTO } from "@/app/types/UpdateTaskDTO";
 import { buildUpdatedTask } from "../Task/buildUpdatedTask";
+
+// Radix Select does not accept an empty value, so this one stands for "nothing selected"
+const NONE = "none";
 
 type Label = {
   name: string;
@@ -273,31 +283,53 @@ export default function CreateTaskForm({
 
       {/* Assign to */}
       <label className="text-sm font-medium mt-3">Assign to:</label>
-      <select
-        {...register("assigneeEmail")}
-        className="border border-primary p-2 rounded w-full mt-2"
-      >
-        <option value="">-- Select assignee email --</option>
-        {projectUsers?.projectUsers?.map((projectUser) => (
-          <option key={projectUser.email} value={projectUser.email}>
-            {projectUser.email}
-          </option>
-        ))}
-      </select>
+      <Controller
+        control={control}
+        name="assigneeEmail"
+        render={({ field }) => (
+          <Select
+            value={field.value || NONE}
+            onValueChange={(value) => field.onChange(value === NONE ? "" : value)}
+          >
+            <SelectTrigger aria-label="Assign to" className="w-full mt-2 border-primary">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NONE}>-- Select assignee email --</SelectItem>
+              {projectUsers?.projectUsers?.map((projectUser) => (
+                <SelectItem key={projectUser.email} value={projectUser.email}>
+                  {projectUser.email}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      />
 
       {/* Task priority */}
       <label className="text-sm font-medium mt-3">Priority:</label>
-      <select
-        {...register("priorityId")}
-        className="border border-primary p-2 rounded w-full mt-2"
-      >
-        <option value="">-- Select task priority --</option>
-        {taskPriorities?.map((taskPriority) => (
-          <option key={taskPriority.id} value={taskPriority.id}>
-            {taskPriority.name} ({taskPriority.priorityValue})
-          </option>
-        ))}
-      </select>
+      <Controller
+        control={control}
+        name="priorityId"
+        render={({ field }) => (
+          <Select
+            value={field.value || NONE}
+            onValueChange={(value) => field.onChange(value === NONE ? "" : value)}
+          >
+            <SelectTrigger aria-label="Priority" className="w-full mt-2 border-primary">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NONE}>-- Select task priority --</SelectItem>
+              {taskPriorities?.map((taskPriority) => (
+                <SelectItem key={taskPriority.id} value={taskPriority.id}>
+                  {taskPriority.name} ({taskPriority.priorityValue})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      />
 
       {/* Task labels */}
       <label className="text-sm font-medium mt-3">Labels:</label>

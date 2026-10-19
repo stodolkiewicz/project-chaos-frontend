@@ -5,12 +5,16 @@ import { useAppSelector } from "@/app/hooks";
 import ProjectInformation from "./ProjectInformation";
 import ProjectMembers from "./ProjectMembers";
 import { useGetProjectInvitationsQuery } from "@/app/state/ProjectInvitationsApiSlice";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface ProjectDetailsContentProps {
   projectId: string;
 }
 
 export default function ProjectDetailsContent({ projectId }: ProjectDetailsContentProps) {
+  const router = useRouter();
   const userEmail = useAppSelector((state) => state.user.email);
   
   const { 
@@ -49,8 +53,12 @@ export default function ProjectDetailsContent({ projectId }: ProjectDetailsConte
 
   return (
     <div className="container mx-auto py-8">
-      <div className="mb-8">
+      <div className="mb-8 flex items-center justify-between gap-4">
         <h1 className="text-3xl font-bold text-primary-darker-2 mb-2">{project.name}</h1>
+        <Button variant="outline" onClick={() => router.push(`/projects/${projectId}/settings`)}>
+          <Settings aria-hidden="true" />
+          Settings
+        </Button>
       </div>
 
       <div className="space-y-8">

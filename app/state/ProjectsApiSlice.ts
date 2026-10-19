@@ -62,6 +62,8 @@ export const projectsApi = baseApi.injectEndpoints({
           : [
               { type: "Project", id: projectId },
               { type: "Columns", id: projectId },
+              // The default preferences depend on which column is the last one
+              { type: "ColumnPreferences", id: projectId },
               { type: "BoardTasks", id: projectId },
             ],
     }),

@@ -1,5 +1,5 @@
 import confetti from "canvas-confetti";
-import type { ColumnDTO } from "@/app/types/ColumnDTO";
+import type { ColumnSound } from "@/app/types/ColumnSound";
 
 const STANDARD_BURST: confetti.Options = {
   particleCount: 120,
@@ -19,18 +19,11 @@ export function celebrate(origin?: { x: number; y: number }): void {
   });
 }
 
-export function isLastColumn(
-  columnId: string,
-  columns: ColumnDTO[]
-): boolean {
-  return columns[columns.length - 1].id === columnId;
-}
-
-const sounds = [
-  { audio: new Audio("/sounds/wow.mp3"), weight: 0.15, volume: 0.7 },
-  { audio: new Audio("/sounds/tada.mp3"), weight: 0.6, volume: 0.7 },
-  { audio: new Audio("/sounds/yeahboy.mp3"), weight: 0.15, volume: 0.7 },
-  { audio: new Audio("/sounds/sogood.mp3"), weight: 0.1, volume: 1.0 },
+// "weight" is the chance of the sound in a random pick
+const sounds: { key: ColumnSound; audio: HTMLAudioElement; weight: number; volume: number }[] = [
+  { key: "WOW", audio: new Audio("/sounds/wow.mp3"), weight: 0.2, volume: 0.7 },
+  { key: "TADA", audio: new Audio("/sounds/tada.mp3"), weight: 0.6, volume: 0.7 },
+  { key: "YEAHBOY", audio: new Audio("/sounds/yeahboy.mp3"), weight: 0.2, volume: 0.7 },
 ];
 
 sounds.forEach(s => s.audio.preload = "auto");
@@ -52,4 +45,18 @@ export function playRandomCelebratoryAudio(clone = false) {
     }
     r -= weight;
   }
+}
+
+export function playColumnSound(sound: ColumnSound) {
+  if (sound === "RANDOM") {
+    playRandomCelebratoryAudio();
+    return;
+  }
+
+  const chosen = sounds.find((s) => s.key === sound);
+  if (!chosen) return;
+
+  chosen.audio.currentTime = 0;
+  chosen.audio.volume = chosen.volume;
+  chosen.audio.play().catch(() => {});
 }

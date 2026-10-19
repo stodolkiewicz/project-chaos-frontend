@@ -1,12 +1,18 @@
 "use client";
 
 import { useAppSelector } from "@/app/hooks";
-import { useGetColumnsQuery } from "@/app/state/ColumnsApiSlice";
+import {
+  useGetColumnPreferencesQuery,
+  useGetColumnsQuery,
+} from "@/app/state/ColumnsApiSlice";
 import {
   useGetBoardTasksQuery,
   useMoveTaskMutation,
 } from "@/app/state/TasksApiSlice";
-import { useGetProjectQuery } from "@/app/state/ProjectsApiSlice";
+import {
+  useGetProjectQuery,
+  useGetUserProjectsQuery,
+} from "@/app/state/ProjectsApiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import {
   DndContext,
@@ -21,7 +27,7 @@ import CreateProjectForm from "./CreateProject/CreateProjectForm";
 import ProjectMenu from "./ProjectMenu";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
-import { celebrate, isLastColumn, playRandomCelebratoryAudio } from "@/lib/celebrate";
+import { celebrate, playColumnSound } from "@/lib/celebrate";
 import Backlog from "./Backlog/Backlog";
 import Archived from "./Archived/Archived";
 import KanbanBoard from "./KanbanBoard";
@@ -77,10 +83,13 @@ export default function DashboardContent() {
         },
       }).unwrap();
 
+      const preference = columnPreferences?.find(
+        (p) => p.columnId === columnBeingDroppedIntoId
+      );
       if (
         sourceColumnId &&
         sourceColumnId !== columnBeingDroppedIntoId &&
-        isLastColumn(columnBeingDroppedIntoId, columns)
+        preference
       ) {
         const origin = taskRectAtDrop
           ? {
@@ -93,8 +102,8 @@ export default function DashboardContent() {
             }
           : undefined;
 
-        celebrate(origin);
-        playRandomCelebratoryAudio();
+        if (preference.confetti) celebrate(origin);
+        playColumnSound(preference.sound);
       }
     } catch (err) {
       handleApiError(err);
@@ -127,6 +136,18 @@ export default function DashboardContent() {
     skip:
       !useAppSelector((state) => state.user.accessToken) || !defaultProjectId,
   });
+
+  const userEmail = useAppSelector((state) => state.user.email);
+  const { data: userProjects } = useGetUserProjectsQuery(userEmail);
+  const projectRole = userProjects?.projects.find(
+    (p) => p.projectId === defaultProjectId
+  )?.projectRole;
+
+  // A viewer can not move tasks, and the backend gives preferences only to members
+  const { data: columnPreferences } = useGetColumnPreferencesQuery(
+    defaultProjectId,
+    { skip: !defaultProjectId || !projectRole || projectRole === "VIEWER" }
+  );
 
   if (!defaultProjectId || !columns) {
     // console.log("columns - not there!");
