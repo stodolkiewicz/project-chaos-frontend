@@ -23,6 +23,7 @@ import { useAppSelector } from "@/app/hooks";
 import { useChangeProjectForUserMutation } from "@/app/state/UsersApiSlice";
 import AddUserDialog from "./AddUser/AddUserDialog";
 import AddUserForm from "./AddUser/AddUserForm";
+import EditProjectDialog from "./CreateProject/EditProjectDialog";
 
 type ProjectMenuProps = {
   projectName: string;
@@ -38,6 +39,7 @@ export default function ProjectMenu({
     useState(false);
   const [isAddUserToProjectDialogOpen, setIsAddUserToProjectDialogOpen] =
     useState(false);
+  const [isEditProjectDialogOpen, setIsEditProjectDialogOpen] = useState(false);
 
   const userEmail = useAppSelector((state) => state.user.email);
   const {
@@ -49,6 +51,8 @@ export default function ProjectMenu({
   const currentProject = userProjects?.projects.find(
     (project) => project.projectId == currentProjectId
   );
+
+  const isAdmin = currentProject?.projectRole === "ADMIN";
 
   const otherProjects = userProjects?.projects.filter(
     (project) => project.projectId != currentProjectId
@@ -63,7 +67,24 @@ export default function ProjectMenu({
   return (
     <div className="flex items-center justify-center mt-4 mb-4">
       <div className="flex items-center p-2  transition-all duration-200 text-primary-darker-2 hover:bg-panel border-0 rounded-md">
-        <span className="text-2xl font-bold mr-2 text-[#1e293b] dark:text-primary-darker-2">{projectName}</span>
+        {isAdmin ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={() => setIsEditProjectDialogOpen(true)}
+                className="text-2xl font-bold mr-2 text-[#1e293b] dark:text-primary-darker-2 cursor-pointer"
+              >
+                {projectName}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit project</p>
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="text-2xl font-bold mr-2 text-[#1e293b] dark:text-primary-darker-2">{projectName}</span>
+        )}
         <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened}>
           <DropdownMenuTrigger>
             <TooltipProvider>
@@ -110,7 +131,7 @@ export default function ProjectMenu({
               <span className="font-medium">Create new project </span>
             </DropdownMenuItem>
             
-            {currentProject?.projectRole === "ADMIN" && (
+            {isAdmin && (
             <DropdownMenuItem
               onClick={(e) => {
                 e.preventDefault();
@@ -138,6 +159,13 @@ export default function ProjectMenu({
         >
           {(onClose) => <AddUserForm onClose={onClose}></AddUserForm>}
         </AddUserDialog>
+        {isAdmin && (
+          <EditProjectDialog
+            projectId={currentProjectId}
+            isOpen={isEditProjectDialogOpen}
+            setIsOpen={setIsEditProjectDialogOpen}
+          />
+        )}
       </div>
     </div>
   );

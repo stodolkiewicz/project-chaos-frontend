@@ -2,6 +2,7 @@ import { UserProjectsResponseDTO } from "../types/UserProjectsResponseDTO";
 import { ProjectDTO } from "../types/ProjectDTO";
 import { CreateProjectRequestDTO } from "../types/CreateProjectRequestDTO";
 import { CreateProjectResponseDTO } from "../types/CreateProjectResponseDTO";
+import { UpdateProjectRequestDTO } from "../types/UpdateProjectRequestDTO";
 import { ProjectUsersDTO } from "../types/ProjectUsersDTO";
 import { AssignUserToProjectRequestDTO } from "../types/AssignUserToProjectRequestDTO";
 import { AssignUserToProjectResponseDTO } from "../types/AssignUserToProjectResponseDTO";
@@ -44,6 +45,25 @@ export const projectsApi = baseApi.injectEndpoints({
         body: createProjectRequestDTO,
       }),
       invalidatesTags: [{ type: "Project", id: "LIST" }, "DefaultProject"],
+    }),
+
+    updateProject: builder.mutation<
+      void,
+      { projectId: string; body: UpdateProjectRequestDTO }
+    >({
+      query: ({ projectId, body }) => ({
+        url: `/api/v1/projects/${projectId}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: (result, error, { projectId }) =>
+        error
+          ? []
+          : [
+              { type: "Project", id: projectId },
+              { type: "Columns", id: projectId },
+              { type: "BoardTasks", id: projectId },
+            ],
     }),
 
     deleteProject: builder.mutation<void, string>({
@@ -141,6 +161,7 @@ export const {
   useGetProjectQuery,
   useGetProjectUsersQuery,
   useCreateProjectMutation,
+  useUpdateProjectMutation,
   useDeleteProjectMutation,
   useAddUserToProjectMutation,
   useRemoveUserFromProjectMutation,
