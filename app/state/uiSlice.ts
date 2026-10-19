@@ -1,10 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { TaskEditField } from "@/app/types/TaskEditField";
 
 interface UiState {
   isAIChatOpen: boolean;
   isBoardOpen: boolean;
   isBacklogOpen: boolean;
   isArchiveOpen: boolean;
+  // Only one task card is edited at a time
+  editingTask: { taskId: string; field: TaskEditField } | null;
 }
 
 const initialState: UiState = {
@@ -12,7 +15,7 @@ const initialState: UiState = {
   isBoardOpen: true,
   isBacklogOpen: false,
   isArchiveOpen: false,
-
+  editingTask: null,
 };
 
 export const uiSlice = createSlice({
@@ -42,9 +45,15 @@ export const uiSlice = createSlice({
     },
     setArchiveOpen: (state, action: PayloadAction<boolean>) => {
       state.isArchiveOpen = action.payload;
+    },
+    startTaskEdit: (state, action: PayloadAction<{ taskId: string; field: TaskEditField }>) => {
+      state.editingTask = action.payload;
+    },
+    stopTaskEdit: (state) => {
+      state.editingTask = null;
     }
   },
 });
 
-export const { setAIChatOpen, toggleAIChat, toggleBoardOpen, setBoardOpen, toggleBacklogOpen, setBacklogOpen, toggleArchiveOpen, setArchiveOpen } = uiSlice.actions;
+export const { setAIChatOpen, toggleAIChat, toggleBoardOpen, setBoardOpen, toggleBacklogOpen, setBacklogOpen, toggleArchiveOpen, setArchiveOpen, startTaskEdit, stopTaskEdit } = uiSlice.actions;
 export default uiSlice.reducer;

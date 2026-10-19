@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useGetTaskPrioritiesQuery } from "@/app/state/TaskPrioritiesApiSlice";
-import { useCreateTaskMutation } from "@/app/state/TasksApiSlice";
+import { useCreateTaskMutation, useUpdateTaskMutation } from "@/app/state/TasksApiSlice";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,9 @@ import {
 import { HexColorPicker } from "react-colorful";
 import { useGetLabelsQuery } from "@/app/state/LabelsApiSlice";
 import { useErrorHandler } from "@/app/hooks/useErrorHandler";
+import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
+import { UpdateTaskDTO } from "@/app/types/UpdateTaskDTO";
+import { buildUpdatedTask } from "../Task/buildUpdatedTask";
 
 type Label = {
   name: string;
@@ -46,9 +49,11 @@ type CreateTaskFormProps = {
   onClose: () => void;
   initialTitle?: string;
   initialDescription?: string;
+  // When set, the form edits this task instead of creating a new one
+  taskToEdit?: BoardTaskDTO;
 };
 
-const generateRandomColor = () => {
+export const generateRandomColor = () => {
   return (
     "#" +
     Math.floor(Math.random() * 16777215)
@@ -64,6 +69,7 @@ export default function CreateTaskForm({
   onClose,
   initialTitle,
   initialDescription,
+  taskToEdit,
 }: CreateTaskFormProps) {
   const {
     register,
@@ -73,10 +79,18 @@ export default function CreateTaskForm({
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<CreateTaskFormData>({
-    defaultValues: {
-      title: initialTitle,
-      description: initialDescription,
-    },
+    defaultValues: taskToEdit
+      ? {
+          title: taskToEdit.title,
+          description: taskToEdit.description ?? "",
+          assigneeEmail: taskToEdit.assignee.email ?? "",
+          priorityId: taskToEdit.priority.id ?? "",
+          labels: taskToEdit.labels.map(({ name, color }) => ({ name, color })),
+        }
+      : {
+          title: initialTitle,
+          description: initialDescription,
+        },
   });
 
   const { data } = useGetDefaultProjectIdQuery();
@@ -116,8 +130,22 @@ export default function CreateTaskForm({
     setValue("columnId", columnId);
   });
 
+  // The selects get their options after the form mounts, so the edited values are set again once options exist
+  useEffect(() => {
+    if (taskToEdit && projectUsers) {
+      setValue("assigneeEmail", taskToEdit.assignee.email ?? "");
+    }
+  }, [taskToEdit, projectUsers, setValue]);
+
+  useEffect(() => {
+    if (taskToEdit && taskPriorities) {
+      setValue("priorityId", taskToEdit.priority.id ?? "");
+    }
+  }, [taskToEdit, taskPriorities, setValue]);
+
   const [createTask, { isLoading, isSuccess, isError }] =
     useCreateTaskMutation();
+  const [updateTask] = useUpdateTaskMutation();
 
   const { handleApiError } = useErrorHandler();
 
@@ -126,13 +154,19 @@ export default function CreateTaskForm({
       ...createTaskFormData,
       stage,
       labels: createTaskFormData.labels.filter((label, index, array) => {
-        const firstOccurrenceIndex = array.findIndex(
-          (l) => l.name.trim() === label.name.trim()
+        // The backend stores label names trimmed and lower-cased, so they are compared the same way
+        const lastOccurrenceIndex = array.findLastIndex(
+          (l) => l.name.trim().toLowerCase() === label.name.trim().toLowerCase()
         );
-        // leave only if it is first occurence
-        return index === firstOccurrenceIndex && label.name !== "";
+        // leave only the last occurrence, so a label added again overrides the color
+        return index === lastOccurrenceIndex && label.name !== "";
       }),
     };
+
+    if (taskToEdit) {
+      await saveEditedTask(createTaskFormDataNoEmptyLabels);
+      return;
+    }
 
     try {
       await createTask({
@@ -151,13 +185,52 @@ export default function CreateTaskForm({
     reset();
   };
 
+  const saveEditedTask = async (formData: CreateTaskFormData) => {
+    if (!taskToEdit || !defaultProjectId) return;
+
+    const updateTaskDTO: UpdateTaskDTO = {
+      title: formData.title.trim(),
+      description: formData.description ?? "",
+      assigneeEmail: formData.assigneeEmail || null,
+      priorityId: formData.priorityId || null,
+      labels: formData.labels,
+    };
+
+    try {
+      await updateTask({
+        projectId: defaultProjectId,
+        taskId: taskToEdit.taskId,
+        updateTaskDTO,
+        updatedTask: buildUpdatedTask(taskToEdit, updateTaskDTO, taskPriorities),
+      }).unwrap();
+
+      toast.success(`Task "${updateTaskDTO.title}" was updated.`);
+      onClose();
+    } catch (err) {
+      handleApiError(
+        err,
+        `There was an error while updating "${updateTaskDTO.title}" task.`
+      );
+    }
+  };
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: "labels",
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col p-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col p-4"
+      onKeyDown={(e) => {
+        // Ctrl+Enter saves an edited task, as in the inline edit mode
+        if (taskToEdit && e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          handleSubmit(onSubmit)();
+        }
+      }}
+    >
       {/* TITLE */}
       <div>
         <label className="block text-sm font-medium">Title:</label>
@@ -303,13 +376,32 @@ export default function CreateTaskForm({
       </div>
 
       {/* SUBMIT BUTTON */}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-azure-600 self-end disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        Create task
-      </button>
+      {taskToEdit ? (
+        <div className="mt-4 flex gap-2 self-end">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded hover:bg-muted"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-primary text-white px-4 py-2 rounded hover:bg-azure-600 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            Save
+          </button>
+        </div>
+      ) : (
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-azure-600 self-end disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Create task
+        </button>
+      )}
     </form>
   );
 }

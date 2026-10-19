@@ -2,7 +2,8 @@ import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { TaskStage } from "@/app/types/TaskStage";
 import DeleteTaskAlertDialog from "./DeleteTaskAlertDialog";
 import TaskCommentsDialog from "./TaskDetailsDialog";
-import { MoreVertical, Trash2, Archive, RotateCcw, Calendar, CheckCheck, ArrowUpLeft, Undo2, Play, LayoutDashboard, Inbox, ListPlus, FileText } from "lucide-react";
+import EditTaskDialog from "./EditTaskDialog";
+import { MoreVertical, Pencil, Trash2, Archive, RotateCcw, Calendar, CheckCheck, ArrowUpLeft, Undo2, Play, LayoutDashboard, Inbox, ListPlus, FileText } from "lucide-react";
 import { 
   useMoveTasksToBacklogMutation, 
   useMoveTasksToArchiveMutation, 
@@ -15,6 +16,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { memo, useState } from "react";
@@ -69,6 +71,20 @@ const TaskMenu = memo(function TaskMenu({
             Task Details
           </DropdownMenuItem>
         </TaskCommentsDialog>
+      )
+    });
+
+    // The shortcut text teaches that double-clicking a field also edits the task
+    options.push({
+      type: "edit",
+      component: (
+        <EditTaskDialog key="edit" boardTask={boardTask}>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <Pencil className="h-4 w-4 mr-2" />
+            Edit Task
+            <DropdownMenuShortcut className="pl-4 tracking-normal">Double-click</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </EditTaskDialog>
       )
     });
 

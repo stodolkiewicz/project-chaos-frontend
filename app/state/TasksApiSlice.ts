@@ -2,6 +2,7 @@ import { BoardTaskDTO } from "../types/BoardTasksDTO";
 import { CreateTaskFormData } from "../(routes)/dashboard/components/CreateTask/CreateTaskForm";
 import { UpdateTaskColumnDTO } from "../types/UpdateTaskColumnDTO";
 import { MoveTasksRequestDTO } from "../types/MoveTasksRequestDTO";
+import { UpdateTaskDTO } from "../types/UpdateTaskDTO";
 import baseApi from "./baseApi";
 
 export const tasksApi = baseApi.injectEndpoints({
@@ -174,6 +175,50 @@ export const tasksApi = baseApi.injectEndpoints({
         }
       },
     }),
+    updateTask: builder.mutation<
+      void,
+      {
+        projectId: string;
+        taskId: string;
+        updateTaskDTO: UpdateTaskDTO;
+        // The task as it looks after the update; it replaces the cached one
+        updatedTask: BoardTaskDTO;
+      }
+    >({
+      query: ({ projectId, taskId, updateTaskDTO }) => ({
+        url: `/api/v1/projects/${projectId}/tasks/${taskId}`,
+        method: "PUT",
+        body: updateTaskDTO,
+      }),
+      // pessimistic update; the cache is patched before the refetch, so the card does not flash old data
+      async onQueryStarted(
+        { projectId, taskId, updatedTask },
+        { dispatch, queryFulfilled }
+      ) {
+        try {
+          await queryFulfilled;
+          const replaceTask = (draft: BoardTaskDTO[]) => {
+            const index = draft.findIndex((task) => task.taskId === taskId);
+            if (index !== -1) {
+              draft[index] = updatedTask;
+            }
+          };
+          dispatch(tasksApi.util.updateQueryData("getBoardTasks", projectId, replaceTask));
+          dispatch(tasksApi.util.updateQueryData("getBacklogTasks", projectId, replaceTask));
+          dispatch(tasksApi.util.updateQueryData("getArchivedTasks", projectId, replaceTask));
+          dispatch(
+            baseApi.util.invalidateTags([
+              { type: "BoardTasks", id: projectId },
+              { type: "BacklogTasks", id: projectId },
+              { type: "ArchivedTasks", id: projectId },
+              { type: "Labels", id: projectId },
+            ])
+          );
+        } catch (error) {
+          console.error("Failed to update task:", error);
+        }
+      },
+    }),
     moveTask: builder.mutation<
       void,
       {
@@ -318,6 +363,7 @@ export const {
   useDeleteArchivedTaskMutation,
   useDeleteTaskMutation,
   useCreateTaskMutation,
+  useUpdateTaskMutation,
   useMoveTaskMutation,
   useMoveTasksToBacklogMutation,
   useMoveTasksToArchiveMutation,

@@ -11,6 +11,8 @@ import { useState } from "react";
 import TaskMenu from "./TaskMenu";
 import UnreadCommentsButton from "./UnreadCommentsButton";
 import { getLabelColors } from "./taskCardStyles";
+import { TaskEditField } from "@/app/types/TaskEditField";
+import { EDITABLE_FIELD_CLASS, EDITABLE_LABEL_CLASS, editTriggerProps } from "./taskEditTrigger";
 
 interface TaskHeaderProps {
   boardTask: BoardTaskDTO;
@@ -18,6 +20,7 @@ interface TaskHeaderProps {
   listeners?: React.HTMLAttributes<HTMLDivElement>;
   attributes?: React.HTMLAttributes<HTMLDivElement>;
   disableDrag?: boolean;
+  onStartEdit: (field: TaskEditField) => void;
 }
 
 export default function TaskHeader({
@@ -26,6 +29,7 @@ export default function TaskHeader({
   listeners,
   attributes,
   disableDrag = false,
+  onStartEdit,
 }: TaskHeaderProps) {
   const { active } = useDndContext();
   const isDragging = active?.id === boardTask.taskId;
@@ -59,7 +63,12 @@ export default function TaskHeader({
           </Tooltip>
         )}
 
-        <h6 className="flex-1 min-w-0 font-medium break-words">{boardTask.title}</h6>
+        <h6
+          className={`flex-1 min-w-0 font-medium break-words ${EDITABLE_FIELD_CLASS}`}
+          {...editTriggerProps("title", onStartEdit)}
+        >
+          {boardTask.title}
+        </h6>
 
         <UnreadCommentsButton boardTask={boardTask} />
 
@@ -71,8 +80,9 @@ export default function TaskHeader({
           {boardTask.labels.map((label) => (
             <span
               key={label.id}
-              className="rounded-full px-2 py-0 text-xs font-medium"
+              className={`rounded-full px-2 py-0 text-xs font-medium ${EDITABLE_LABEL_CLASS}`}
               style={getLabelColors(label.color)}
+              {...editTriggerProps("labels", onStartEdit)}
             >
               {label.name}
             </span>
