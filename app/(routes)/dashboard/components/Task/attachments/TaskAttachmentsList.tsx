@@ -134,7 +134,7 @@ export function TaskAttachmentsList({ projectId, taskId, uploadingFileName, hide
         {attachments.map((attachment) => (
           <div
             key={attachment.id}
-            className="flex items-center gap-2 px-2 py-1.5 bg-white border border-gray-200 hover:border-primary rounded text-xs group transition-all duration-200"
+            className="flex items-center gap-2 px-2 py-1.5 bg-panel border border-gray-200 hover:border-primary rounded text-xs group transition-all duration-200"
           >
             <div className="flex-shrink-0">
               {getFileIcon(attachment.contentType)}

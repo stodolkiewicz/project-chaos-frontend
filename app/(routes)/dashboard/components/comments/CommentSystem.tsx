@@ -68,15 +68,15 @@ const CommentSystem = ({ comments, onAddComment, pagination }: CommentSystemProp
         />
 
       {/* New comment */}
-      <div className="p-3 bg-white rounded-lg border">
+      <div className="p-3 bg-panel rounded-lg border">
         <h4 className="text-base font-semibold mb-3">Add Comment</h4>
         
         {/* Show comment being replied to */}
         {replyingTo && (
-          <div className="mb-3 bg-blue-50 border-l-4 border-blue-500 p-3 rounded-md">
+          <div className="mb-3 bg-primary-lighter-3 border-l-4 border-blue-500 p-3 rounded-md">
             <div className="flex justify-between items-start">
               <div>
-                <div className="text-sm text-blue-600 mb-1">
+                <div className="text-sm text-blue-600 dark:text-blue-300 mb-1">
                   Replying to {replyingTo.lastModifiedBy}:
                 </div>
                 <div className="text-sm italic text-gray-700">
@@ -104,7 +104,7 @@ const CommentSystem = ({ comments, onAddComment, pagination }: CommentSystemProp
         <div className="flex mt-3">
           <button
             onClick={handleSubmit}
-            className="bg-primary text-white px-3 py-1 text-base rounded-md hover:bg-primary-darker-1 ml-auto"
+            className="bg-primary text-white px-3 py-1 text-base rounded-md hover:bg-primary-hover ml-auto"
             disabled={!newComment}
           >
             {replyingTo ? 'Post Reply' : 'Post Comment'}

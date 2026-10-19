@@ -1,7 +1,7 @@
-// Share of white mixed into the label color for the chip background
-const LABEL_BACKGROUND_WHITE_RATIO = 0.85;
-// Share of the label color kept for the chip text; the rest is black
-const LABEL_TEXT_COLOR_RATIO = 0.45;
+// Share of the label color in the chip background; the rest is --label-background-base (white in the light theme)
+const LABEL_BACKGROUND_COLOR_PERCENT = 15;
+// Share of the label color in the chip text; the rest is --label-text-base (black in the light theme)
+const LABEL_TEXT_COLOR_PERCENT = 45;
 
 // Avatar backgrounds; each one keeps white initials readable
 const AVATAR_COLORS = [
@@ -15,25 +15,11 @@ const AVATAR_COLORS = [
   "#a16207",
 ];
 
-function hexToRgb(hexColor: string): [number, number, number] {
-  const hex = hexColor.replace("#", "");
-  return [
-    parseInt(hex.substring(0, 2), 16),
-    parseInt(hex.substring(2, 4), 16),
-    parseInt(hex.substring(4, 6), 16),
-  ];
-}
-
-function rgb([r, g, b]: number[]): string {
-  return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-}
-
-// Returns a light background and a dark text color derived from the label color
+// Returns a background and a text color derived from the label color; both follow the current theme
 export function getLabelColors(labelColor: string): { background: string; color: string } {
-  const channels = hexToRgb(labelColor);
   return {
-    background: rgb(channels.map((c) => c + (255 - c) * LABEL_BACKGROUND_WHITE_RATIO)),
-    color: rgb(channels.map((c) => c * LABEL_TEXT_COLOR_RATIO)),
+    background: `color-mix(in srgb, ${labelColor} ${LABEL_BACKGROUND_COLOR_PERCENT}%, var(--label-background-base))`,
+    color: `color-mix(in srgb, ${labelColor} ${LABEL_TEXT_COLOR_PERCENT}%, var(--label-text-base))`,
   };
 }
 

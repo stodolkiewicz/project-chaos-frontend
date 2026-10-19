@@ -13,7 +13,7 @@ export default function LoginButton() {
     <Button
       variant="outline"
       onClick={handleLogin}
-      className="w-full flex items-center justify-center gap-2 bg-white text-gray-900 hover:bg-gray-100"
+      className="w-full flex items-center justify-center gap-2 bg-panel text-foreground hover:bg-muted"
     >
       <FcGoogle className="w-5 h-5" />
       <span>Continue with Google</span>

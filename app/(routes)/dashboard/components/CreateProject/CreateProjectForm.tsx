@@ -12,13 +12,15 @@ import {
   useForm,
 } from "react-hook-form";
 import { CreateProjectRequestDTO } from "@/app/types/CreateProjectRequestDTO";
+import { ColumnColor, firstUnusedColumnColor } from "@/app/types/ColumnColor";
+import ColumnColorPicker from "./ColumnColorPicker";
 
 import { toast } from "sonner";
 
 export type CreateProjectFormData = {
   name: string;
   description: string;
-  columns: { name: string }[];
+  columns: { name: string; color: ColumnColor }[];
 };
 
 export default function CreateProjectForm({
@@ -46,9 +48,9 @@ export default function CreateProjectForm({
     }
 
     try {
-      const createProjectRequestDTO = {
+      const createProjectRequestDTO: CreateProjectRequestDTO = {
         ...data,
-        columns: data.columns.map((col) => col.name),
+        columns: data.columns.map(({ name, color }) => ({ name, color })),
       };
       await createProject(createProjectRequestDTO).unwrap();
 
@@ -68,9 +70,9 @@ export default function CreateProjectForm({
   useEffect(() => {
     const columns = getValues("columns");
     if (!columns || columns.length === 0) {
-      append({ name: "To do" });
-      append({ name: "In progress" });
-      append({ name: "Done" });
+      append({ name: "To do", color: firstUnusedColumnColor([]) });
+      append({ name: "In progress", color: firstUnusedColumnColor(["GRAY"]) });
+      append({ name: "Done", color: firstUnusedColumnColor(["GRAY", "BLUE"]) });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -84,7 +86,7 @@ export default function CreateProjectForm({
       return;
     }
     setColumnError("");
-    append({ name: "" });
+    append({ name: "", color: firstUnusedColumnColor(columns.map((column) => column.color)) });
   };
 
   return (
@@ -139,10 +141,20 @@ export default function CreateProjectForm({
               <>
                 <div className="flex items-center w-full">
                   <div className="mr-2 w-6">{index + 1}. </div>
+                  <Controller
+                    control={control}
+                    name={`columns.${index}.color`}
+                    render={({ field: colorField }) => (
+                      <ColumnColorPicker
+                        value={colorField.value}
+                        onChange={colorField.onChange}
+                      />
+                    )}
+                  />
                   <Input
                     {...field}
                     placeholder="Label name"
-                    className="flex-1"
+                    className="flex-1 ml-2"
                   />
                 </div>
               </>

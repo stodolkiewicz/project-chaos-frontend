@@ -24,6 +24,14 @@
   --color-chat-assistant: var(--color-chat-assistant);
   --color-text-muted: var(--color-text-muted);
   --color-hover: var(--color-hover);
+  --color-header-bar: var(--color-header-bar);
+  --color-header-bar-border: var(--color-header-bar-border);
+  --color-header-bar-icon: var(--color-header-bar-icon);
+  --color-header-bar-icon-hover: var(--color-header-bar-icon-hover);
+  --color-header-bar-hover: var(--color-header-bar-hover);
+  --color-header: var(--color-header);
+  --color-header-hover: var(--color-header-hover);
+  --color-primary-hover: var(--color-primary-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -85,7 +93,7 @@
   /* layout */
   --color-page: #f8fafc;
   --color-panel: #ffffff;
-  --color-panel-muted: #f1f5f9;
+  --color-panel-muted: #eef2f6;
   
   /* borders */
   --color-divider: #e5e7eb;
@@ -100,6 +108,24 @@
   
   /* hover */
   --color-hover: #eef2f7;
+
+  /* top menu bar; blue is left only for the active view in the section switcher */
+  --color-header-bar: #ffffff;
+  --color-header-bar-border: #e2e8f0;
+  --color-header-bar-icon: #64748b;
+  --color-header-bar-icon-hover: #0f172a;
+  --color-header-bar-hover: #f1f5f9;
+
+  /* section headers */
+  --color-header: var(--primary);
+  --color-header-hover: #1953bf;
+
+  /* hover of filled primary buttons */
+  --color-primary-hover: #1953bf;
+
+  /* Label chips mix the label color with these, see getLabelColors */
+  --label-background-base: #ffffff;
+  --label-text-base: #000000;
 
   /* task card */
   --task-drag-handle-size: 16px;
@@ -132,23 +158,32 @@
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
+  --background: #0b1220;
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
+  --card: #1a2332;
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
+  --popover: #1a2332;
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
+  /* The brand blue stays the same in both themes */
+  --primary: #2b7fff;
+  --primary-foreground: oklch(0.985 0 0);
+  /* "lighter" shades are subtle tints and "darker" shades are high-contrast accents, so in the dark theme they swap brightness */
+  --primary-lighter-3: #0f1e3a;
+  --primary-lighter-2: #16305e;
+  --primary-lighter-1: #1d3f7a;
+  --primary-darker-1: #6aa5ff;
+  --primary-darker-2: #8fbaff;
+  --primary-darker-3: #b4d1ff;
+  --primary-darker-4: #dbe8ff;
+  --secondary: #223044;
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
+  --muted: #223044;
+  --muted-foreground: #94a3b8;
+  --accent: #223044;
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: #2a3647;
+  --input: #2a3647;
   --ring: oklch(0.552 0.016 285.938);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -163,6 +198,57 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.552 0.016 285.938);
+
+  --color-bg: #0b1220;
+  --color-surface: #1a2332;
+  --color-surface-2: #111a27;
+  --color-border: #2a3647;
+  --color-page: #0b1220;
+  --color-panel: #1a2332;
+  --color-panel-muted: #111a27;
+  --color-divider: #2a3647;
+  --color-chat-assistant: #1a2332;
+  --color-text-muted: #94a3b8;
+  --color-text-subtle: #64748b;
+  --color-hover: #223044;
+  /* Full brand blue is too bright for large areas on a dark page, so the bars use deep blues */
+  --color-header-bar: #13213b;
+  --color-header-bar-border: #2a3647;
+  --color-header-bar-icon: rgb(255 255 255 / 0.8);
+  --color-header-bar-icon-hover: #ffffff;
+  --color-header-bar-hover: rgb(255 255 255 / 0.1);
+  --color-header: #1c3766;
+  --color-header-hover: #234482;
+  --color-primary-hover: #1f6ae0;
+
+  /* Label chips mix the label color with these, see getLabelColors */
+  --label-background-base: #1a2332;
+  --label-text-base: #ffffff;
+
+  /* Many components use fixed gray and slate classes, e.g. text-gray-500 or bg-gray-100.
+     Reversing both scales keeps their contrast in the dark theme without dark: variants on every class */
+  --color-gray-50: oklch(13% 0.028 261.692);
+  --color-gray-100: oklch(21% 0.034 264.665);
+  --color-gray-200: oklch(27.8% 0.033 256.848);
+  --color-gray-300: oklch(37.3% 0.034 259.733);
+  --color-gray-400: oklch(44.6% 0.03 256.802);
+  --color-gray-500: oklch(70.7% 0.022 261.325);
+  --color-gray-600: oklch(70.7% 0.022 261.325);
+  --color-gray-700: oklch(87.2% 0.01 258.338);
+  --color-gray-800: oklch(92.8% 0.006 264.531);
+  --color-gray-900: oklch(96.7% 0.003 264.542);
+  --color-gray-950: oklch(98.5% 0.002 247.839);
+  --color-slate-50: oklch(12.9% 0.042 264.695);
+  --color-slate-100: oklch(20.8% 0.042 265.755);
+  --color-slate-200: oklch(27.9% 0.041 260.031);
+  --color-slate-300: oklch(37.2% 0.044 257.287);
+  --color-slate-400: oklch(44.6% 0.043 257.281);
+  --color-slate-500: oklch(70.4% 0.04 256.788);
+  --color-slate-600: oklch(70.4% 0.04 256.788);
+  --color-slate-700: oklch(86.9% 0.022 252.894);
+  --color-slate-800: oklch(92.9% 0.013 255.508);
+  --color-slate-900: oklch(96.8% 0.007 247.896);
+  --color-slate-950: oklch(98.4% 0.003 247.858);
 }
 
 @layer base {

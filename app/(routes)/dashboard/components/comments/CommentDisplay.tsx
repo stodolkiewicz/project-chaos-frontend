@@ -12,7 +12,7 @@ const CommentDisplay = ({ comment, onReply }: CommentDisplayProps) => {
   const htmlContent = convertTipTapContentToHtml(comment.content)
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm">
+    <div className="bg-panel border border-gray-200 rounded-lg p-3 shadow-sm">
       {/* Comment header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
@@ -28,7 +28,7 @@ const CommentDisplay = ({ comment, onReply }: CommentDisplayProps) => {
         
         <button
           onClick={onReply}
-          className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+          className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
         >
           Reply
         </button>

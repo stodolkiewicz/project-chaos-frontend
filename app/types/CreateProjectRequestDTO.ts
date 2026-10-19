@@ -1,5 +1,7 @@
+import { ColumnColor } from "./ColumnColor";
+
 export type CreateProjectRequestDTO = {
   name: string;
   description: string;
-  columns: string[];
+  columns: { name: string; color: ColumnColor }[];
 };

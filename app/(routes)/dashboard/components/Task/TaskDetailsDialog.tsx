@@ -62,7 +62,7 @@ export default function TaskCommentsDialog({
             Details, attachments and comments of the task.
           </DialogDescription>
         </DialogHeader>
-        <div className="p-3 bg-white rounded-lg">
+        <div className="p-3 bg-panel rounded-lg">
           {editingField ? (
             <TaskEditForm
               boardTask={boardTask}

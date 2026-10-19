@@ -95,13 +95,13 @@ export default function Archived() {
   return (
     <div className={`transition-all duration-300`}>
       {/* ARCHIVED HEADER */}
-      <div className="flex items-center justify-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
-        <span className="text-2xl font-bold text-primary-darker-2">Archived</span>
+      <div className="flex items-center justify-center mt-4 mb-4">
+        <span className="text-2xl font-bold text-[#1e293b] dark:text-primary-darker-2">Archived</span>
       </div>
 
       {/* ARCHIVED CARD */}
       <div className={`${isAIChatOpen ? 'w-[97%]' : 'w-[85%]'} mx-auto transition-all duration-300`}>
-        <div className="flex flex-col box-border border-2 shadow-sm bg-panel-muted mb-12" style={{ borderRadius: '12px', padding: '12px' }}>
+        <div className="flex flex-col box-border border-2 dark:shadow-sm bg-panel-muted mb-12" style={{ borderRadius: '12px', padding: '12px' }}>
           {/* ARCHIVED TASKS */}
           <TaskFiltersBar filters={filters} onChange={handleFiltersChange} />
           <div>

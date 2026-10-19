@@ -10,6 +10,7 @@ import { useAppSelector, useAppDispatch } from "@/app/hooks";
 import { setAIChatOpen } from "@/app/state/uiSlice";
 import { useGetDefaultProjectIdQuery } from "@/app/state/UsersApiSlice";
 import ShowHideSections from "./ShowHideSections";
+import ThemeToggle from "./ThemeToggle";
 
 export default function TopMenu({ userData }: { userData: UserData }) {
   const router = useRouter();
@@ -22,15 +23,15 @@ export default function TopMenu({ userData }: { userData: UserData }) {
   const defaultProjectId = data?.projectId;
 
   return (
-    <div className="bg-primary opacity-96 fixed top-0 left-0 w-screen h-[2.8rem] flex items-center px-4 border-b-1 z-50 relative">
+    <div className="bg-header-bar opacity-96 fixed top-0 left-0 w-screen h-[calc(2.8rem-7px)] flex items-center px-4 border-b border-header-bar-border z-50 relative">
       {path !== "/dashboard" && (
         <button 
           onClick={() => router.back()}
-          className="group flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all hover:bg-white/10 active:scale-95"
+          className="group flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all hover:bg-header-bar-hover active:scale-95"
           title="Go back to dashboard"
         >
           <ChevronLeft 
-            className="h-5 w-5 text-white/80 group-hover:text-white group-hover:-translate-x-0.5 transition-all stroke-[2.5px]" 
+            className="h-5 w-5 text-header-bar-icon group-hover:text-header-bar-icon-hover group-hover:-translate-x-0.5 transition-all stroke-[2.5px]" 
           />
         </button>
       )}
@@ -44,11 +45,12 @@ export default function TopMenu({ userData }: { userData: UserData }) {
       
       <div className="flex-1" />
       <div className="flex justify-end items-center gap-3 mr-10">
+        <ThemeToggle />
         {defaultProjectId && (
             <button 
               onClick={() => dispatch(setAIChatOpen(true))}
               title="AI Assistant"
-              className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all cursor-pointer hover:scale-105"
+              className="p-2 rounded-lg text-header-bar-icon hover:text-header-bar-icon-hover hover:bg-header-bar-hover transition-all cursor-pointer hover:scale-105"
             >
               <Bot className="h-5 w-5" />
             </button>

@@ -22,8 +22,8 @@ export default function ShowHideSections() {
   }
 
   return (
-    <div className="border border-white/30 shadow-md rounded-lg backdrop-blur-sm">
-      <ToggleGroup variant="default" type="multiple" 
+    <div className="border border-header-bar-border shadow-sm rounded-lg">
+      <ToggleGroup variant="default" size="sm" type="multiple" 
           onValueChange={(value) => onValueChange(value)}
           value={value}
           className=""
@@ -32,7 +32,7 @@ export default function ShowHideSections() {
         value="backlog" 
         aria-label="Toggle backlog"
         title={`${isBacklogOpen ? 'Hide' : 'Show'} Backlog`}
-        className="p-2 text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer data-[state=on]:bg-white data-[state=on]:text-black !rounded-l-lg !rounded-r-none"
+        className="p-1.5 text-header-bar-icon hover:text-header-bar-icon-hover hover:bg-header-bar-hover transition-all cursor-pointer data-[state=on]:bg-primary data-[state=on]:text-white !rounded-l-lg !rounded-r-none"
       >
         <ListPlus className="h-5 w-5" />
       </ToggleGroupItem>
@@ -40,7 +40,7 @@ export default function ShowHideSections() {
         value="board" 
         aria-label="Toggle board"
         title={`${isBoardOpen ? 'Hide' : 'Show'} Board`}
-        className="p-2 text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer data-[state=on]:bg-white data-[state=on]:text-black !rounded-none"
+        className="p-1.5 text-header-bar-icon hover:text-header-bar-icon-hover hover:bg-header-bar-hover transition-all cursor-pointer data-[state=on]:bg-primary data-[state=on]:text-white !rounded-none"
       >
         <LayoutDashboard className="h-5 w-5" />
       </ToggleGroupItem>
@@ -48,7 +48,7 @@ export default function ShowHideSections() {
         value="archive" 
         aria-label="Toggle archive"
         title={`${isArchiveOpen ? 'Hide' : 'Show'} Archived`}
-        className="p-2 text-white/70 hover:text-white hover:bg-white/10 transition-all cursor-pointer data-[state=on]:bg-white data-[state=on]:text-black !rounded-l-none !rounded-r-lg"
+        className="p-1.5 text-header-bar-icon hover:text-header-bar-icon-hover hover:bg-header-bar-hover transition-all cursor-pointer data-[state=on]:bg-primary data-[state=on]:text-white !rounded-l-none !rounded-r-lg"
       >
         <CheckCheck className="h-5 w-5" />
       </ToggleGroupItem>

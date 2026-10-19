@@ -18,7 +18,7 @@ export function TaskAttachments({ projectId, taskId }: TaskAttachmentsProps) {
   const hasAttachments = attachments.length > 0 || uploadingFile;
 
   return (
-    <div className="p-3 bg-white rounded-lg">
+    <div className="p-3 bg-panel rounded-lg">
       <div className="flex items-center justify-between mb-1">
         <h4 className="font-semibold text-base">Attachments</h4>
         <TaskAttachmentUpload 

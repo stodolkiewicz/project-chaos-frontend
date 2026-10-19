@@ -127,9 +127,9 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
 
         {/* Error Display */}
         {error && (
-          <div className="mx-4 mb-2 p-2 bg-red-50 border border-red-200 rounded-md flex items-center gap-2">
+          <div className="mx-4 mb-2 p-2 bg-red-50 border border-red-200 dark:bg-red-950/40 dark:border-red-900 rounded-md flex items-center gap-2">
             <AlertCircle className="h-4 w-4 text-red-500" />
-            <span className="text-sm text-red-700">{error}</span>
+            <span className="text-sm text-red-700 dark:text-red-300">{error}</span>
             <Button variant="ghost" size="sm" onClick={clearError} className="ml-auto h-6 w-6 p-0">
               ×
             </Button>

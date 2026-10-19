@@ -61,9 +61,9 @@ export default function ProjectMenu({
   }
 
   return (
-    <div className="flex items-center justify-center mt-4 mb-4 text-primary-darker-4 text-shadow-md">
-      <div className="flex items-center p-2  transition-all duration-200 text-primary-darker-2 hover:bg-white border-0 rounded-md">
-        <span className="text-2xl font-bold mr-2">{projectName}</span>
+    <div className="flex items-center justify-center mt-4 mb-4">
+      <div className="flex items-center p-2  transition-all duration-200 text-primary-darker-2 hover:bg-panel border-0 rounded-md">
+        <span className="text-2xl font-bold mr-2 text-[#1e293b] dark:text-primary-darker-2">{projectName}</span>
         <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened}>
           <DropdownMenuTrigger>
             <TooltipProvider>

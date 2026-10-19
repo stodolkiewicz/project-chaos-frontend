@@ -1,6 +1,7 @@
 import Task from "@/app/(routes)/dashboard/components/Task/Task";
 import AddTaskGhostCard from "./CreateTask/AddTaskGhostCard";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
+import { COLUMN_COLORS } from "@/app/types/ColumnColor";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { TaskStage } from "@/app/types/TaskStage";
 import { useDroppable } from "@dnd-kit/core";
@@ -28,12 +29,19 @@ export default function Column({
     <div
       key={column.id}
       id={column.id}
-      className="flex flex-col box-border border-2 ml-2 mr-2 mb-4 min-h-[30rem] shadow-sm bg-panel-muted"
-      style={{ borderRadius: '12px', padding: '12px' }}
+      className="flex flex-col box-border border-2 ml-2 mr-2 mb-4 min-h-[30rem] dark:shadow-sm bg-panel-muted"
+      style={{ borderRadius: '12px', padding: '8px' }}
       ref={setNodeRef}
     >
-      <h6 className="flex items-center px-1 py-1 bg-primary text-primary-foreground hover:bg-primary-darker-1 rounded-t-sm bg-primary-headers-darker hover:bg-primary-headers-darker transition-all duration-300 break-all">
-        <span className="flex flex-1 justify-center">{column.name}</span>
+      {/* The left padding equals the card margin, border and padding, so the dot lines up with the drag handle of the cards */}
+      <h6 className="flex items-center gap-2 pl-[21px] pr-2 py-1 text-sm break-all">
+        <span
+          className="size-2 shrink-0 rounded-full"
+          style={{ backgroundColor: COLUMN_COLORS[column.color] }}
+          aria-hidden="true"
+        />
+        <span className="text-foreground">{column.name}</span>
+        <span className="font-normal text-text-muted">· {tasksInColumn.length}</span>
       </h6>
 
       {tasksInColumn.map((taskInColumn) => (

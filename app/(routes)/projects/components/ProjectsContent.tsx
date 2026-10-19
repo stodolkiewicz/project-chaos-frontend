@@ -68,7 +68,7 @@ export default function ProjectsContent() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button 
-                          className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300 transition-all duration-200 text-gray-500"
+                          className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-blue-100 hover:text-blue-600 hover:border-blue-300 dark:hover:bg-blue-950/50 dark:hover:border-blue-800 transition-all duration-200 text-gray-500"
                           onClick={() => router.push(`/projects/${project.projectId}`)}
                         >
                           <Eye className="h-4 w-4" />
@@ -79,13 +79,13 @@ export default function ProjectsContent() {
                       </TooltipContent>
                     </Tooltip>
                     <LeaveProjectAlertDialog projectId={project.projectId} projectName={project.projectName}>
-                      <button className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-orange-100 hover:text-orange-600 hover:border-orange-300 transition-all duration-200 text-gray-500">
+                      <button className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-orange-100 hover:text-orange-600 hover:border-orange-300 dark:hover:bg-orange-950/50 dark:hover:border-orange-800 transition-all duration-200 text-gray-500">
                         <LogOut className="h-4 w-4" />
                       </button>
                     </LeaveProjectAlertDialog>
                     { project.projectRole === "ADMIN" && (
                       <DeleteProjectAlertDialog projectId={project.projectId} projectName={project.projectName} >
-                        <button className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 transition-all duration-200 text-gray-500">
+                        <button className="p-2 rounded-md bg-gray-100 border border-gray-200 hover:bg-red-100 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-950/50 dark:hover:border-red-800 transition-all duration-200 text-gray-500">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </DeleteProjectAlertDialog> 
