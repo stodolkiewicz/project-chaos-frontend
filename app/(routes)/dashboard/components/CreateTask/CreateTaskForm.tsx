@@ -68,7 +68,7 @@ export default function CreateTaskForm({
     handleSubmit,
     reset,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<CreateTaskFormData>({
     defaultValues: {
       title: initialTitle,
@@ -303,7 +303,8 @@ export default function CreateTaskForm({
       {/* SUBMIT BUTTON */}
       <button
         type="submit"
-        className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-azure-600 self-end"
+        disabled={isSubmitting}
+        className="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-azure-600 self-end disabled:opacity-60 disabled:cursor-not-allowed"
       >
         Create task
       </button>
