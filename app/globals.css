@@ -69,6 +69,40 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@theme {
+  /*
+   * A jump takes 0.48s (one third of 1.44s). The dots start 0.24s apart, so a dot jumps when the previous one reaches the top.
+   * The last dot lands at 0.96s, 480ms before the first one jumps again.
+   */
+  --animate-thinking-dot: thinking-dot 1.44s ease-in-out infinite;
+
+  /* The dots show up only when the answer takes longer than 350ms, so a fast answer does not flash them */
+  --animate-thinking-appear: thinking-appear 0.15s ease-out 350ms both;
+
+  @keyframes thinking-appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* A resting dot is pale and gets darker at the top, so the jumping dot stands out */
+  @keyframes thinking-dot {
+    0%,
+    33.333%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.4;
+    }
+    16.667% {
+      transform: translateY(-4px);
+      opacity: 0.7;
+    }
+  }
+}
+
 :root {
   --radius: 0.5rem;
   --background: oklch(1 0 0);

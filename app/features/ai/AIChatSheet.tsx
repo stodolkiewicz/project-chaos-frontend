@@ -13,6 +13,7 @@ import { useAIChat } from "./useAIChat";
 import ConversationHistory from "./ConversationHistory";
 import AICreateTaskDialog from "./AICreateTaskDialog";
 import AIDeleteTaskAlertDialog from "./AIDeleteTaskAlertDialog";
+import ThinkingDots from "./ThinkingDots";
 
 interface AIChatSheetProps {
   open: boolean;
@@ -57,6 +58,11 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
    );
 
  
+
+  // The answer placeholder stays empty until the first token arrives
+  const lastChat = chatHistory?.[chatHistory.length - 1];
+  const isWaitingForFirstToken =
+    isLoading && lastChat?.type === 'ASSISTANT' && lastChat.content === '';
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading || !defaultProjectId || !userId) return;
@@ -145,7 +151,11 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
             </div>
           ) : (
             <div className="space-y-2.5 pr-3">
-              {chatHistory.map((chat, index) => (
+              {chatHistory.map((chat, index) =>
+                // The empty answer placeholder shows the thinking dots until the first token arrives
+                isWaitingForFirstToken && index === chatHistory.length - 1 ? (
+                  <ThinkingDots key={chat.id || index} />
+                ) : (
                 <div
                   key={chat.id || index}
                   className={`flex ${chat.type === 'USER' ? 'justify-end' : 'justify-start'}`}
@@ -170,7 +180,8 @@ export default function AIChatSheet({ open, onOpenChange }: AIChatSheetProps) {
                     )}
                   </div>
                 </div>
-              ))}
+                )
+              )}
             </div>
           )}
         </div>
