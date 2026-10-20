@@ -3,6 +3,7 @@
 import { useAppSelector } from "@/app/hooks";
 import { useGetColumnPreferencesQuery, useGetColumnsQuery } from "@/app/state/ColumnsApiSlice";
 import { useGetProjectQuery, useGetUserProjectsQuery } from "@/app/state/ProjectsApiSlice";
+import { useGetTaskPrioritiesQuery } from "@/app/state/TaskPrioritiesApiSlice";
 import { useGetBoardTasksQuery } from "@/app/state/TasksApiSlice";
 import { ColumnPreferenceDTO } from "@/app/types/ColumnPreferenceDTO";
 import ProjectSettingsForm from "./ProjectSettingsForm";
@@ -20,6 +21,10 @@ export default function ProjectSettingsContent({ projectId }: { projectId: strin
   const { data: savedPreferences } = useGetColumnPreferencesQuery(projectId, {
     skip: !projectRole || isViewer,
   });
+
+  // Only an admin edits the priorities
+  const isAdmin = projectRole === "ADMIN";
+  const { data: priorities } = useGetTaskPrioritiesQuery(projectId, { skip: !isAdmin });
 
   const preferences: ColumnPreferenceDTO[] | undefined = isViewer
     ? columns?.map((column, index) => ({
@@ -43,12 +48,13 @@ export default function ProjectSettingsContent({ projectId }: { projectId: strin
         {project ? `${project.name} settings` : "Project settings"}
       </h1>
       {/* The form starts from the loaded data, so it renders only after all queries finish */}
-      {project && columns && boardTasks && preferences && projectRole && (
+      {project && columns && boardTasks && preferences && projectRole && (!isAdmin || priorities) && (
         <ProjectSettingsForm
           project={project}
           columns={columns}
           boardTasks={boardTasks}
           preferences={preferences}
+          priorities={priorities ?? []}
           projectRole={projectRole}
         />
       )}

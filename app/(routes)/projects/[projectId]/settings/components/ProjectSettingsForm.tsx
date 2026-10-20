@@ -6,13 +6,26 @@ import {
   useUpdateColumnPreferencesMutation,
 } from "@/app/state/ColumnsApiSlice";
 import { useUpdateProjectMutation } from "@/app/state/ProjectsApiSlice";
+import { useUpdateTaskPrioritiesMutation } from "@/app/state/TaskPrioritiesApiSlice";
 import { BoardTaskDTO } from "@/app/types/BoardTasksDTO";
 import { ColumnDTO } from "@/app/types/ColumnDTO";
 import { COLUMN_COLORS, ColumnColor, firstUnusedColumnColor } from "@/app/types/ColumnColor";
 import { ColumnPreferenceDTO } from "@/app/types/ColumnPreferenceDTO";
 import { COLUMN_SOUND_KEYS, COLUMN_SOUND_LABELS, ColumnSound } from "@/app/types/ColumnSound";
+import { firstUnusedPriorityColor } from "@/app/types/PriorityColor";
 import { ProjectDTO } from "@/app/types/ProjectDTO";
+import { TaskPriorityDTO } from "@/app/types/TaskPriorityDTO";
 import { UpdateProjectRequestDTO } from "@/app/types/UpdateProjectRequestDTO";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,9 +43,20 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, SubmitHandler, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import PriorityColorPicker from "./PriorityColorPicker";
 
 // Column, sound and confetti
 const PREFERENCES_GRID = "grid-cols-[minmax(0,1fr)_11rem_7rem]";
+
+// The database allows priority values from 1 to 5, and every priority has a different one.
+// The form hides the values; a new priority takes the first free one.
+const PRIORITY_VALUES = [1, 2, 3, 4, 5];
+
+// The backend explains a rejected save in "detail"
+function errorDetail(err: unknown): string | undefined {
+  const detail = (err as { data?: { detail?: unknown } })?.data?.detail;
+  return typeof detail === "string" ? detail : undefined;
+}
 
 type ProjectSettingsFormData = {
   description: string;
@@ -44,6 +68,14 @@ type ProjectSettingsFormData = {
     sound: ColumnSound;
     confetti: boolean;
   }[];
+  // A missing priorityId means a priority added in this form
+  priorities: {
+    priorityId?: string;
+    name: string;
+    priorityValue: number;
+    color: string;
+    taskCount: number;
+  }[];
 };
 
 export default function ProjectSettingsForm({
@@ -51,20 +83,27 @@ export default function ProjectSettingsForm({
   columns,
   boardTasks,
   preferences,
+  priorities,
   projectRole,
 }: {
   project: ProjectDTO;
   columns: ColumnDTO[];
   boardTasks: BoardTaskDTO[];
   preferences: ColumnPreferenceDTO[];
+  priorities: TaskPriorityDTO[];
   projectRole: "ADMIN" | "MEMBER" | "VIEWER";
 }) {
   const router = useRouter();
   const [updateProject, { isLoading: isProjectSaving }] = useUpdateProjectMutation();
+  const [updateTaskPriorities, { isLoading: isPrioritiesSaving }] =
+    useUpdateTaskPrioritiesMutation();
   const [updateColumnPreferences, { isLoading: isPreferencesSaving }] =
     useUpdateColumnPreferencesMutation();
   const [fetchColumns] = useLazyGetColumnsQuery();
   const [columnError, setColumnError] = useState("");
+  const [priorityError, setPriorityError] = useState("");
+  // The index of a used priority waiting for the admin to confirm its deletion
+  const [priorityToDelete, setPriorityToDelete] = useState<number | null>(null);
 
   const isAdmin = projectRole === "ADMIN";
   const isViewer = projectRole === "VIEWER";
@@ -74,7 +113,7 @@ export default function ProjectSettingsForm({
     handleSubmit,
     control,
     getValues,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ProjectSettingsFormData>({
     defaultValues: {
       description: project.description ?? "",
@@ -88,6 +127,13 @@ export default function ProjectSettingsForm({
           confetti: preference?.confetti ?? false,
         };
       }),
+      priorities: priorities.map((priority) => ({
+        priorityId: priority.id,
+        name: priority.name,
+        priorityValue: priority.priorityValue,
+        color: priority.color,
+        taskCount: priority.taskCount,
+      })),
     },
   });
 
@@ -99,6 +145,17 @@ export default function ProjectSettingsForm({
   // The sounds section shows the names and colors while the admin edits them above
   const watchedColumns = useWatch({ control, name: "columns" });
 
+  const {
+    fields: priorityFields,
+    append: appendPriority,
+    remove: removePriority,
+  } = useFieldArray({
+    control,
+    name: "priorities",
+  });
+  // The delete dialog shows the current name of the priority
+  const watchedPriorities = useWatch({ control, name: "priorities" });
+
   const onSubmit: SubmitHandler<ProjectSettingsFormData> = async (data) => {
     if (data.columns.length < 2) {
       setColumnError("Keep at least 2 columns");
@@ -109,6 +166,11 @@ export default function ProjectSettingsForm({
       return;
     }
     setColumnError("");
+    if (data.priorities.some((priority) => priority.name.trim() === "")) {
+      setPriorityError("Every priority needs a name");
+      return;
+    }
+    setPriorityError("");
 
     try {
       let columnIds = data.columns.map((column) => column.columnId);
@@ -123,6 +185,25 @@ export default function ProjectSettingsForm({
           })),
         };
         await updateProject({ projectId: project.id, body }).unwrap();
+
+        try {
+          await updateTaskPriorities({
+            projectId: project.id,
+            body: {
+              priorities: data.priorities.map(({ priorityId, name, priorityValue, color }) => ({
+                id: priorityId,
+                name: name.trim(),
+                priorityValue,
+                color,
+              })),
+            },
+          }).unwrap();
+        } catch (err) {
+          setPriorityError(
+            errorDetail(err) ?? `There was an error while saving priorities of "${project.name}" project.`
+          );
+          return;
+        }
 
         // New columns get their ids only now. The backend keeps the order of the form, so row i is column i
         const savedColumns = await fetchColumns(project.id).unwrap();
@@ -142,14 +223,37 @@ export default function ProjectSettingsForm({
       router.back();
     } catch (err) {
       // The backend rejects a column that got tasks after the page opened. Its message names the column
-      const detail = (err as { data?: { detail?: unknown } })?.data?.detail;
-      if (typeof detail === "string") {
-        setColumnError(detail);
-      } else {
-        setColumnError(`There was an error while saving settings of "${project.name}" project.`);
-      }
+      setColumnError(
+        errorDetail(err) ?? `There was an error while saving settings of "${project.name}" project.`
+      );
     }
   };
+
+  const handleDeletePriority = (index: number) => {
+    setPriorityError("");
+    if (getValues(`priorities.${index}.taskCount`) > 0) {
+      setPriorityToDelete(index);
+      return;
+    }
+    removePriority(index);
+  };
+
+  const handleAddPriority = () => {
+    const currentPriorities = getValues("priorities");
+    const usedValues = currentPriorities.map((priority) => priority.priorityValue);
+    const freeValue = PRIORITY_VALUES.find((value) => !usedValues.includes(value));
+    if (freeValue === undefined) return;
+    setPriorityError("");
+    appendPriority({
+      name: "",
+      priorityValue: freeValue,
+      color: firstUnusedPriorityColor(currentPriorities.map((priority) => priority.color)),
+      taskCount: 0,
+    });
+  };
+
+  const priorityPendingDeletion =
+    priorityToDelete === null ? undefined : watchedPriorities[priorityToDelete];
 
   const handleDeleteColumn = (index: number) => {
     const column = getValues(`columns.${index}`);
@@ -371,14 +475,98 @@ export default function ProjectSettingsForm({
         </div>
       </section>
 
-      <div className="flex justify-end gap-2">
+      {/* PRIORITIES: shared by the whole project, so only an admin changes them */}
+      {isAdmin && (
+        <section className="bg-panel rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-header px-6 py-2">
+            <h2 className="text-base font-semibold text-primary-foreground">Task priorities</h2>
+          </div>
+          <div className="p-6 flex flex-col">
+            <p className="text-sm text-text-muted mb-2">
+              Choose the priorities that members can give to tasks in this project.
+            </p>
+
+            {priorityFields.map((field, index) => (
+              <div key={field.id} className="mt-2 flex items-center gap-2">
+                <Controller
+                  control={control}
+                  name={`priorities.${index}.color`}
+                  render={({ field: colorField }) => (
+                    <PriorityColorPicker value={colorField.value} onChange={colorField.onChange} />
+                  )}
+                />
+                <Input
+                  {...register(`priorities.${index}.name`)}
+                  placeholder="Priority name"
+                  maxLength={50}
+                  className="min-w-0 flex-1"
+                />
+                <button
+                  type="button"
+                  aria-label="Delete priority"
+                  title="Delete priority"
+                  onClick={() => handleDeletePriority(index)}
+                  className="rounded p-1 text-text-muted cursor-pointer hover:text-red-500"
+                >
+                  <Trash2 className="size-5" aria-hidden="true" />
+                </button>
+              </div>
+            ))}
+            {priorityError && <p className="text-red-500 text-sm mt-2">{priorityError}</p>}
+
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleAddPriority}
+              disabled={priorityFields.length >= PRIORITY_VALUES.length}
+              className="mt-4"
+            >
+              Click to add the next priority
+            </Button>
+          </div>
+
+          <AlertDialog
+            open={priorityToDelete !== null}
+            onOpenChange={(open) => !open && setPriorityToDelete(null)}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete priority?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {priorityPendingDeletion?.taskCount}{" "}
+                  {priorityPendingDeletion?.taskCount === 1 ? "task uses" : "tasks use"} priority{" "}
+                  <span className="font-bold">{priorityPendingDeletion?.name}</span>. After saving
+                  they will have no priority.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    if (priorityToDelete !== null) removePriority(priorityToDelete);
+                    setPriorityToDelete(null);
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </section>
+      )}
+
+      {/* The page is long, so the buttons stick to the bottom of the screen and stay visible */}
+      <div className="sticky bottom-0 z-10 flex items-center justify-end gap-2 border-t border-divider bg-background py-4">
+        {!isViewer && isDirty && (
+          <span className="mr-auto text-sm font-medium text-amber-600">You have unsaved changes</span>
+        )}
         <Button type="button" variant="outline" onClick={() => router.back()}>
           {isViewer ? "Back" : "Cancel"}
         </Button>
         {!isViewer && (
           <button
             type="submit"
-            disabled={isProjectSaving || isPreferencesSaving}
+            disabled={isProjectSaving || isPrioritiesSaving || isPreferencesSaving}
             className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-hover cursor-pointer disabled:opacity-50"
           >
             Save changes

@@ -323,7 +323,12 @@ export default function CreateTaskForm({
               <SelectItem value={NONE}>-- Select task priority --</SelectItem>
               {taskPriorities?.map((taskPriority) => (
                 <SelectItem key={taskPriority.id} value={taskPriority.id}>
-                  {taskPriority.name} ({taskPriority.priorityValue})
+                  <span
+                    className="size-3 shrink-0 rounded-full"
+                    style={{ backgroundColor: taskPriority.color }}
+                    aria-hidden="true"
+                  />
+                  {taskPriority.name}
                 </SelectItem>
               ))}
             </SelectContent>
